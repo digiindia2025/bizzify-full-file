@@ -5,7 +5,7 @@ import User from "../../models/User";
 import Category from "../../models/Category";
 import Subcategory from "../../models/Subcategory";
 import ChildCategory from "../../models/ChildCategoryModel";
-import Contact from "../../models/Contact";
+import { Contact } from "../../models/Contact";
 // import SupportTicket from "../../models/SupportTicket";
 // import Enquiry from "../../models/Enquiry";
 // import LinkModel from "../../models/Link";
@@ -22,11 +22,6 @@ export const getDashboardCounts = async (req: Request, res: Response) => {
       subcategories,
       childCategories,
       contacts,
-      supports,
-      enquiries,
-      links,
-      reviews,
-      memberships,
     ] = await Promise.all([
       Listing.countDocuments(),
       Advertisement.countDocuments(),
@@ -50,11 +45,6 @@ export const getDashboardCounts = async (req: Request, res: Response) => {
       subcategories,
       childCategories,
       contacts,
-      supports,
-      enquiries,
-      links,
-      reviews,
-      memberships,
     });
   } catch (err) {
     console.error("Error fetching dashboard counts:", err);
