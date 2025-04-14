@@ -12,7 +12,7 @@
   align-items: center;
   justify-content: space-between;
   height: 4.25rem;
-  box-shadow:0px -3px 39px -13px lightgray;
+  box-shadow: 0px -3px 39px -13px lightgray;
 }
 
 .navbar-nav {
@@ -52,10 +52,12 @@
   border-radius: 5px;
   color: white;
 }
+
 .service:hover {
   background-color: var(--blue);
   transition: all 0.3s ease;
 }
+
 .service h6:hover {
   color: white;
   transition: all 0.3s ease;
@@ -101,7 +103,7 @@
 
 .navbar-toggler {
   background-color: var(--blue) !important;
-  color: white; 
+  color: white;
   padding: 5px 7px !important;
 }
 
@@ -114,7 +116,7 @@
   display: contents;
 }
 
-.navbar-toggler:focus{
+.navbar-toggler:focus {
   box-shadow: none !important;
 }
 
@@ -123,12 +125,13 @@
   display: ruby;
   font-size: 16px;
 }
-.service a h6{
+
+.service a h6 {
   font-size: 11px;
   margin: 0;
 }
 
-.service{
+.service {
   padding: 5px 10px;
 }
 
@@ -142,7 +145,7 @@
 }
 
 
-.register-btn{
+.register-btn {
   background-color: var(--blue);
   color: white;
   padding: 8px 15px;
@@ -160,6 +163,7 @@
     position: unset;
     margin: 0;
   }
+
   .navbar-collapse {
     background-color: white;
     padding: 1rem 1rem;

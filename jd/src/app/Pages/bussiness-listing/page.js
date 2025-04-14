@@ -210,7 +210,7 @@ const Page = () => {
                                   </p>
                                 </div>
                                 <span>|</span>
-                                <p>Phone: {biz.phone}</p>
+                                <p>Mobile : {biz.phone}</p>
                               </div>
                             </div>
                           </div>

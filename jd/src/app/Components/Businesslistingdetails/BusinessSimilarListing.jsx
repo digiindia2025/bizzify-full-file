@@ -11,7 +11,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Navigation, Autoplay } from "swiper/modules";
+import {Autoplay } from "swiper/modules";
 
 const BusinessSimilarListing = () => {
   const similarlistingbusinesses = [
@@ -121,21 +121,21 @@ const BusinessSimilarListing = () => {
         <div className="row">
           <h3 className="text-center fw-bold text-dark">Similar Listings</h3>
           <Swiper
-            modules={[Navigation, Autoplay]}
-            spaceBetween={20}
-            slidesPerView={2}
-            navigation
-            autoplay={{ delay: 2000 }}
-            breakpoints={{
-              320: { slidesPerView: 1 },
-              576: { slidesPerView: 1 },
-              992: { slidesPerView: 2 },
-            }}
-          >
+              modules={[Autoplay]}
+              spaceBetween={20}
+              slidesPerView={2}
+              navigation
+              autoplay={{ delay: 2000 }}
+              breakpoints={{
+                320: { slidesPerView: 1 },
+                576: { slidesPerView: 1 },
+                992: { slidesPerView: 2 },
+              }}
+            >
             {similarlistingbusinesses.map((similarbusinesses) => (
               <SwiperSlide key={similarbusinesses.id}>
                 <Link
-                  className="text-decoration-none"
+                  className="text-decoration-none p-2"
                   href={`/Pages/bussiness-listing/${similarbusinesses.id}`}
                 >
                   <div className="business-card">

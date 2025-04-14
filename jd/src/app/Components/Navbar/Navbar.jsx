@@ -61,7 +61,8 @@ const Header = () => {
         </div> */}
         <div className="container">
           <Link className="navbar-brand" href="/">
-            <Image src={logo} alt="logo" />
+            <p className="logo-text">Bizi<span>ff</span>y </p>
+            {/* <Image src={logo} alt="logo" /> */}
           </Link>
           <button
             className="navbar-toggler"
@@ -82,13 +83,6 @@ const Header = () => {
             ref={navbarCollapseRef}
           >
             <ul className="navbar-nav mb-2 mb-lg-0">
-              {/* <li className="nav-item">
-                <input
-                  type="text"
-                  className="form-control me-2"
-                  placeholder="Enter a website, business, or keyword"
-                />
-              </li> */}
               <li className="nav-item">
                 <Link
                   className="nav-link"
@@ -104,43 +98,6 @@ const Header = () => {
                   Earn With Us
                 </Link>
               </li>
-              {/* <li
-                className={`nav-item webdesign ${services ? "active" : ""}`}
-              >
-                <Link
-                  className="nav-link"
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleServices();
-                  }}
-                >
-                  Category <i className="bi bi-chevron-down"></i>
-                </Link>
-                {services && (
-                  <div className="dropMain">
-                    <div className="container py-2">
-                      <div className="row">
-                        <p><b>Categories</b></p>
-                        {categories.map((service, index) => (
-                          <div key={index} className="col-lg-4 col-md-3 col-sm-4 col-6">
-                            <div className="service">
-                              <Link
-                                href={service.link}
-                                onClick={() => {
-                                  setServices(false);
-                                }}
-                              >
-                                <h6>{service.name}</h6>
-                              </Link>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </li> */}
               <li className="nav-item">
                 <Link
                   className="nav-link"

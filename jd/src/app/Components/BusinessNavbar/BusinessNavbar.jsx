@@ -5,10 +5,11 @@ import Link from "next/link";
 import logo from "../../Images/logo.jpg";
 import Image from "next/image";
 import "../../Pages/login/page";
-import './businessNavbar.css'
+import './businessNavbar.css';
 
 const BusinessNavbar = () => {
   const navbarCollapseRef = useRef(null);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -27,7 +28,6 @@ const BusinessNavbar = () => {
     };
 
     document.addEventListener("click", handleClickOutside);
-
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
@@ -55,61 +55,101 @@ const BusinessNavbar = () => {
         }, 1500);
       }
     }, 100);
-
     return () => clearInterval(interval);
   }, [placeholderIndex]);
+
   return (
     <>
-    <section className="business-navbar">
-      <nav className="navbar navbar-expand-lg">
-        <div className="container-fluid">
-          <Link className="navbar-brand" href="/">
-            <Image src={logo} alt="logo" />
-          </Link>
-          <div className="business-navbar-search-container">
-            {/* Search Input */}
-            <input
-              type="text"
-              className="hero-search-input"
-              placeholder={animatedText}
-            />
-            <button className="hero-search-btn">
-            <i className="bi bi-search"></i> 
-            </button>
-          </div>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span>
-              <i className="bi bi-list text-white"></i>
-            </span>
-          </button>
-          <div
-            className="collapse navbar-collapse justify-content-end"
-            id="navbarSupportedContent"
-            ref={navbarCollapseRef}
-          >
-            <div className="d-flex align-items-center justify-content-end">
-              <Link href="/Pages/login" className="login-btn me-2">
-                SignIn / Signup
-              </Link>
+      <section className="business-navbar">
+        <nav className="navbar navbar-expand-lg">
+          <div className="container-fluid">
+            <Link className="navbar-brand" href="/">
+              <Image src={logo} alt="logo" />
+            </Link>
+
+            {/* Desktop search bar */}
+            <div className="d-none d-lg-flex business-navbar-search-container">
+              <select className="hero-location-select">
+                <option value="">Select Location</option>
+                <option value="new-york">New York</option>
+                <option value="los-angeles">Los Angeles</option>
+                <option value="chicago">Chicago</option>
+              </select>
+              <input
+                type="text"
+                className="hero-search-input"
+                placeholder={animatedText}
+              />
+              <button className="hero-search-btn">
+                <i className="bi bi-search"></i>
+              </button>
             </div>
-            {/* ========== This is Profile code show after login please ========== */}
-            {/* <div className="d-flex align-items-center ">
-              <Link href="/Pages/login" className="login-btn me-2">
-               My Profile
-              </Link>
-            </div> */}
+
+            {/* Mobile search icon */}
+            <div className="d-flex gap-3 d-lg-none">  
+            <button
+              className="d-lg-none btn btn-link  p-0 ms-2"
+              onClick={() => setShowMobileSearch(!showMobileSearch)}
+            >
+              <i className="bi bi-search fs-4"></i>
+            </button>
+
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span>
+                <i className="bi bi-list text-white"></i>
+              </span>
+            </button>
+            </div>
+
+            <div
+              className="collapse navbar-collapse justify-content-end"
+              id="navbarSupportedContent"
+              ref={navbarCollapseRef}
+            >
+              <div className="d-flex align-items-center ">
+                <Link href="/Pages/login" className="btn btn bg-primary text-white me-2">
+                  SignIn
+                </Link>
+                <Link href="/Pages/signup" className="btn btn bg-dark text-white me-2">
+                  Register
+                </Link>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </section>
+
+      {/* Mobile search dropdown */}
+      {showMobileSearch && (
+        <div className="mobile-search-slide animate__animated animate__slideInDown">
+          <div className="container-fluid d-flex flex-column bg-white p-3 shadow">
+            <select className="form-select mb-2">
+              <option value="">Select Location</option>
+              <option value="new-york">New York</option>
+              <option value="los-angeles">Los Angeles</option>
+              <option value="chicago">Chicago</option>
+            </select>
+            <div className="d-flex">
+              <input
+                type="text"
+                className="form-control me-2"
+                placeholder={animatedText}
+              />
+              <button className="btn btn-primary">
+                <i className="bi bi-search"></i>
+              </button>
+            </div>
           </div>
         </div>
-      </nav>
-    </section>
+      )}
     </>
   );
 };

@@ -11,7 +11,9 @@ const Footer = () => {
         <div className="row">
           {/* Logo & Social Media */}
           <div className="col-lg-3 col-md-6 col-6 footer-section">
-            <Image src={logo} className="footer-logo" alt="Biziffy Logo" />
+          <Link className="navbar-brand" href="/">
+            <p className="logo-text">Bizi<span>ff</span>y </p>
+          </Link>
             <p className="footer-description">
               Your trusted partner in digital solutions.
             </p>

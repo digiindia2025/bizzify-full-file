@@ -32,6 +32,8 @@
   text-decoration: none;
 }
 
+
+
 .business-listing-page .breadcrumb {
   margin: 0;
   padding: 20px 30px 0;
@@ -59,7 +61,7 @@
 .business-card h5 {
   margin-bottom: 0;
   color: var(--black);
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .bi-star-fill {
@@ -114,14 +116,6 @@ span {
   margin: 0;
 }
 
-.listing-image {
-  width: 110px;
-  color: transparent;
-  height: 110px;
-  object-fit: cover;
-  border-radius: 10px;
-  aspect-ratio: 4 / 3;
-}
 .listing-image {
   width: 110px;
   color: transparent;
@@ -334,7 +328,7 @@ span {
 
 .service-list li,
 .client-feedback {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .biziffy-listing-text {
@@ -352,6 +346,12 @@ span {
   color: goldenrod;
   animation: wiggle 1s infinite;
 }
+
+.swiper-button-next,
+.swiper-button-prev {
+  display: none !important;
+}
+
 
 @keyframes wiggle {
   0%,
@@ -373,9 +373,26 @@ span {
   border: 1px solid lightgray;
 }
 
+.basic-li-detail{
+  justify-content: center;
+}
+
 /* ===== Similar Listing Data =========== */
 
 @media (max-width: 768px) {
+  .details-card .nav-link {
+    padding: 3px 8px;
+    font-size: 12px;
+  }
+  
+  .business-listing-black-btn{
+    padding: 2px 5px;
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .basic-li-detail{
+    justify-content: start;
+  }
   .col-5-scroll-css {
     height: 100%;
     padding: 10px 2px;
@@ -389,6 +406,7 @@ span {
 
   .business-card {
     gap: 10px;
+    align-items: flex-start;
   }
 
   .business-card:hover {
@@ -429,7 +447,7 @@ span {
     box-shadow: none;
     height: 100%;
     background-color: white;
-    /* margin: 5rem 0 0; */
+    margin: 1rem 0;
     width: 100%;
   }
 
@@ -442,16 +460,16 @@ span {
   }
 
   .business-card p {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .business-card h5 {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .listing-image {
-    width: 78px;
-    height: 78px;
+    width: 50px;
+    height: 50px;
   }
 
   .details-card p {
@@ -472,7 +490,7 @@ span {
 
   .service-list li,
   .client-feedback {
-    font-size: 10px;
+    font-size: 14px;
   }
 
   .similar-listing-data {
