@@ -63,7 +63,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 
     await axios.post(
-      "http://localhost:5000/api/advertisements/upload", // ✅ FIXED route
+      "http://localhost:5000/api/admin/listings/create", // ✅ FIXED route
       formPayload,
       {
         headers: {

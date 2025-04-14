@@ -37,7 +37,7 @@ const AllAdvertisements = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
   const [advertisements, setAdvertisements] = useState<Advertisement[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<{ _id: string; name: string }[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedAd, setSelectedAd] = useState<Advertisement | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -51,17 +51,17 @@ const AllAdvertisements = () => {
   const fetchAdvertisements = async () => {
     try {
       const response = await axios.get("/advertisements");
+      console.log(response.data);  // Add this line to check the fetched data
       setAdvertisements(response.data);
     } catch (error) {
       console.error("Failed to fetch advertisements", error);
     }
   };
-
+  
   const fetchCategories = async () => {
     try {
       const response = await axios.get("/categories");
-      const categoryNames = response.data.map((cat: any) => cat.name);
-      setCategories(categoryNames);
+      setCategories(response.data);
     } catch (error) {
       console.error("Failed to fetch categories", error);
     }
@@ -204,11 +204,12 @@ const AllAdvertisements = () => {
             }}
           >
             <option value="All">All Categories</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
+           {categories.map((category) => (
+  <option key={category._id} value={category.name}>
+    {category.name}
+  </option>
+))}
+
           </select>
           <Button
             className="bg-green-500 hover:bg-green-600 text-white text-sm"
