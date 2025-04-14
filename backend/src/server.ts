@@ -43,7 +43,7 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 // Middleware
-const allowedOrigins = ["http://localhost:3000", "http://localhost:8080"];
+const allowedOrigins = ["http://localhost:3000", "http://localhost:8080", "http://localhost:5173"];
 
 app.use(
   cors({
