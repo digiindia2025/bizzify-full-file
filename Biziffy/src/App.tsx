@@ -29,7 +29,7 @@
   import DeactivatedUsers from "./pages/admin/DeactivatedUsers";
   import AllCategories from "./pages/admin/AllCategories";
   import AddNewCategories from "./pages/admin/AddNewCategory";
-  import AllSubcategories from "./pages/admin/AllSubCategories";
+  import AllSubcategories from "./pages/admin/AllSubcategories";
   import AddNewSubcategory from "./pages/admin/AddNewSubcategory";
   import UserDetails from "./pages/admin/UserDetails";
     import NotFound from "./pages/NotFound";
