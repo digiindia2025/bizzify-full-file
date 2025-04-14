@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/Layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,10 +21,11 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface UserData {
   _id: string;
-  name: string;
+  fullName: string;
   email: string;
   phone: string;
   status: "Active" | "Inactive" | "Deactivated";
@@ -37,6 +39,7 @@ const AllUsers = () => {
   const [error, setError] = useState("");
   const [editingStatusId, setEditingStatusId] = useState<string | null>(null);
   const [bulkAction, setBulkAction] = useState<string>("Bulk Action");
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const usersPerPage = 5;
   const navigate = useNavigate();
 
@@ -46,24 +49,42 @@ const AllUsers = () => {
 
   const fetchUsers = async () => {
     setLoading(true);
+    setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/admin/users");
-      const data = await res.json();
-      console.log("Fetched data:", data);
-
-      // Corrected data handling: Ensure we're always working with an array of users
-      if (data && Array.isArray(data)) {
-        setUserList(data);
-      } else if (data && data.users && Array.isArray(data.users)) {
-        setUserList(data.users);
-      } else {
+      const response = await axios.get("http://localhost:5000/api/admin/users");
+      console.log("API Response:", response.data);
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = response.data;
+      if (data?.users && Array.isArray(data.users)) {
+        setUserList(data.users.filter((user): user is UserData =>
+          typeof user?._id === 'string' &&
+          typeof user?.fullName === 'string' &&
+          typeof user?.email === 'string' &&
+          typeof user?.phone === 'string' &&
+          ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
+        ));
+      } else if (Array.isArray(data)) {
+        setUserList(data.filter((user): user is UserData =>
+          typeof user?._id === 'string' &&
+          typeof user?.fullName === 'string' &&
+          typeof user?.email === 'string' &&
+          typeof user?.phone === 'string' &&
+          ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
+        ));
+      }
+       else {
         console.error("Unexpected response format:", data);
         setUserList([]);
-        setError("Failed to load users due to unexpected data format."); // Added error message for clarity
+        setError("Failed to load users due to unexpected data format.");
       }
-    } catch (err) {
-      console.error("Error fetching users:", err);
-      setError("Failed to load users.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError("Failed to load users: " + err.message);
+      } else {
+        setError("Failed to load users: An unknown error occurred.");
+      }
       setUserList([]);
     } finally {
       setLoading(false);
@@ -75,54 +96,80 @@ const AllUsers = () => {
     if (!confirmed) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setUserList((prev) => prev.filter((u) => u._id !== userId));
-      } else {
-        console.error("Error deleting user:", res.statusText); // Log error message
-        // Optionally set an error state to inform the user
+      const response = await axios.delete(`http://localhost:5000/api/admin/users/${userId}`);
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } catch (err) {
-      console.error("Error deleting user:", err);
-      // Optionally set an error state to inform the user
+      setUserList((prev) => prev.filter((u) => u._id !== userId));
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Error deleting user:", err);
+        setError("Failed to delete user: " + err.message);
+      } else {
+        console.error("Unknown error deleting user:", err);
+        setError("Failed to delete user due to an unknown error.");
+      }
     }
   };
 
   const handleUpdateStatus = async (userId: string, newStatus: UserData["status"]) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/users/${userId}/toggle-status`, {
-        method: "PATCH",
+      const response = await axios.patch(`http://localhost:5000/api/admin/users/${userId}/toggle-status`, { status: newStatus }, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: newStatus }),
       });
 
-      if (response.ok) {
-        const updatedUser = await response.json();
-        setUserList((prevUsers) =>
-          prevUsers.map((user) =>
-            user._id === updatedUser._id ? updatedUser : user
-          )
-        );
-        setEditingStatusId(null);
-      } else {
-        console.error("Failed to update user status:", response.statusText); // Log error message
-        // Optionally set an error state
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } catch (error) {
-      console.error("Error updating status:", error);
-      // Optionally set an error state
+
+      const updatedUser: UserData = response.data;
+      setUserList((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === updatedUser._id ? updatedUser : user
+        )
+      );
+      setEditingStatusId(null);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error updating status:", error);
+        setError("Failed to update status: " + error.message);
+      }
     }
   };
 
-  const filteredUsers = userList.filter((user) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.phone.includes(searchQuery)
-  );
+  const handleCheckboxChange = (userId: string) => {
+    setSelectedUsers((prevSelected) => {
+      if (prevSelected.includes(userId)) {
+        return prevSelected.filter((id) => id !== userId);
+      } else {
+        return [...prevSelected, userId];
+      }
+    });
+  };
+
+  const handleBulkCheckboxChange = () => {
+    const currentVisibleIds = currentUsers.map((user) => user._id);
+    const allSelected = currentVisibleIds.every((id) => selectedUsers.includes(id));
+
+    if (allSelected) {
+      setSelectedUsers((prev) => prev.filter((id) => !currentVisibleIds.includes(id)));
+    } else {
+      setSelectedUsers((prev) => [...prev, ...currentVisibleIds].filter((v, i, a) => a.indexOf(v) === i));
+    }
+  };
+
+  const filteredUsers = userList.filter((user) => {
+    const matches =
+      user?.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user?.phone?.includes(searchQuery);
+    console.log(`Checking user: ${user.fullName}, match: ${matches}`);
+    return matches;
+  });
+  console.log("Filtered Users:", filteredUsers);
+
 
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
   const indexOfLastUser = currentPage * usersPerPage;
@@ -147,8 +194,8 @@ const AllUsers = () => {
   };
 
   const exportToCSV = () => {
-    const headers = ["ID", "Name", "Email", "Phone", "Status"];
-    const rows = filteredUsers.map((u) => [u._id, u.name, u.email, u.phone, u.status]);
+    const headers = ["ID", "Full Name", "Email", "Phone", "Status"];
+    const rows = filteredUsers.map((u) => [u._id, u.fullName, u.email, u.phone, u.status]);
     const csvContent = [headers, ...rows].map((r) => r.join(",")).join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -177,31 +224,64 @@ const AllUsers = () => {
 
   const handleBulkAction = async () => {
     if (bulkAction === "Delete") {
-      const confirmed = window.confirm("Are you sure you want to delete the selected users?");
-      if (confirmed) {
-        try {
-          
-          const usersToDelete = currentUsers.map((user) => user._id);
-          await Promise.all(
-            usersToDelete.map((userId) =>
-              fetch(`http://localhost:5000/api/admin/users/${userId}`, { method: "DELETE" })
-            )
-          );
-          // After successful deletion, refetch the users to update the UI
-          fetchUsers();
-        } catch (err) {
-          console.error("Error deleting users:", err);
-          // Optionally set an error state
+      if (selectedUsers.length > 0) {
+        const confirmed = window.confirm("Are you sure you want to delete the selected users?");
+        if (confirmed) {
+          try {
+            const deletePromises = selectedUsers.map((userId) =>
+              axios.delete(`http://localhost:5000/api/admin/users/${userId}`)
+            );
+            const responses = await Promise.all(deletePromises);
+            if (responses.every((res) => res.status === 200)) {
+              fetchUsers();
+              setSelectedUsers([]);
+              alert("Selected users deleted successfully.");
+            } else {
+              const errors = await Promise.all(responses.map(res => res.status !== 200 ? res.data?.message || `Failed with status ${res.status}` : null));
+              console.error("Error deleting users:", errors);
+              setError("Failed to delete some or all users.");
+            }
+          } catch (err: unknown) {
+            console.error("Error deleting users:", err);
+            setError("Failed to delete users: " + (err instanceof Error ? err.message : "An unknown error occurred."));
+          }
         }
+      } else {
+        alert("Please select users to delete.");
       }
     } else if (bulkAction === "Deactivate") {
-      // In a real application, you'd have logic to identify selected users and an API endpoint for bulk deactivation.
-      console.log("Bulk Deactivate action triggered (implementation needed)");
-      
+      if (selectedUsers.length > 0) {
+        try {
+          const response = await axios.patch("http://localhost:5000/api/admin/users/bulk-deactivate", { userIds: selectedUsers }, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (response.status === 200) {
+            fetchUsers();
+            setSelectedUsers([]);
+            alert("Selected users deactivated successfully.");
+          } else {
+            console.error("Failed to deactivate users:", response.data?.message || `Failed with status ${response.status}`);
+            setError("Failed to deactivate users.");
+          }
+        } catch (error: unknown) {
+          console.error("Error deactivating users:", error);
+          if (error instanceof Error) {
+            setError("Failed to deactivate users: " + error.message);
+          } else {
+            setError("Failed to deactivate users: An unknown error occurred.");
+          }
+        }
+      } else {
+        alert("Please select users to deactivate.");
+      }
     }
-    // Reset bulk action dropdown
     setBulkAction("Bulk Action");
   };
+
+  const isAllCurrentUsersSelected = currentUsers.every((user) => selectedUsers.includes(user._id));
+
 
   return (
     <AdminLayout title="All Users">
@@ -220,44 +300,45 @@ const AllUsers = () => {
             <option value="Delete">Delete</option>
             <option value="Deactivate">Deactivate</option>
           </select>
-          <Button className="bg-blue-500 hover:bg-blue-600" onClick={handleBulkAction}>
+          <Button className="bg-blue-500 hover:bg-blue-600" onClick={handleBulkAction} disabled={selectedUsers.length === 0 && bulkAction !== "Bulk Action"}>
             Apply
           </Button>
         </div>
 
         <div className="flex items-center gap-2">
-          <Input
-            type="text"
-            placeholder="Search"
-            className="w-64"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-            }}
-          />
+        <Input
+  placeholder="Search..."
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  className="max-w-sm"
+/>
+
           <Button className="bg-blue-500 hover:bg-blue-600" onClick={exportToCSV}>
             Export to CSV
           </Button>
         </div>
       </div>
 
+      {error && <div className="p-4 mb-4 text-red-500 bg-red-100 border border-red-400 rounded-md">{error}</div>}
+
       <div className="bg-white rounded-md border shadow-sm">
         {loading ? (
           <div className="p-4 text-center">Loading users...</div>
-        ) : error ? (
-          <div className="p-4 text-center text-red-500">{error}</div>
         ) : (
           <>
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[40px]">
-                    {/* You'll need to implement logic to select multiple users for bulk actions */}
-                    <input type="checkbox" className="h-4 w-4" />
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4"
+                      checked={isAllCurrentUsersSelected}
+                      onChange={handleBulkCheckboxChange}
+                    />
                   </TableHead>
                   <TableHead>ID</TableHead>
-                  <TableHead>Name</TableHead>
+                  <TableHead>Full Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Account Status</TableHead>
@@ -268,11 +349,15 @@ const AllUsers = () => {
                 {currentUsers.map((user) => (
                   <TableRow key={user._id}>
                     <TableCell>
-                      {/* You'll need to implement logic to select this user for bulk actions */}
-                      <input type="checkbox" className="h-4 w-4" />
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4"
+                        checked={selectedUsers.includes(user._id)}
+                        onChange={() => handleCheckboxChange(user._id)}
+                      />
                     </TableCell>
                     <TableCell>{user._id}</TableCell>
-                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.fullName}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{user.phone}</TableCell>
                     <TableCell>
@@ -324,7 +409,6 @@ const AllUsers = () => {
                     </TableCell>
                   </TableRow>
                 ))}
-                {/* Added a conditional rendering for the case when there are no users */}
                 {currentUsers.length === 0 && !loading && !error && (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-4">
