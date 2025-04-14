@@ -1,0 +1,161 @@
+.freelistingform-page-css {
+  margin: 8rem 0rem 4rem !important;
+}
+
+sup {
+  color: red;
+  font-size: 18px !important;
+}
+
+.tab-image {
+  width: 100%;
+  height: auto;
+  transition: opacity 0.5s ease-in-out;
+  border-radius: 10px;
+}
+
+.fixed-listing-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.fixed-image {
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.free-listing-multitab {
+  border: 2px solid #ccc;
+  border-radius: 20px;
+  padding: 2rem;
+  width: 90%;
+  margin: auto;
+}
+
+.tab-form-title {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: black;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: black;
+}
+
+/* Select All */
+.select-all-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.select-all-container label {
+  font-weight: 500;
+}
+
+.all-days-time .time-selection-div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Individual Day Rows */
+.timing-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around !important;
+  padding: 8px 0;
+  border-bottom: 2px solid #eee;
+}
+
+.timing-row:last-child {
+  border-bottom: none;
+}
+
+.day-label {
+  flex: 1;
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.timing-row .seprate-day-time {
+  display: flex;
+  gap: 8px;
+}
+
+.time-input {
+  width: 100px;
+  border-radius: 5px;
+  padding: 6px;
+}
+
+/* =======================
+     🖼️ Image Upload Preview
+     ======================= */
+/* Image Preview Styling */
+.image-preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.image-preview {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* =======================
+     📱 Responsive Design
+     ======================= */
+@media (max-width: 768px) {
+  .freelisting-side-image {
+    display: none !important;
+  }
+
+  .free-listing-multitab {
+    padding: 1rem;
+  }
+
+  .all-days-time .time-selection-div input {
+    width: 130px;
+  }
+
+  .tab-form-title {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 17px;
+    color: black;
+  }
+}

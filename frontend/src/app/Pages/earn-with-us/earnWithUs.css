@@ -1,0 +1,157 @@
+.earn-with-us-section-heading {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.earn-with-us-section-title {
+  font-size: 30px;
+  font-weight: 700;
+  text-transform: capitalize;
+  color: var(--black);
+}
+
+.who-can-earn {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.earn-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.earn-name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--black);
+}
+
+.earn-revenue-list,
+.payment-info-list,
+.sales-partner-list {
+  list-style: none;
+  padding: 0;
+}
+
+.earn-revenue-list li {
+  font-size: 18px;
+  color: var(--black);
+  background: #fff;
+  font-weight: 700;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+}
+
+.earn-revenue-list li::before {
+  content: "💰";
+  margin-right: 10px;
+}
+
+.payment-info-list li {
+  font-size: 18px;
+  color: var(--black);
+  background: #fff;
+  font-weight: 600;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+}
+
+.payment-info-list li span {
+  font-size: 20px;
+  font-weight: 700;
+  margin-right: 15px;
+}
+
+.sales-partner-item {
+  display: flex;
+  align-items: flex-start;
+  background: #fff;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 18px;
+  color: var(--black);
+}
+
+.sales-partner-item-bg {
+  background: #d3d3d337;
+}
+
+.sales-partner-item p {
+  margin: 0;
+}
+
+.sales-partner-item .step-number {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--blue);
+  margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+  .earn-revenue-list li{
+    font-weight: 500;
+  }
+  .earn-with-us-section-title {
+    font-size: 20px;
+  }
+  .who-can-earn-data
+  {
+    margin-bottom: 1rem;
+  }
+
+  .earn-with-us-section-heading {
+    margin-top: 0;
+  }
+  .earn-img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .earn-name {
+    font-size: 12px;
+  }
+
+  .earn-revenue-list li,
+  .payment-info-list li {
+    font-size: 20px;
+   
+    padding: 10px;
+  }
+
+  .sales-partner-title {
+    font-size: 24px;
+  }
+
+  .sales-partner-item {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 500px) {
+  .earn-revenue-list li,
+  .payment-info-list li {
+    font-size: 12px;
+    padding: 10px;
+    font-weight: 500;
+  }
+
+  .payment-info-list li span {
+    font-size: 13px;
+    font-weight: 600;
+  }
+}

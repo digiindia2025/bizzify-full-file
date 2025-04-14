@@ -1,0 +1,95 @@
+.bussiness-category-card {
+  border-radius: 15px 40px 25px; /* Smoother radius */
+  padding: 15px;
+  background-color: rgba(240, 248, 255, 0.425);
+  text-align: center;
+  border: 1px dashed #007bff;
+  transition: transform 0.3s ease-in-out, border-radius 0.3s ease-in-out;
+  margin: 12px 6px;
+  height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Image inside the card */
+.bussiness-category-card img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 8px;
+  mix-blend-mode: multiply;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Title inside the card */
+.bussiness-category-card h6 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+  text-align: center;
+  margin: 0;
+}
+
+/* Hover Effect */
+.bussiness-category-card:hover {
+  border-radius: 40px 15px 25px; /* Smooth transition on hover */
+  transform: translateY(-5px); /* Subtle lift effect */
+}
+
+.bussiness-category-card:hover img {
+  transform: scale(1.2); /* Slightly larger on hover */
+}
+
+/* Medium Screens (Tablets) */
+@media (max-width: 768px) {
+  .bussiness-category-card {
+    padding: 12px;
+    height: 110px;
+  }
+
+  .bussiness-category-card img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .bussiness-category-card h6 {
+    font-size: 12px;
+  }
+}
+
+/* Small Screens (Phones) */
+@media (max-width: 576px) {
+  .bussiness-category-card {
+    height: 95px;
+    padding: 10px;
+    margin: 8px 4px;
+  }
+
+  .bussiness-category-card img {
+    width: 26px;
+    height: 26px;
+    margin-bottom: 4px;
+  }
+
+  .bussiness-category-card h6 {
+    font-size: 10px;
+  }
+}
+
+/* Extra Small Screens */
+@media (max-width: 400px) {
+  .bussiness-category-card {
+    height: 85px;
+    padding: 8px;
+  }
+
+  .bussiness-category-card img {
+    width: 25px;
+    height: 25px;
+  }
+
+  .bussiness-category-card h6 {
+    font-size: 9px;
+  }
+}

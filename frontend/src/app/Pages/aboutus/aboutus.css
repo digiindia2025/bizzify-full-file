@@ -1,0 +1,256 @@
+.biziffy-about-image-div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.biziffy-about-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+}
+
+.biziffy-about-content .biziffy-about-title {
+  font-size: 30px;
+  font-weight: 700;
+  text-transform: capitalize;
+  line-height: 1.3;
+  color: var(--black);
+  text-align: left;
+}
+
+.biziffy-about-content .biziffy-about-text {
+  background: #d3d3d337;
+  padding: 1.5rem;
+  border-radius: 10px;
+  font-size: 16px;
+  color: var(--black);
+}
+
+.about-page-count-content {
+  margin-top: 2rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.about-page-count-title {
+  font-size: 30px;
+  font-weight: 700;
+  text-transform: capitalize;
+  color: var(--black);
+  text-align: center;
+}
+
+.about-page-count-data {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.about-page-count-bg-image {
+  width: 100%;
+  height: 100%;
+}
+
+.about-page-count-div {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.about-page-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  text-align: center;
+  color: white;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.about-page-count h3 {
+  font-size: 15px;
+  font-weight: 800;
+  margin: 3px 0;
+}
+
+.about-page-count h6 {
+  font-size: 12px;
+  margin: 0;
+  max-width: 75%;
+}
+
+.about-page-count:nth-child(1) {
+  background: #58b4f5;
+}
+.about-page-count:nth-child(2) {
+  background: #fb5a8f;
+}
+.about-page-count:nth-child(3) {
+  background: #2eaa38;
+}
+.about-page-count:nth-child(4) {
+  background: #fdbb51;
+}
+.about-page-count:nth-child(5) {
+  background: #914ff4;
+}
+
+.count-Image {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+}
+
+.about-dive-data-link {
+  position: relative;
+  width: 100%;
+  height: 200px; /* Adjust as needed */
+  overflow: hidden;
+  border-radius: 10px; /* Optional rounded corners */
+}
+
+.about-dive-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: -1;
+}
+
+.about-dive-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  filter: blur(5px);
+}
+
+.dive-title {
+  position: absolute;
+  top: 15%; /* Adjust as needed */
+  left: 50%;
+  transform: translateX(-50%); /* Remove translateY */
+  text-align: center;
+}
+
+.button-group {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 60px;
+}
+
+.dive-title h4 {
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.button-group a button {
+  white-space: nowrap; /* Prevents text from breaking into new line */
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  border: none;
+  background-color: transparent;
+  color: var(--black);
+  border: 2px solid #d3d3d3ea;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .biziffy-about-content .biziffy-about-title {
+    font-size: 24px;
+  }
+
+  .biziffy-about-content .biziffy-about-text {
+    padding: 1rem;
+    font-size: 14px;
+  }
+
+  .about-page-count-bg-image {
+    display: none;
+  }
+
+  .about-page-count-div {
+    top: auto;
+    left: auto;
+    transform: none;
+    position: static;
+  }
+
+  .about-page-count {
+    width: 100px;
+    height: 100px;
+    margin: 10px 0;
+  }
+
+  .about-page-count h3 {
+    font-size: 14px;
+  }
+
+  .about-page-count h6 {
+    font-size: 10px;
+  }
+
+  .about-dive-data-link {
+    height: 180px;
+  }
+
+  .about-dive-bg {
+    display: none;
+  }
+
+  .dive-title {
+    top: 10%;
+  }
+
+  .dive-title h4 {
+    top: 0;
+    font-size: 18px; /* Reduce font size */
+    letter-spacing: 1px;
+  }
+
+  .button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    top: 70%;
+  }
+
+  .button-group a button {
+    font-size: 14px; /* Reduce font size */
+    padding: 8px 15px; /* Adjust padding */
+  }
+}
+
+@media (max-width: 500px) {
+  .about-page-hero-title {
+    font-size: 22px;
+  }
+}

@@ -1,0 +1,78 @@
+.page-title {
+    font-size: 28px;
+    color: #222;
+    text-transform: uppercase;
+}
+
+.enquiry-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    transition: all 0.3s ease-in-out;
+    border-left: 5px solid #007bff;
+    margin-bottom: 1rem;
+}
+
+.enquiry-card:hover {
+    transform: scale(1.02);
+    border-left: 5px solid #0056b3;
+}
+
+.user-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.enquiry-title {
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+
+.enquiry-message {
+    font-size: 14px;
+    color: #666;
+}
+
+.actions a {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.enquiry-call{
+    background-color: #0078f8;
+    color: white;
+}
+
+.enquiry-msg{
+    background-color: #19d342;
+    color: white;
+}
+
+.enquiry-call:hover {
+    background-color: #0056b3;
+    
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .enquiry-card {
+        padding: 15px;
+    }
+    .user-name {
+        font-size: 16px;
+    }
+    .enquiry-message {
+        font-size: 13px;
+    }
+}

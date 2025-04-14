@@ -1,0 +1,90 @@
+.footer {
+
+    background-color: white;
+    padding: 40px 0 20px;
+    box-shadow: 0px -6px 50px -23px lightgray;
+    z-index: 1;
+  }
+
+.footer-logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--blue);
+}
+
+.social-icons {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.social-icons a {
+  color: var(--black);
+  font-size: 18px;
+  border: 1px solid var(--black);
+  padding: 5px 10px;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+.social-icons a:hover {
+  color: white;
+  background-color: var(--blue);
+  scale: 1.2;
+  transition: all 0.3s;
+}
+
+.footer .footer-section h5 {
+  color: var(--black);
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.footer ul {
+  padding: 0;
+  list-style: none;
+}
+
+.footer ul li a {
+  color: var(--black);
+  text-decoration: none;
+}
+
+.footer ul li a:hover {
+  color: var(--blue);
+}
+
+.footer .btn {
+  font-size: 14px;
+}
+
+.footer-bottom p {
+  margin: 0;
+}
+
+.footer-login-btn {
+  border: 1px dotted var(--blue);
+  border-radius: 8px;
+  padding: 5px 15px;
+  text-decoration: none;
+}
+
+.footer-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.footer-bottom {
+  margin-top: 0.5rem;
+}
+
+.footer-section ul li {
+  margin-bottom: 0.5rem;
+}
+@media only screen and (max-width: 768px) {
+  .social-icons a {
+    font-size: 14px;
+    padding: 1px 5px;
+  }
+}

@@ -1,0 +1,104 @@
+.sc-category-card {
+  border-radius: 16px;
+  padding: 24px;
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid lightgray;
+  background: #fff;
+}
+
+.sc-category-title {
+  color: var(--black);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.sc-service-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 5px;
+}
+
+.sc-service-item:hover {
+  transform: scale(1.05);
+}
+
+/* Image container with 3D effect and shine */
+.sc-image-container {
+  width: 100%;
+  max-width: 180px;
+  border-radius: 16px;
+  object-fit: cover;
+  overflow: hidden;
+  margin-bottom: 10px;
+ 
+}
+/* Image styling - Ensures dynamic images fit properly */
+.sc-service-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* Service name */
+.sc-service-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--black);
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .sc-category-title {
+    font-size: 1.4rem;
+  }
+
+  .sc-image-container {
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 767px) {
+  .sc-category-card {
+    padding: 16px;
+  }
+
+  .sc-category-title {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+
+  .sc-service-name {
+    font-size: 0.85rem;
+  }
+
+  .sc-image-container {
+    max-width: 140px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .row.g-3 {
+    --bs-gutter-x: 0.5rem;
+  }
+
+  .sc-image-container {
+    max-width: 100px;
+    border-radius: 10px;
+  }
+
+  .sc-service-name {
+    font-size: 0.75rem;
+  }
+}
