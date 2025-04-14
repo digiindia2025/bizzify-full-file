@@ -1,0 +1,33 @@
+.successlisting-alert-success {
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.premium-plan {
+  background: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.premium-plan ul {
+  padding: 0;
+  list-style: none;
+}
+
+.premium-plan li {
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.premium-plan li::before {
+  content: "✔";
+  color: blue;
+  font-size: 20px;
+}

@@ -1,0 +1,64 @@
+/* FAQ Box */
+.testimonil-faq-box {
+  border-left: 4px solid var(--blue);
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.testimonil-faq-box:hover {
+  transform: translateY(-2px);
+}
+
+.testimonil-faq-btn {
+  font-size: 18px;
+  color: black;
+  border: none;
+  background: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.testimonil-faq-btn:focus,
+.testimonil-faq-btn:active {
+  outline: none !important;
+  border: none !important;
+}
+
+.testimonil-faq-answer {
+  font-size: 16px;
+  color: black;
+}
+
+/* Testimonial Box */
+.testimonil-box {
+  transition: transform 0.3s ease-in-out;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  text-align: center;
+}
+
+.testimonil-img {
+  border: 4px solid var(--blue);
+}
+
+.testimonil-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.testimonil-role {
+  font-size: 14px;
+  color: black;
+}
+
+.testimonil-quote {
+  font-size: 16px;
+  color: #555;
+  font-style: italic;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}

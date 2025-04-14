@@ -1,0 +1,94 @@
+/* Global Bootstrap Overrides */
+.auth-section {
+  padding: 20px;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-section{
+  height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.auth-card {
+  background-color: white;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-card h4 {
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--black);
+  margin: 0;
+}
+
+.auth-card p {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--black);
+}
+
+.login-input {
+  border: 2px solid var(--blue);
+  border-radius: 30px;
+  width: 100%;
+  padding: 10px 20px;
+}
+
+.auth-card input:focus {
+  box-shadow: none;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+
+.login-welcome-content {
+  max-width: 80%;
+  margin: auto;
+}
+
+@media only screen and (max-width:768px) {
+  .login-section{
+    height: 100%;
+  }
+  
+  .auth-card h4 {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--black);
+    margin: 0;
+  }
+  
+  .auth-card p {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .login-welcome-text {
+    position: relative;
+  }
+
+  .login-welcome-content {
+    height: 100%;
+    text-align: center;
+  }
+
+  .auth-section {
+    min-height: max-content;
+  }
+
+  .login-welcome-text p {
+    margin: 0;
+  }
+
+  .login-welcome-image,
+  .login-welcome-text {
+    left: 0%;
+  }
+}
