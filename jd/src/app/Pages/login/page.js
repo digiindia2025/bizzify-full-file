@@ -145,21 +145,30 @@ const Login = () => {
         <section className="login-section">
           <div className="container py-3">
             <div className="row align-items-center">
-              <div className="col-md-6 p-0">
-                <div className="login-welcome-content">
-                  <div className="login-welcome-text">
-                    <h1>
-                      <strong>
-                        Welcome to Bizi<span style={{ color: "var(--blue)" }}>ff</span>y
-                      </strong>
-                    </h1>
-                    <p>
-                      Biziffy is a platform that allows you to manage your tasks and
-                      projects in a simple way.
-                    </p>
-                  </div>
+            <div className="col-md-6 p-0">
+              <div className="login-welcome-content  d-flex flex-column justify-content-center align-items-center h-100 px-4 position-relative login-welcome-bg">
+
+                {/* Optional Floating Icon/Illustration */}
+                <div className="login-welcome-icon">
+                  <i className="bi bi-briefcase-fill fs-1  glow-icon"></i>
                 </div>
+
+                <div className="login-welcome-text text-center">
+                <h1 className="display-5 fw-bold mb-3">
+                  Welcome Back to Bizi<span style={{color:'var(--blue)'}}>ff</span>y
+                </h1>
+                  <p className="lead mb-2">
+                    Manage your work like a pro — <br /> login to access your dashboard, tasks, and tools.
+                  </p>
+                  <p className="small fst-italic">
+                    Trusted by hundreds of service providers. Be part of the future.
+                  </p>
+                </div>
+
+                {/* Optional: Animated Background or glow effects */}
+                <div className="animated-bg-gradient"></div>
               </div>
+            </div>
 
               <div className="col-md-6">
                 <div className="auth-section">

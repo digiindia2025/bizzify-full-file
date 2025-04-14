@@ -234,6 +234,18 @@ body {
   margin: 0 !important;
 }
 
+
+.logo-text {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 600;
+  color: black;
+}
+
+.logo-text span {
+  color: var(--blue);
+}
+
 @media (max-width: 768px) {
   .some-page-hero-content {
     padding: 2rem 0px 0px;
@@ -278,7 +290,7 @@ body {
   }
 
   .black-btn {
-    font-size: 10px;
+    font-size: 14 px;
     border: 1px solid var(--black);
     padding: 5px 10px;
   }

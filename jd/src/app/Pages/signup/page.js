@@ -7,7 +7,7 @@ import Link from "next/link";
 import Head from "next/head";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-
+import './signup.css'
 const Page = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -129,23 +129,26 @@ const Page = () => {
 
       <div className="container py-3">
         <div className="row align-items-center">
-          <div className="col-md-6 p-0">
-            <div className="login-welcome-content">
-              <div className="login-welcome-image">
-                <Image src={logo} alt="Biziffy Logo" />
-              </div>
-              <div className="login-welcome-text">
-                <h1>
-                  Welcome to Bizi
-                  <span style={{ color: "var(--blue)" }}>ff</span>y
-                </h1>
-                <p>
-                  Biziffy is a platform that allows you to manage your tasks
-                  and projects in a simple way.
-                </p>
+        <div className="col-md-6 p-0">
+              <div className="login-welcome-content d-flex flex-column justify-content-center align-items-center h-100 px-4 py-2">
+                <div className="login-welcome-text text-center">
+                  <div className="login-welcome-icon">
+                    <i className="bi bi-person-plus-fill fs-1 glow-icon"></i>
+                  </div>
+                  <h1 className="display-5 fw-bold mb-3">
+                    Welcome to Bizi<span style={{ color: 'var(--blue)' }}>ff</span>y
+                  </h1>
+                  <p className="lead">
+                    Your all-in-one platform to manage <strong>tasks</strong>, grow your <strong>business</strong>, and connect with <strong>local clients</strong>.
+                  </p>
+                  <hr className="border-light w-50 mx-auto" />
+                  <p className="small fst-italic">
+                    Empowering service providers, one click at a time.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+
 
           <div className="col-md-6">
             <div className="auth-section">
