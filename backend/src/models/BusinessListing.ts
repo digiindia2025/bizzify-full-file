@@ -7,6 +7,12 @@ const businessListingSchema = new mongoose.Schema(
     subcategories: [String],
     about: { type: String, required: true },
     images: [String], // URLs or file paths
+
+     user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // 👈 ye "User" model ke name se match hona chahiye
+      required: true,
+    },
   },
   { timestamps: true }
 );

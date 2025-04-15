@@ -32,6 +32,7 @@ import businessListingRoutes from "./routes/admin/businessListingRoute";
 import businessTimingRoutes from "./routes/admin/businessTimingRoutes"; 
 import businessUpgradeRoutes from './routes/admin/businessUpgradeRoutes';
 import businessListingAdminRoute from "./routes/admin/businessListingAdminRoute";
+// import businessListingCategoriesRoutes from './routes/admin/businessListingCategoriesRoutes';
 
 
 
@@ -90,6 +91,7 @@ app.use("/api/admin", businessListingRoutes);
 app.use("/api/business", businessTimingRoutes);
 app.use(businessUpgradeRoutes);
 app.use("/api/admin/business", businessListingAdminRoute);
+// app.use('/api/admin', businessListingCategoriesRoutes);
 
 // app.use("/api/admin", resetRoutes);
 
