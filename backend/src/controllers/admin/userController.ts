@@ -6,7 +6,7 @@ import { ObjectId } from "mongodb";
 // ✅ POST - Create user (Signup)
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { fullName, email, phone, password, confirmPassword, status } = req.body;
+    const { name, email, phone, password, confirmPassword, status } = req.body;
 
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match." });
@@ -19,10 +19,10 @@ export const createUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Email already exists." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 4);
 
     const newUser = new User({
-      fullName,
+      name,
       email: normalizedEmail,
       phone,
       password: hashedPassword,
@@ -48,7 +48,7 @@ export const createUser = async (req: Request, res: Response) => {
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const limit = parseInt(req.query.limit as string) || 30;
     const skip = (page - 1) * limit;
 
     const users = await User.find({}, "-password").skip(skip).limit(limit);
