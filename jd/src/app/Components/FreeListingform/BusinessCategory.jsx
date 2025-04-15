@@ -1,25 +1,38 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../Pages/freelistingform/freelistingform.css";
 
 const BusinessCategory = ({ setKey }) => {
-  const [category, setCategory] = useState([]); // subcategories
-  const [services, setServices] = useState(""); // main category
+  const [category, setCategory] = useState([]); // Subcategory IDs
+  const [services, setServices] = useState(""); // Main category ID
   const [about, setAbout] = useState("");
   const [businessImages, setBusinessImages] = useState([]);
+
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+
+  // Fetch categories and subcategories
+  useEffect(() => {
+    fetch("http://localhost:5000/api/admin/categories")
+    .then((res) => res.json())
+    .then((data) => setCategories(data));
+  
+
+    fetch("http://localhost:5000/api/admin/subcategories")
+      .then((res) => res.json())
+      .then((data) => setSubcategories(data));
+  }, []);
 
   const handleSelectChange = (e) => {
     const selectedValues = Array.from(
       e.target.selectedOptions,
       (option) => option.value
     );
-    setCategory((prevCategories) => [
-      ...new Set([...prevCategories, ...selectedValues]),
-    ]);
+    setCategory((prev) => [...new Set([...prev, ...selectedValues])]);
   };
 
-  const removeCategory = (categoryToRemove) => {
-    setCategory(category.filter((cat) => cat !== categoryToRemove));
+  const removeCategory = (idToRemove) => {
+    setCategory(category.filter((id) => id !== idToRemove));
   };
 
   const handleImageChange = (e) => {
@@ -30,6 +43,11 @@ const BusinessCategory = ({ setKey }) => {
 
   const removeImage = (index) => {
     setBusinessImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+
+  const getSubcategoryName = (id) => {
+    const match = subcategories.find((sub) => sub._id === id);
+    return match ? match.name : id;
   };
 
   const handleSubmit = async (e) => {
@@ -44,13 +62,10 @@ const BusinessCategory = ({ setKey }) => {
     formData.append("category", services);
     formData.append("about", about);
 
-    // Adding selected subcategories to the form data
-    category.forEach((subCat) => formData.append("subcategories[]", subCat));
+    category.forEach((subCatId) => formData.append("subcategories[]", subCatId));
 
-    // Adding images to the form data
     const fileInputs = document.querySelector('input[type="file"]');
     const files = fileInputs?.files;
-
     if (files) {
       Array.from(files).forEach((file) => {
         formData.append("images", file);
@@ -67,10 +82,10 @@ const BusinessCategory = ({ setKey }) => {
 
       if (response.ok) {
         console.log("Listing created:", result);
-        setKey("timing");
+        setKey("timing"); // Go to next step
       } else {
         console.error("Failed to create listing:", result);
-        alert("Error submitting form");
+        alert(result.error || "Error submitting form");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -95,16 +110,11 @@ const BusinessCategory = ({ setKey }) => {
           required
         >
           <option value="">Select Your Category</option>
-          <option value="Construction">Construction</option>
-          <option value="Real Estate">Real Estate</option>
-          <option value="Education">Education</option>
-          <option value="Retail">Retail</option>
-          <option value="Healthcare">Healthcare</option>
-          <option value="Technology">Technology</option>
-          <option value="Finance">Finance</option>
-          <option value="Hospitality">Hospitality</option>
-          <option value="Automotive">Automotive</option>
-          <option value="Manufacturing">Manufacturing</option>
+          {categories.map((cat) => (
+            <option key={cat._id} value={cat._id}>
+              {cat.name}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -118,26 +128,21 @@ const BusinessCategory = ({ setKey }) => {
           onChange={handleSelectChange}
           multiple
         >
-          <option value="">Select Your SubCategory</option>
-          <option value="Construction">Construction</option>
-          <option value="Real Estate">Real Estate</option>
-          <option value="Education">Education</option>
-          <option value="Retail">Retail</option>
-          <option value="Healthcare">Healthcare</option>
-          <option value="Technology">Technology</option>
-          <option value="Finance">Finance</option>
-          <option value="Hospitality">Hospitality</option>
-          <option value="Automotive">Automotive</option>
-          <option value="Manufacturing">Manufacturing</option>
+          {subcategories.map((sub) => (
+            <option key={sub._id} value={sub._id}>
+              {sub.name}
+            </option>
+          ))}
         </select>
+
         <div className="mt-2">
-          {category.map((cat) => (
-            <span key={cat} className="badge bg-primary m-1 p-2">
-              {cat}
+          {category.map((catId) => (
+            <span key={catId} className="badge bg-primary m-1 p-2">
+              {getSubcategoryName(catId)}
               <button
                 type="button"
                 className="btn-close ms-2 bg-danger"
-                onClick={() => removeCategory(cat)}
+                onClick={() => removeCategory(catId)}
                 aria-label="Remove"
               ></button>
             </span>
@@ -161,8 +166,7 @@ const BusinessCategory = ({ setKey }) => {
 
       <div className="mb-3">
         <label className="form-label">
-          Upload Business Photos{" "}
-          <span style={{ color: "red" }}>(Optional)</span>
+          Upload Business Photos <span style={{ color: "red" }}>(Optional)</span>
         </label>
         <input
           type="file"
@@ -192,8 +196,8 @@ const BusinessCategory = ({ setKey }) => {
           ))}
         </div>
       </div>
+
       <button type="submit" className="btn btn-primary w-100 py-3">
-        {" "}
         Next
       </button>
     </form>

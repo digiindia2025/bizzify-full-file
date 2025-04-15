@@ -15,6 +15,9 @@ const BusinessDetails = ({ setKey }) => {
     state: "",
     direction: "",
     website: "",
+    phone: "",                // ✅ add phone
+    categories: [], 
+      user: "661d3cf91e9a76ad50f353f1"
   });
 
   const handleChange = (e) => {
@@ -23,9 +26,14 @@ const BusinessDetails = ({ setKey }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      const response = await axios.post("http://localhost:5000/api/admin/business-details", formData);
+      const dataToSend = {
+        ...formData,
+        categories: ["661d3dfbe7d76fa5b0d9cd60"], // 🔁 sample category ObjectId
+      };
+  
+      const response = await axios.post("http://localhost:5000/api/admin/business-details", dataToSend);
       console.log("Form submitted:", response.data);
       setKey("category"); // move to next step
     } catch (error) {
@@ -33,7 +41,7 @@ const BusinessDetails = ({ setKey }) => {
       alert("Failed to submit business details. Please try again.");
     }
   };
-
+  
   return (
     <form onSubmit={handleSubmit}>
       <h5 className="section-title">
@@ -89,6 +97,12 @@ const BusinessDetails = ({ setKey }) => {
         <label className="form-label">Website</label>
         <input type="text" className="form-control" name="website" onChange={handleChange} />
       </div>
+
+      <div className="mb-3">
+  <label className="form-label">Phone Number<sup>*</sup></label>
+  <input type="text" className="form-control" name="phone" onChange={handleChange} required />
+</div>
+
 
       <button type="submit" className="btn btn-primary w-100 py-3">
         Next
