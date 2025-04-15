@@ -37,6 +37,7 @@ interface FullListingDetails {
     gstNo?: string;
     cin?: string;
     entity?: string;
+    
   };
   timings: Record<string, string | number | boolean>; // Replace with the actual structure if known
   contact: Record<string, string | number | boolean>; // Replace with the actual structure if known
@@ -101,11 +102,11 @@ console.log("listing value",listing);
     <AdminLayout title="Listing Details">
       <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-semibold">All Bssiness Details</h2>
-        {/* <Link to="/admin/all-listings">
+        <Link to="/admin/listings">
           <Button className="bg-blue-500 hover:bg-blue-600">
             All Listings
           </Button>
-        </Link> */}
+        </Link>
       </div>
 
       <Card className="mb-6">
@@ -115,13 +116,13 @@ console.log("listing value",listing);
             <h3 className="text-xl font-semibold mb-3">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div><p className="font-medium">Business Name:</p><p>{listing?.businessName || "N/A"}</p></div>
-              <div><p className="font-medium">Category:</p><p>{listing?.businessDetails?.category || "N/A"}</p></div>
+              <div><p className="font-medium">Category:</p><p>{listing?.category || "N/A"}</p></div>
               <div><p className="font-medium">Phone:</p><p>{listing?.phone || "N/A"}</p></div>
               <div>
                 <p className="font-medium">Hide Phone Number:</p>
                 <input
                   type="checkbox"
-                  checked={listing.businessDetails?.hidePhoneNumber || false}
+                  checked={listing?.hidePhoneNumber || false}
                   readOnly
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
@@ -157,7 +158,7 @@ console.log("listing value",listing);
           {listing.businessDetails?.description && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Description</h3>
-              <p className="text-gray-700">{listing.businessDetails.description}</p>
+              <p className="text-gray-700">{listing?.description}</p>
             </div>
           )}
 
@@ -190,7 +191,7 @@ console.log("listing value",listing);
           )}
 
           {/* Services */}
-          {listing.businessDetails?.services && (
+          {listing?.services && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Services</h3>
               <p className="text-gray-700">{listing?.services}</p>

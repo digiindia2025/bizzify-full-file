@@ -39,6 +39,7 @@ interface FullListing {
     status?: string;
     businessStatus?: string;
     trustStatus?: string;
+    phon?: string;
   };
   timings: {
     open: string;
@@ -60,7 +61,7 @@ export const AllListings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedAction, setSelectedAction] = useState("Bulk Action");
+  // const [selectedAction, setSelectedAction] = useState("Bulk Action");
   const [selectedListingIds, setSelectedListingIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const listingsPerPage = 5;
@@ -80,7 +81,7 @@ export const AllListings = () => {
     setError(null);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/admin/business/all-listings?page=${currentPage}&limit=${listingsPerPage}`
+        `http://localhost:5000/api/admin/business/all-listings?page=${currentPage}&limit=${listingsPerPage}`, 
       );
       setFullListings(res.data || []);
       setTotalPages(Math.ceil((res.data?.length || 0) / listingsPerPage) || 1);
@@ -119,21 +120,21 @@ export const AllListings = () => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  const handleBulkAction = async () => {
-    if (selectedAction === "Bulk Action" || selectedListingIds.length === 0) return;
+  // const handleBulkAction = async () => {
+  //   if (selectedAction === "Bulk Action" || selectedListingIds.length === 0) return;
 
-    try {
-      await axios.post(`http://localhost:5000/api/admin/listings/bulk-action`, {
-        ids: selectedListingIds,
-        action: selectedAction,
-      });
-      fetchFullListings();
-      setSelectedListingIds([]);
-      setSelectedAction("Bulk Action");
-    } catch (error) {
-      console.error(`Failed to ${selectedAction} listings`, error);
-    }
-  };
+  //   try {
+  //     await axios.post(`http://localhost:5000/api/admin/listings/bulk-action`, {
+  //       ids: selectedListingIds,
+  //       action: selectedAction,
+  //     });
+  //     fetchFullListings();
+  //     setSelectedListingIds([]);
+  //     setSelectedAction("Bulk Action");
+  //   } catch (error) {
+  //     console.error(`Failed to ${selectedAction} listings`, error);
+  //   }
+  // };
 
   const handleCheckboxChange = (id: string) => {
     if (selectedListingIds.includes(id)) {
@@ -187,7 +188,7 @@ export const AllListings = () => {
 
   const handleUpdatePublishStatus = async (id: string, newStatus: string) => {
     try {
-      await axios.patch(`http://localhost:5000/api/admin/listings/${id}`, { publishedDate: newStatus });
+      await axios.patch(`http://localhost:5000/api/admin/listings/${id}`, { status: newStatus });
       setFullListings(fullListings.map((listing) =>
         listing.businessId === id && listing.businessDetails
           ? { ...listing, businessDetails: { ...listing.businessDetails, publishedDate: newStatus } }
@@ -225,7 +226,7 @@ export const AllListings = () => {
   const handleDeleteListing = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this listing?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/admin/listings/${id}`);
+        const response = await axios.delete(`http://localhost:5000/api/admin/listings/${id}`);
         fetchFullListings();
       } catch (error) {
         console.error("Failed to delete listing", error);
@@ -265,7 +266,7 @@ export const AllListings = () => {
       {/* Bulk Actions + Search/Export */}
       <div className="flex flex-col md:flex-row md:justify-between mb-4 gap-4">
         <div className="flex items-center gap-2">
-          <select
+          {/* <select
             className="px-4 py-2 border rounded-md"
             value={selectedAction}
             onChange={(e) => setSelectedAction(e.target.value)}
@@ -274,10 +275,10 @@ export const AllListings = () => {
             <option value="Delete">Delete</option>
             <option value="Approve">Approve</option>
             <option value="Reject">Reject</option>
-          </select>
-          <Button className="bg-blue-500 hover:bg-blue-600" onClick={handleBulkAction} disabled={selectedListingIds.length === 0}>
+          </select> */}
+          {/* <Button className="bg-blue-500 hover:bg-blue-600" onClick={handleBulkAction} disabled={selectedListingIds.length === 0}>
             Apply
-          </Button>
+          </Button> */}
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -379,7 +380,7 @@ export const AllListings = () => {
                     </select>
                   ) : (
                     <div className="flex items-center gap-2">
-                      {getStatusBadge(listing.businessDetails?.status || "")}
+                      {getStatusBadge(listing.businessDetails?.status || "Pending")}
                       <button
                         onClick={() => setEditingStatusId(listing.businessId)}
                         className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
