@@ -1,20 +1,22 @@
-// models/BusinessListing.ts
-import mongoose from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-const businessListingSchema = new mongoose.Schema(
+interface IBusinessListing extends Document {
+  category: string;
+  subcategories: string[];
+  about: string;
+  images: string[];
+  // user: string; // Assuming user is a string (ID of the user creating the listing)
+}
+
+const BusinessListingSchema: Schema = new Schema(
   {
     category: { type: String, required: true },
-    subcategories: [String],
+    subcategories: [{ type: String, required: true }],
     about: { type: String, required: true },
-    images: [String], // URLs or file paths
-
-     user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // 👈 ye "User" model ke name se match hona chahiye
-      required: true,
-    },
+    images: [{ type: String }],
+    // user: { type: String, required: true }, // Assuming the user ID is a string
   },
   { timestamps: true }
 );
 
-export default mongoose.model("BusinessListing", businessListingSchema);
+export default mongoose.model<IBusinessListing>("BusinessListing", BusinessListingSchema);

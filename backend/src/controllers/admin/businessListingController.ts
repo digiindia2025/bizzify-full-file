@@ -1,19 +1,19 @@
 import { Request, Response } from "express";
 import BusinessListing from "../../models/BusinessListing";
-import path from "path";
 
 export const createBusinessListing = async (req: Request, res: Response) => {
   try {
-    // Check if all required fields are present
     const { category, subcategories, about } = req.body;
 
+    // Validate required fields, without user
     if (!category || !subcategories || subcategories.length === 0 || !about) {
       return res.status(400).json({ error: "All required fields must be provided" });
     }
 
-    // Save images
+    // Save images (if any)
     const imageUrls = req.files ? (req.files as Express.Multer.File[]).map((file) => `/uploads/${file.filename}`) : [];
 
+    // Create new business listing
     const newBusinessListing = new BusinessListing({
       category,
       subcategories,
@@ -21,6 +21,7 @@ export const createBusinessListing = async (req: Request, res: Response) => {
       images: imageUrls,
     });
 
+    // Save the listing to the database
     await newBusinessListing.save();
 
     res.status(201).json({ message: "Business listing created successfully", data: newBusinessListing });
