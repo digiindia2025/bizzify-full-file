@@ -1,28 +1,34 @@
+// Frontend (Next.js or React - assuming this is a client component)
 "use client";
 import React, { useState, useEffect } from "react";
 import "../../Pages/freelistingform/freelistingform.css";
 
 const BusinessCategory = ({ setKey }) => {
   const [category, setCategory] = useState([]); // Subcategory IDs
-  const [services, setServices] = useState(""); // Main category ID
+  const [services, setServices] = useState(""); // Static category value
   const [about, setAbout] = useState("");
-  const [businessImages, setBusinessImages] = useState([]);
-
-  const [categories, setCategories] = useState([]);
+  const [businessImages, setBusinessImages] = useState([]); // Images selected by user
   const [subcategories, setSubcategories] = useState([]);
+  const [fetchSubcategoriesError, setFetchSubcategoriesError] = useState(null);
+  const [submitError, setSubmitError] = useState(null);
 
-  // Fetch categories and subcategories
+  // Fetch subcategories
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/categories")
-    .then((res) => res.json())
-    .then((data) => setCategories(data));
-  
-
     fetch("http://localhost:5000/api/admin/subcategories")
-      .then((res) => res.json())
-      .then((data) => setSubcategories(data));
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => setSubcategories(data))
+      .catch((err) => {
+        console.error("Error fetching subcategories:", err);
+        setFetchSubcategoriesError("Failed to load subcategories.");
+      });
   }, []);
 
+  // Handle category selection change
   const handleSelectChange = (e) => {
     const selectedValues = Array.from(
       e.target.selectedOptions,
@@ -31,30 +37,37 @@ const BusinessCategory = ({ setKey }) => {
     setCategory((prev) => [...new Set([...prev, ...selectedValues])]);
   };
 
+  // Remove selected category
   const removeCategory = (idToRemove) => {
     setCategory(category.filter((id) => id !== idToRemove));
   };
 
+  // Handle image change (upload)
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const imageUrls = files.map((file) => URL.createObjectURL(file));
     setBusinessImages((prevImages) => [...prevImages, ...imageUrls]);
   };
 
+  // Remove image preview
   const removeImage = (index) => {
     setBusinessImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
+  // Get subcategory name by ID
   const getSubcategoryName = (id) => {
     const match = subcategories.find((sub) => sub._id === id);
     return match ? match.name : id;
   };
 
+  // Submit the form
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError(null);
 
-    if (!services || !category.length || !about) {
-      alert("All required fields must be provided.");
+    // Ensure all required fields are provided
+    if (!services || category.length === 0 || !about) {
+      alert("Please select a category, at least one subcategory, and provide a description.");
       return;
     }
 
@@ -62,17 +75,20 @@ const BusinessCategory = ({ setKey }) => {
     formData.append("category", services);
     formData.append("about", about);
 
+    // Append selected subcategories to form data
     category.forEach((subCatId) => formData.append("subcategories[]", subCatId));
 
+    // Append selected images to form data
     const fileInputs = document.querySelector('input[type="file"]');
     const files = fileInputs?.files;
-    if (files) {
+    if (files && files.length > 0) {
       Array.from(files).forEach((file) => {
         formData.append("images", file);
       });
     }
 
     try {
+      // Send POST request to create a business listing
       const response = await fetch("http://localhost:5000/api/admin/business-listing", {
         method: "POST",
         body: formData,
@@ -80,18 +96,28 @@ const BusinessCategory = ({ setKey }) => {
 
       const result = await response.json();
 
+      // Check if the response is successful
       if (response.ok) {
         console.log("Listing created:", result);
-        setKey("timing"); // Go to next step
+        setKey("timing"); // Move to next step
       } else {
-        console.error("Failed to create listing:", result);
-        alert(result.error || "Error submitting form");
+        // Ensure result is not undefined and contains an error message
+        const errorMessage = result?.error || "Error submitting form";
+        console.error("Failed to create listing. Response:", result);
+        setSubmitError(errorMessage);
+        alert(errorMessage);
       }
     } catch (error) {
+      // Catch unexpected errors and log them
       console.error("Error:", error);
-      alert("Something went wrong!");
+      setSubmitError("Something went wrong! Please try again.");
+      alert("Something went wrong! Please try again.");
     }
   };
+
+  if (fetchSubcategoriesError) {
+    return <div>Error: {fetchSubcategoriesError}</div>;
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -110,11 +136,11 @@ const BusinessCategory = ({ setKey }) => {
           required
         >
           <option value="">Select Your Category</option>
-          {categories.map((cat) => (
-            <option key={cat._id} value={cat._id}>
-              {cat.name}
-            </option>
-          ))}
+          <option value="health">Health & Wellness</option>
+          <option value="education">Education</option>
+          <option value="food">Food & Beverages</option>
+          <option value="automobile">Automobile</option>
+          <option value="fashion">Fashion & Lifestyle</option>
         </select>
       </div>
 
@@ -128,6 +154,7 @@ const BusinessCategory = ({ setKey }) => {
           onChange={handleSelectChange}
           multiple
         >
+          <option value="" disabled>Select Your SubCategory</option>
           {subcategories.map((sub) => (
             <option key={sub._id} value={sub._id}>
               {sub.name}
@@ -197,6 +224,8 @@ const BusinessCategory = ({ setKey }) => {
         </div>
       </div>
 
+      {submitError && <div className="alert alert-danger">{submitError}</div>}
+
       <button type="submit" className="btn btn-primary w-100 py-3">
         Next
       </button>
@@ -204,4 +233,4 @@ const BusinessCategory = ({ setKey }) => {
   );
 };
 
-export default BusinessCategory;
+export default BusinessCategory;  
