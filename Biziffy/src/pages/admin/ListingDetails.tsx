@@ -62,6 +62,7 @@ const ListingDetails = () => {
       if (id) {
         try {
           const res = await axios.get(`http://localhost:5000/api/admin/business/listings/${id}`);
+          console.log("Fetched Listing Details:", res.data);
           setListing(res.data);
         } catch (err: unknown) {
           console.error(`Failed to fetch listing details for ID: ${id}`, err);
@@ -94,16 +95,17 @@ const ListingDetails = () => {
   if (!listing) {
     return <AdminLayout title="Listing Details"><div>Listing not found.</div></AdminLayout>;
   }
+console.log("listing value",listing);
 
   return (
     <AdminLayout title="Listing Details">
       <div className="flex justify-between mb-4">
-        <h2 className="text-2xl font-semibold">Listing Details</h2>
-        <Link to="/admin/all-listings">
+        <h2 className="text-2xl font-semibold">All Bssiness Details</h2>
+        {/* <Link to="/admin/all-listings">
           <Button className="bg-blue-500 hover:bg-blue-600">
             All Listings
           </Button>
-        </Link>
+        </Link> */}
       </div>
 
       <Card className="mb-6">
@@ -112,9 +114,9 @@ const ListingDetails = () => {
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><p className="font-medium">Business Name:</p><p>{listing.businessDetails?.businessName || "N/A"}</p></div>
-              <div><p className="font-medium">Category:</p><p>{listing.businessDetails?.category || "N/A"}</p></div>
-              <div><p className="font-medium">Phone:</p><p>{listing.businessDetails?.phone || "N/A"}</p></div>
+              <div><p className="font-medium">Business Name:</p><p>{listing?.businessName || "N/A"}</p></div>
+              <div><p className="font-medium">Category:</p><p>{listing?.businessDetails?.category || "N/A"}</p></div>
+              <div><p className="font-medium">Phone:</p><p>{listing?.phone || "N/A"}</p></div>
               <div>
                 <p className="font-medium">Hide Phone Number:</p>
                 <input
@@ -124,13 +126,13 @@ const ListingDetails = () => {
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
               </div>
-              <div><p className="font-medium">Status:</p><p>{listing.businessDetails?.status || "N/A"}</p></div>
-              <div><p className="font-medium">Business Status:</p><p>{listing.businessDetails?.businessStatus || "N/A"}</p></div>
-              <div><p className="font-medium">Trust Status:</p><p>{listing.businessDetails?.trustStatus || "N/A"}</p></div>
-              <div><p className="font-medium">View Count:</p><p>{listing.businessDetails?.viewCount || 0}</p></div>
-              <div><p className="font-medium">Created At:</p><p>{listing.businessDetails?.createdAt ? new Date(listing.businessDetails.createdAt).toLocaleDateString() : "N/A"}</p></div>
-              <div><p className="font-medium">Updated At:</p><p>{listing.businessDetails?.updatedAt ? new Date(listing.businessDetails.updatedAt).toLocaleDateString() : "N/A"}</p></div>
-              {listing.businessDetails?.publishedDate && <div><p className="font-medium">Published Date:</p><p>{new Date(listing.businessDetails.publishedDate).toLocaleDateString()}</p></div>}
+              <div><p className="font-medium">Status:</p><p>{listing?.status || "N/A"}</p></div>
+              <div><p className="font-medium">Business Status:</p><p>{listing?.businessStatus || "N/A"}</p></div>
+              <div><p className="font-medium">Trust Status:</p><p>{listing?.trustStatus || "N/A"}</p></div>
+              <div><p className="font-medium">View Count:</p><p>{listing?.viewCount || 0}</p></div>
+              <div><p className="font-medium">Created At:</p><p>{listing?.createdAt ? new Date(listing?.createdAt).toLocaleDateString() : "N/A"}</p></div>
+              <div><p className="font-medium">Updated At:</p><p>{listing?.updatedAt ? new Date(listing?.updatedAt).toLocaleDateString() : "N/A"}</p></div>
+              {listing?.publishedDate && <div><p className="font-medium">Published Date:</p><p>{new Date(listing?.publishedDate).toLocaleDateString()}</p></div>}
             </div>
           </div>
 
@@ -138,16 +140,16 @@ const ListingDetails = () => {
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Address Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><p className="font-medium">Pin Code:</p><p>{listing.businessDetails?.pinCode || "N/A"}</p></div>
-              <div><p className="font-medium">Building:</p><p>{listing.businessDetails?.building || "N/A"}</p></div>
-              <div><p className="font-medium">Street:</p><p>{listing.businessDetails?.street || "N/A"}</p></div>
-              <div><p className="font-medium">Area:</p><p>{listing.businessDetails?.area || "N/A"}</p></div>
-              <div><p className="font-medium">Landmark:</p><p>{listing.businessDetails?.landmark || "N/A"}</p></div>
-              <div><p className="font-medium">City:</p><p>{listing.businessDetails?.city || "N/A"}</p></div>
-              <div><p className="font-medium">State:</p><p>{listing.businessDetails?.state || "N/A"}</p></div>
+              <div><p className="font-medium">Pin Code:</p><p>{listing?.pinCode || "N/A"}</p></div>
+              <div><p className="font-medium">Building:</p><p>{listing?.building || "N/A"}</p></div>
+              <div><p className="font-medium">Street:</p><p>{listing?.street || "N/A"}</p></div>
+              <div><p className="font-medium">Area:</p><p>{listing?.area || "N/A"}</p></div>
+              <div><p className="font-medium">Landmark:</p><p>{listing?.landmark || "N/A"}</p></div>
+              <div><p className="font-medium">City:</p><p>{listing?.city || "N/A"}</p></div>
+              <div><p className="font-medium">State:</p><p>{listing?.state || "N/A"}</p></div>
               <div><p className="font-medium">Country:</p><p>India</p></div> {/* Assuming country is always India */}
-              {listing.businessDetails?.direction && <div><p className="font-medium">Direction:</p><p>{listing.businessDetails.direction}</p></div>}
-              {listing.businessDetails?.website && <div><p className="font-medium">Website:</p><Link to={listing.businessDetails.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{listing.businessDetails.website}</Link></div>}
+              {listing?.direction && <div><p className="font-medium">Direction:</p><p>{listing?.direction}</p></div>}
+              {listing?.website && <div><p className="font-medium">Website:</p><Link to={listing?.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{listing?.website}</Link></div>}
             </div>
           </div>
 
@@ -163,9 +165,9 @@ const ListingDetails = () => {
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Additional Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div><p className="font-medium">GST No:</p><p>{listing.businessDetails?.gstNo || "N/A"}</p></div>
-              <div><p className="font-medium">CIN:</p><p>{listing.businessDetails?.cin || "N/A"}</p></div>
-              <div><p className="font-medium">Entity:</p><p>{listing.businessDetails?.entity || "N/A"}</p></div>
+              <div><p className="font-medium">GST No:</p><p>{listing?.gstNo || "N/A"}</p></div>
+              <div><p className="font-medium">CIN:</p><p>{listing?.cin || "N/A"}</p></div>
+              <div><p className="font-medium">Entity:</p><p>{listing?.entity || "N/A"}</p></div>
             </div>
           </div>
 
@@ -191,7 +193,7 @@ const ListingDetails = () => {
           {listing.businessDetails?.services && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Services</h3>
-              <p className="text-gray-700">{listing.businessDetails.services}</p>
+              <p className="text-gray-700">{listing?.services}</p>
             </div>
           )}
 
