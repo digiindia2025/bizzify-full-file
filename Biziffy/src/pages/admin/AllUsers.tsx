@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import React, { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/Layout/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ import axios from "axios";
 
 interface UserData {
   _id: string;
-  fullName: string;
+  name: string;
   email: string;
   phone: string;
   status: "Active" | "Inactive" | "Deactivated";
@@ -57,10 +57,12 @@ const AllUsers = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = response.data;
+      
+      
       if (data?.users && Array.isArray(data.users)) {
         setUserList(data.users.filter((user): user is UserData =>
           typeof user?._id === 'string' &&
-          typeof user?.fullName === 'string' &&
+          typeof user?.name === 'string' &&
           typeof user?.email === 'string' &&
           typeof user?.phone === 'string' &&
           ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
@@ -68,7 +70,7 @@ const AllUsers = () => {
       } else if (Array.isArray(data)) {
         setUserList(data.filter((user): user is UserData =>
           typeof user?._id === 'string' &&
-          typeof user?.fullName === 'string' &&
+          typeof user?.name === 'string' &&
           typeof user?.email === 'string' &&
           typeof user?.phone === 'string' &&
           ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
@@ -149,6 +151,7 @@ const AllUsers = () => {
     });
   };
 
+ 
   const handleBulkCheckboxChange = () => {
     const currentVisibleIds = currentUsers.map((user) => user._id);
     const allSelected = currentVisibleIds.every((id) => selectedUsers.includes(id));
@@ -160,42 +163,59 @@ const AllUsers = () => {
     }
   };
 
-  const filteredUsers = userList.filter((user) => {
-    const matches =
-      user?.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user?.phone?.includes(searchQuery);
-    console.log(`Checking user: ${user.fullName}, match: ${matches}`);
-    return matches;
-  });
-  console.log("Filtered Users:", filteredUsers);
+  console.log("Search Query:", searchQuery);
+  console.log("Users:", userList);
+  
+  const filteredUsers = searchQuery
+    ? userList.filter((user) => {
+        const name = user?.name || "";
+        const email = user?.email || "";
+        const phone = user?.phone || "";
+  
+        const matches =
+          name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          phone.includes(searchQuery);
+  
+        console.log(`Checking user: ${name}, match: ${matches}`);
+        return matches;
+      })
+    : userList;
+  
+    console.log("Filtered Users:", filteredUsers);
+  
 
+  
+// console.log("Filtered Users:", filteredUsers);
 
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+const indexOfLastUser = currentPage * usersPerPage;
+const indexOfFirstUser = indexOfLastUser - usersPerPage;
+const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
-  const paginate = (page: number) => setCurrentPage(page);
+// Pagination handler
+const paginate = (page: number) => setCurrentPage(page);
 
-  const renderPageNumbers = () => {
-    const maxVisible = 4;
-    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-    const end = Math.min(totalPages, start + maxVisible - 1);
-    if (end - start + 1 < maxVisible) {
-      start = Math.max(1, end - maxVisible + 1);
-    }
+// Page number renderer
+const renderPageNumbers = () => {
+  const maxVisible = 10;
+  let start = Math.max(1, currentPage - Math.floor(maxVisible / 1));
+  const end = Math.min(totalPages, start + maxVisible - 1);
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1);
+  }
 
-    const pages = [];
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    return pages;
-  };
+  const pages = [];
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  return pages;
+};
+
 
   const exportToCSV = () => {
     const headers = ["ID", "Full Name", "Email", "Phone", "Status"];
-    const rows = filteredUsers.map((u) => [u._id, u.fullName, u.email, u.phone, u.status]);
+    const rows = filteredUsers.map((u) => [u._id, u.name, u.email, u.phone, u.status]);
     const csvContent = [headers, ...rows].map((r) => r.join(",")).join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -338,7 +358,7 @@ const AllUsers = () => {
                     />
                   </TableHead>
                   <TableHead>ID</TableHead>
-                  <TableHead>Full Name</TableHead>
+                  <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Account Status</TableHead>
@@ -357,7 +377,7 @@ const AllUsers = () => {
                       />
                     </TableCell>
                     <TableCell>{user._id}</TableCell>
-                    <TableCell>{user.fullName}</TableCell>
+                    <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{user.phone}</TableCell>
                     <TableCell>
