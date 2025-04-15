@@ -22,10 +22,10 @@ export const getAllListingsController = async (req: Request, res: Response) => {
 // ✅ PATCH: Update a specific listing (status, publishedDate, etc.)  
 export const updateListingController = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const updates = req.body;
+    const { id } = req.params;  // Get the ID from the request params
+    const updates = req.body;   // Get the update data from the request body
 
-    const listing = await Listing.findByIdAndUpdate(id, updates, { new: true });
+    const listing = await Listing.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
 
     if (!listing) {
       return res.status(404).json({ message: "Listing not found" });
@@ -38,23 +38,25 @@ export const updateListingController = async (req: Request, res: Response) => {
   }
 };
 
+
 // ✅ DELETE: Delete a specific listing
-export const deleteListingController = async (req: Request, res: Response) => {
+// listingController.ts
+export const deleteListing = async (req: Request, res: Response) => {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-
-    const listing = await Listing.findByIdAndDelete(id);
-
-    if (!listing) {
+    // Assuming you have a Listing model for MongoDB
+    const deletedListing = await Listing.findByIdAndDelete(id);
+    if (!deletedListing) {
       return res.status(404).json({ message: "Listing not found" });
     }
-
     res.status(200).json({ message: "Listing deleted successfully" });
   } catch (error) {
-    console.error("Error deleting listing:", error);
-    res.status(500).json({ message: "Error deleting listing", error });
+    console.error(error);
+    res.status(500).json({ message: "Error deleting listing" });
   }
 };
+
+
 
 // ✅ POST: Bulk action (e.g., approve/reject/publish multiple listings)
 export const bulkActionListingController = async (req: Request, res: Response) => {

@@ -8,6 +8,7 @@ import UpgradeListing from "../../models/businessUpgradeModel";
 import Business from "../../models/businessDetailsModel";
 
 
+
 // Controller function to get all business listings with full data
 
 export const getAllBusinessListings = async (req: Request, res: Response) => {
@@ -81,3 +82,9 @@ export const getBusinessListingById = async (req: Request, res: Response) => {
       res.status(500).json({ message: "Failed to fetch business listing" });
     }
   };
+
+
+
+  // 
+
+  

@@ -5,8 +5,12 @@ const listingSchema = new mongoose.Schema({
   category: String,
   user: String,
   createdDate: String,
-  publishedDate: String,
-  status: String,
+  publishedDate: { type: Date, default: null }, // Add a default value if not provided
+  status: { 
+    type: String, 
+    enum: ["Pending", "Approved", "Rejected"], 
+    default: "Pending" 
+  },
   businessStatus: String,
   trustStatus: String,
 });
