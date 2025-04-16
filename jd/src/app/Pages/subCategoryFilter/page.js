@@ -1,36 +1,28 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import "./subCategoryFilter.css";
 import "../citytourismGuide/citytourismGuide.css";
 import breadbg from "../../Images/ResturantBanner.jpg";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
+import axios from "axios";
 
-const page = () => {
-  // Example category data. Ideally, this will come from an API or a static file.
-  const categories = [
-    {
-      id: "1",
-      name: "Chinese Foods",
-      bannerImage: breadbg,
-      subcategories: [
-        { title: "Dim Sum", link: "/subcategory/dim-sum" },
-        { title: "Noodles", link: "/subcategory/noodles" },
-      ],
-      image: "/images/ChinessResturant.jpg",
-    },
-    {
-      id: "2",
-      name: "South Indian Foods",
-      bannerImage: breadbg,
-      subcategories: [
-        { title: "Idli", link: "/subcategory/idli" },
-        { title: "Dosa", link: "/subcategory/dosa" },
-      ],
-      image: "/images/SouthIndiaFood.jpg",
-    },
-    // Add more categories here...
-  ];
+const Page = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchSubCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/admin/subcategories");
+        setCategories(response.data.subcategories); // Assuming this is the response format
+      } catch (error) {
+        console.error("Error fetching subcategories:", error);
+      }
+    };
+
+    fetchSubCategories();
+  }, []);
 
   return (
     <>
@@ -38,7 +30,6 @@ const page = () => {
         <title>Find Top Businesses by Category | Biziffy</title>
         <meta name="description" content="Explore local businesses by category on Biziffy." />
         <meta name="keywords" content="business category filter, local services, list by category" />
-        {/* Open Graph and Twitter Meta Tags... */}
       </Head>
 
       <section>
@@ -69,23 +60,43 @@ const page = () => {
               </div>
             </div>
 
-            {categories.map((category) => (
-              <div key={category.id} className="col-md-3 col-sm-4 col-6">
-                <div className="city-category-select-data">
-                  {/* Link to the category's subcategory listing */}
-                  <Link href={`/subcategory-filter?categoryId=${category.id}`}>
-                    <div className="subcategory-filter-img">
-                      <Image src={category.image} alt={category.name} width={300} height={200} />
-                    </div>
-                  </Link>
+            {categories?.length > 0 ? (
+              categories.map((category) => (
+                <div key={category._id} className="col-md-3 col-sm-4 col-6">
+                  <div className="city-category-select-data">
+                    <Link href={`/subcategory-filter?categoryId=${category._id}`}>
+                      <div className="subcategory-filter-img">
+                        <Image
+                          src={category.imageUrl || "/images/default.jpg"}
+                          alt={category.name}
+                          width={300}
+                          height={200}
+                        />
+                      </div>
+                    </Link>
 
-                  <h4 className="subcategory-filter-title">{category.name}</h4>
+                    <h4 className="subcategory-filter-title">{category.name}</h4>
+
+                    {category.mainSubCategories?.length > 0 && (
+                      <div className="subcategory-list mt-2">
+                        {category.mainSubCategories.map((sub, idx) => (
+                          <div key={idx} className="subcategory-item">
+                            <Link href={`/subcategory/${sub.name.toLowerCase().replace(/\s/g, "-")}`}>
+                              {sub.name}
+                            </Link>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center mt-4">No categories found.</p>
+            )}
 
             <div className="text-center mt-4">
-              <button className="btn btn-primary" type="submit">
+              <button className="btn btn-primary" type="button">
                 View All Categories
               </button>
             </div>
@@ -96,4 +107,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
