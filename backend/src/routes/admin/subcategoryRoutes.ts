@@ -1,17 +1,16 @@
-import express from "express";
-import upload from "../../utils/multer";
-import { createSubcategoryController } from "../../controllers/admin/subcategoryController";
+import { Router } from "express";
+import {
+  getSubcategories,
+  createSubcategory,
+  updateSubcategory,
+  deleteSubcategory,
+} from "../../controllers/admin/subcategoryController";
 
-const router = express.Router();
+const router = Router();
 
-// ✅ Correct way to apply upload middleware and controller together
-router.post(
-  "/create",
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "banner", maxCount: 1 },
-  ]),
-  createSubcategoryController
-);
+router.get("/subcategories", getSubcategories); // Get all subcategories
+router.post("/subcategories", createSubcategory); // Create new subcategory
+router.put("/subcategories/:id", updateSubcategory); // Update subcategory
+router.delete("/subcategories/:id", deleteSubcategory); // Delete subcategory
 
 export default router;

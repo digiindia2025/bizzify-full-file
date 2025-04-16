@@ -63,7 +63,8 @@ app.use(
 // Serve static image files
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-// const upload = multer({ dest: 'uploads/' });
+// Optionally, if you're dealing with form data:
+app.use(express.urlencoded({ extended: true }));
 
 // ✅ Parse JSON body
 app.use(bodyParser.json()); // ✅ important
@@ -73,7 +74,7 @@ app.use(bodyParser.json()); // ✅ important
 app.use("/api/advertisements", advertisementRoutes);
 app.use("/api/admin/child-categories", childCategoryRoutes);
 app.use("/api", categoryRoutes);
-app.use("/api/admin/subcategory", subcategoryRoutes);
+app.use("/api/admin", subcategoryRoutes);
 app.use("/api/admin", listingRoutes); // 👈 important!
 app.use("/api/admin", userRoutes);
 app.use("/api/admin", deactivateUserRoutes);

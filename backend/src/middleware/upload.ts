@@ -1,14 +1,13 @@
-import multer from "multer";
-import path from "path";
+import multer from 'multer';
+import path from 'path';
 
-// Define where and how files will be stored
+// Storage configuration
 const storage = multer.diskStorage({
-  destination: function (_req, _file, cb) {
-    cb(null, "uploads/category-icons"); // create this folder if not existing
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
   },
-  filename: function (_req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+  filename: function (req, file, cb) {
+    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
   },
 });
 
