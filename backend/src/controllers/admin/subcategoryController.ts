@@ -9,6 +9,7 @@ export const getSubcategories = async (req: Request, res: Response) => {
     const total = await SubcategoryModel.countDocuments(); // Get total count first to calculate totalPages
 
     const subcategories = await SubcategoryModel.find()
+    // .populate("category") // ✅ This will pull full category object
       .skip((Number(page) - 1) * Number(limit))
       .limit(Number(limit))
       .exec();
