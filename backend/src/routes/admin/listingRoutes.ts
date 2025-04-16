@@ -5,10 +5,9 @@ import express from "express";
 import {
   getAllListingsController,
   updateListingController,
-  deleteListing    // ✅ Import controller for updating a listing
-   // ✅ Import controller for deleting a listing
-  // bulkActionListingController, // ✅ Optional: for handling bulk actions
+  deleteListingController
 } from "../../controllers/admin/listingController";
+
 
 const router = express.Router();
 
@@ -17,10 +16,12 @@ router.get("/listings", getAllListingsController);
 
 // ✅ PATCH route to update a specific listing (status, publishStatus, etc.)
 router.patch("/listings/:id", updateListingController);
+// listing delete
 
-// ✅ DELETE route to remove a specific listing by ID
-// In your Express route file, make sure you have a route like this
-router.delete("/listings/:id", deleteListing);
+// routes/admin/listingRoutes.ts
+router.delete("/listings/:id", deleteListingController);
+
+
 
 
 

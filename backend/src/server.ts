@@ -6,6 +6,7 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import bodyParser from "body-parser"; // ✅ Add this!
+import multer from "multer"; // ✅ Import multer
 import { connectDB } from "./config/db";
 
 import advertisementRoutes from "./routes/admin/advertisementRoutes";
@@ -62,6 +63,8 @@ app.use(
 // Serve static image files
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
+// const upload = multer({ dest: 'uploads/' });
+
 // ✅ Parse JSON body
 app.use(bodyParser.json()); // ✅ important
 // OR just use:
@@ -70,7 +73,7 @@ app.use(bodyParser.json()); // ✅ important
 app.use("/api/advertisements", advertisementRoutes);
 app.use("/api/admin/child-categories", childCategoryRoutes);
 app.use("/api", categoryRoutes);
-app.use("/api/admin/subcategories", subcategoryRoutes);
+app.use("/api/admin/subcategory", subcategoryRoutes);
 app.use("/api/admin", listingRoutes); // 👈 important!
 app.use("/api/admin", userRoutes);
 app.use("/api/admin", deactivateUserRoutes);

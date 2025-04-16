@@ -54,7 +54,7 @@ const BussinessCategory = () => {
         title="Top Business Categories"
         subtitle="Businesses by category"
       />
-
+      
       <div className="container">
         <div className="row">
           {categories.map((category) => (

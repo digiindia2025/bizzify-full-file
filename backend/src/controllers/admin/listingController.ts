@@ -44,18 +44,20 @@ export const updateListingController = async (req: Request, res: Response) => {
 
 // ✅ DELETE: Delete a specific listing
 // listingController.ts
-export const deleteListing = async (req: Request, res: Response) => {
-  const { id } = req.params;
+// controller/admin/deleteListingController.ts
+export const deleteListingController = async (req: Request, res: Response) => {
   try {
-    // Assuming you have a Listing model for MongoDB
-    const deletedListing = await Listing.findByIdAndDelete(id);
-    if (!deletedListing) {
+    const { id } = req.params;
+    const deleted = await Listing.findByIdAndDelete(id);
+
+    if (!deleted) {
       return res.status(404).json({ message: "Listing not found" });
     }
-    res.status(200).json({ message: "Listing deleted successfully" });
+
+    return res.status(200).json({ message: "Listing deleted successfully" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error deleting listing" });
+    console.error("Delete error:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 

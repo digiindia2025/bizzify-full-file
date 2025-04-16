@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Pencil, Eye, Trash } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { CSVLink } from "react-csv";
+import { toast } from "@/components/ui/use-toast";
+
 
 import {
   Table,
@@ -227,13 +229,26 @@ export const AllListings = () => {
     if (window.confirm("Are you sure you want to delete this listing?")) {
       try {
         const response = await axios.delete(`http://localhost:5000/api/admin/listings/${id}`);
-        fetchFullListings();
+
+        fetchFullListings(); // refetch updated listings
+  
+        toast({
+          title: "Deleted",
+          description: "Listing deleted successfully.",
+        });
       } catch (error) {
         console.error("Failed to delete listing", error);
+  
+        toast({
+          title: "Error",
+          description: "Failed to delete listing.",
+          variant: "destructive",
+        });
       }
     }
   };
-
+  
+  
   const csvData = filteredListings.map(listing => ({
     ID: listing.businessId,
     Title: listing.businessDetails?.businessName,
@@ -397,11 +412,16 @@ export const AllListings = () => {
                           View
                         </Button>
                       </Link>
+
+
                       <Button size="sm" variant="destructive" onClick={() => handleDeleteListing(listing.businessId)}>
                         <Trash className="h-4 w-4 mr-1" />
                         Delete
                       </Button>
                     </div>
+
+
+                    
                     <div className="flex flex-col gap-1">
                       {getBusinessTrustStatus(listing.businessDetails?.businessStatus || "Not Approved")}
                       {getTrustStatus(listing.businessDetails?.trustStatus || "Not Approved")}

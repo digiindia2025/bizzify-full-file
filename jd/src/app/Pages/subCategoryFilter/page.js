@@ -2,74 +2,43 @@ import React from "react";
 import "./subCategoryFilter.css";
 import "../citytourismGuide/citytourismGuide.css";
 import breadbg from "../../Images/ResturantBanner.jpg";
-import ChinessResturant from "../../Images/ChinessResturant.jpg";
-import SouthIndiaFood from "../../Images/SouthIndiaFood.jpg";
-import NorthIndiaFood from "../../Images/NorthIndiaFood.jpg";
-import SweetsFoods from "../../Images/SweetsFoods.jpg";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
 
 const page = () => {
-  const Categorydata = [
+  // Example category data. Ideally, this will come from an API or a static file.
+  const categories = [
     {
-      image: ChinessResturant,
-      title: "Chinese Foods",
-      link: "/Pages/bussiness-listing",
+      id: "1",
+      name: "Chinese Foods",
+      bannerImage: breadbg,
+      subcategories: [
+        { title: "Dim Sum", link: "/subcategory/dim-sum" },
+        { title: "Noodles", link: "/subcategory/noodles" },
+      ],
+      image: "/images/ChinessResturant.jpg",
     },
     {
-      image: SouthIndiaFood,
-      title: "South Indian Foods",
-      link: "/Pages/bussiness-listing",
+      id: "2",
+      name: "South Indian Foods",
+      bannerImage: breadbg,
+      subcategories: [
+        { title: "Idli", link: "/subcategory/idli" },
+        { title: "Dosa", link: "/subcategory/dosa" },
+      ],
+      image: "/images/SouthIndiaFood.jpg",
     },
-    {
-      image: NorthIndiaFood,
-      title: "North Indian Foods",
-      link: "/Pages/bussiness-listing",
-    },
-    {
-      image: SweetsFoods,
-      title: "Sweets & Beverage",
-      link: "/Pages/bussiness-listing",
-    },
+    // Add more categories here...
   ];
+
   return (
     <>
       <Head>
         <title>Find Top Businesses by Category | Biziffy</title>
-        <meta
-          name="description"
-          content="Explore local businesses by category on Biziffy. Filter top-rated services like restaurants, salons, plumbers, electricians, and more near you."
-        />
-        <meta
-          name="keywords"
-          content="business category filter, local services, list by category, find restaurants, find electricians, plumber listing, category based search, Biziffy filter, top businesses in India, local SEO categories, business listing platform, nearby services, top rated businesses, business finder, categorized services, home repair services, beauty salons, AC repair, online business directory, SEO for service businesses, location based search, best plumbers, electricians in Delhi, best digital marketing agencies, categorized leads, find professionals online, discover local businesses"
-        />
-
-        {/* Open Graph Tags */}
-        <meta
-          property="og:title"
-          content="Category Based Business Search | Biziffy"
-        />
-        <meta
-          property="og:description"
-          content="Search and filter local businesses by category. Discover top-rated professionals and grow your business with Biziffy."
-        />
-        <meta property="og:url" content="https://biziffy.com/category-filter" />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Biziffy" />
-
-        {/* Twitter Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Find Businesses by Category on Biziffy"
-        />
-        <meta
-          name="twitter:description"
-          content="Easily discover services by category like plumbing, AC repair, beauty, electricians, and more with Biziffy."
-        />
-        <meta name="twitter:creator" content="@biziffy" />
+        <meta name="description" content="Explore local businesses by category on Biziffy." />
+        <meta name="keywords" content="business category filter, local services, list by category" />
+        {/* Open Graph and Twitter Meta Tags... */}
       </Head>
 
       <section>
@@ -99,19 +68,22 @@ const page = () => {
                 </h1>
               </div>
             </div>
-            {Categorydata.map((category, index) => (
-              <div key={index} className="col-md-3 col-sm-4 col-6">
+
+            {categories.map((category) => (
+              <div key={category.id} className="col-md-3 col-sm-4 col-6">
                 <div className="city-category-select-data">
-                  <Link href={category.link}>
+                  {/* Link to the category's subcategory listing */}
+                  <Link href={`/subcategory-filter?categoryId=${category.id}`}>
                     <div className="subcategory-filter-img">
-                      <Image src={category.image} alt={category.title} />
+                      <Image src={category.image} alt={category.name} width={300} height={200} />
                     </div>
                   </Link>
 
-                  <h4 className="subcategory-filter-title">{category.title}</h4>
+                  <h4 className="subcategory-filter-title">{category.name}</h4>
                 </div>
               </div>
             ))}
+
             <div className="text-center mt-4">
               <button className="btn btn-primary" type="submit">
                 View All Categories

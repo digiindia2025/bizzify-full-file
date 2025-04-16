@@ -102,6 +102,7 @@ const AllCategories = () => {
   };
 
   const confirmDelete = async () => {
+    if (!categoryToDelete) return;
     try {
       await axios.delete(`http://localhost:5000/api/categories/${categoryToDelete}`);
       setCategories(prev => prev.filter(cat => cat._id !== categoryToDelete));
@@ -110,7 +111,9 @@ const AllCategories = () => {
       toast({ title: "Error", description: "Failed to delete category.", variant: "destructive" });
     }
     setIsDeleteConfirmOpen(false);
+    setCategoryToDelete(null); // clear selection
   };
+
 
   const handleExportToCSV = () => {
     const headers = ["ID", "Name", "Icon", "Status", "Create Date"];
@@ -234,6 +237,36 @@ const AllCategories = () => {
         ))}
         <Button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>Next</Button>
       </div>
+
+
+      {isDeleteConfirmOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-start pt-24 z-50">
+    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-auto p-6 border-t-8 border-red-600 animate-slide-down">
+      <h2 className="text-xl font-bold text-red-600 mb-2">⚠️ Confirm Deletion</h2>
+      <p className="text-gray-700 mb-4">
+        Are you absolutely sure you want to delete this category? This action cannot be undone.
+      </p>
+      <div className="flex justify-end space-x-3">
+        <button
+          onClick={() => setIsDeleteConfirmOpen(false)}
+          className="px-4 py-2 rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={confirmDelete}
+          className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+        >
+          Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+
 
       {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>

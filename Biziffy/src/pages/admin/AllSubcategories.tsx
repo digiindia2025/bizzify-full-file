@@ -37,21 +37,14 @@ const AllSubcategories = () => {
 
   const subcategoriesPerPage = 5;
 
-  const fetchSubcategories = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get("http://localhost:5000/api/admin/subcategories");
-      setSubcategoriesData(res.data);
-    } catch (error) {
-      console.error("Error fetching subcategories:", error);
-      toast({ title: "Error", description: "Failed to fetch subcategories" });
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
-    fetchSubcategories();
+    const fetchCategories = async () => {
+      const res = await axios.get("http://localhost:5000/api/admin/categories");
+      setSubcategoriesData(res.data.categories);
+    };
+    fetchCategories();
   }, []);
+  
 
   const handleEdit = (subcategory: any) => {
     setEditSubcategory(subcategory);

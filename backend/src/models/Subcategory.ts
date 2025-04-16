@@ -1,10 +1,24 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema } from 'mongoose';
 
-const subcategorySchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  image: { type: String },
-  category: { type: String, required: true },
-  status: { type: String, enum: ["active", "inactive"], default: "active" },
-});
+interface ISubcategory extends Document {
+  name: string;
+  category: mongoose.Types.ObjectId;
+  status: string;
+  image: string;
+  banner: string;
+}
 
-export default mongoose.model("Subcategory", subcategorySchema);
+const SubcategorySchema: Schema = new Schema(
+  {
+    name: { type: String, required: true },
+    category: { type: mongoose.Types.ObjectId, ref: 'Category', required: true },
+    status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+    image: { type: String, required: true },
+    banner: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+
+const Subcategory = mongoose.model<ISubcategory>('Subcategory', SubcategorySchema);
+
+export default Subcategory;

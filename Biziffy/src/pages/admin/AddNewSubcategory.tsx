@@ -3,8 +3,8 @@ import { AdminLayout } from "@/components/Layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import {
@@ -16,6 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import {
   Select,
   SelectContent,
@@ -24,7 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Dummy category list
 const categories = [
   { id: 1, name: "Electronics" },
   { id: 2, name: "Clothing" },
@@ -34,6 +34,7 @@ const categories = [
 interface FormValues {
   name: string;
   image: FileList | null;
+  banner: FileList | null;
   category: string;
   status: string;
 }
@@ -42,25 +43,35 @@ const AddNewSubcategory = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     defaultValues: {
       name: "",
       image: null,
+      banner: null,
       category: "",
       status: "active",
-    }
+    },
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
+      reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
       form.setValue("image", e.target.files as FileList);
+    }
+  };
+
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setBannerPreview(reader.result as string);
+      reader.readAsDataURL(file);
+      form.setValue("banner", e.target.files as FileList);
     }
   };
 
@@ -69,19 +80,20 @@ const AddNewSubcategory = () => {
     formData.append("name", data.name);
     formData.append("category", data.category);
     formData.append("status", data.status);
-    if (data.image && data.image[0]) {
-      formData.append("image", data.image[0]);
-    }
+    if (data.image && data.image[0]) formData.append("image", data.image[0]);
+    if (data.banner && data.banner[0]) formData.append("banner", data.banner[0]);
 
     try {
-      await axios.post("http://localhost:5000/api/admin/subcategories", formData);
-  
+      await axios.post("http://localhost:5000/api/admin/subcategory/create", formData);
+
       toast({
         title: "Subcategory Created",
         description: `Subcategory "${data.name}" has been created successfully.`,
       });
+
       form.reset();
       setImagePreview(null);
+      setBannerPreview(null);
       navigate("/admin/subcategories");
     } catch (error) {
       console.error("Submission error:", error);
@@ -98,6 +110,7 @@ const AddNewSubcategory = () => {
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Subcategory Name */}
             <FormField
               control={form.control}
               name="name"
@@ -113,63 +126,62 @@ const AddNewSubcategory = () => {
               )}
             />
 
-            <FormItem>
-              <FormLabel>Subcategory Image</FormLabel>
-              <div className="flex items-center gap-4">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="max-w-xs"
-                />
-                {imagePreview && (
-                  <div className="h-16 w-16 relative">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="h-full w-full object-cover rounded-md"
-                    />
-                  </div>
-                )}
-              </div>
-              <FormDescription>
-                Upload an image for this subcategory (recommended: 200x200px).
-              </FormDescription>
-            </FormItem>
-
+            {/* Category */}
             <FormField
               control={form.control}
               name="category"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Main Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select main category" />
+                        <SelectValue placeholder="Select Category" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id.toString()}>
+                        <SelectItem key={category.id} value={category.name}>
                           {category.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormDescription>Select which category this subcategory belongs to.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Image Upload */}
+            <FormItem>
+              <FormLabel>Subcategory Image</FormLabel>
+              <FormControl>
+                <Input type="file" accept="image/*" onChange={handleImageChange} />
+              </FormControl>
+              {imagePreview && (
+                <img src={imagePreview} alt="Image Preview" className="mt-2 h-24 rounded-md" />
+              )}
+            </FormItem>
+
+            {/* Banner Upload */}
+            <FormItem>
+              <FormLabel>Subcategory Banner</FormLabel>
+              <FormControl>
+                <Input type="file" accept="image/*" onChange={handleBannerChange} />
+              </FormControl>
+              {bannerPreview && (
+                <img src={bannerPreview} alt="Banner Preview" className="mt-2 h-24 rounded-md" />
+              )}
+            </FormItem>
+
+            {/* Status */}
             <FormField
               control={form.control}
               name="status"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
@@ -180,20 +192,12 @@ const AddNewSubcategory = () => {
                       <SelectItem value="inactive">Inactive</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormDescription>Set status for this subcategory.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="flex justify-end space-x-2">
-              <Button type="button" variant="outline" asChild>
-                <Link to="/admin/subcategories">Cancel</Link>
-              </Button>
-              <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
-                Create Subcategory
-              </Button>
-            </div>
+            <Button type="submit">Create Subcategory</Button>
           </form>
         </Form>
       </div>
