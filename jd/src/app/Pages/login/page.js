@@ -78,7 +78,8 @@ const Login = () => {
         localStorage.setItem("biziffyUser", JSON.stringify(data.user));
 
         setTimeout(() => {
-          router.push("/");
+          router.push("/Pages/Profile");
+
         }, 1500);
       } else {
         setLoginError(data.message || "Invalid credentials.");
@@ -114,7 +115,7 @@ const Login = () => {
         setLoginError("");
 
         setTimeout(() => {
-          router.push("/");
+          router.push("/profile");
         }, 1500);
       } else {
         setLoginError(data.message || "Google login failed.");

@@ -7,8 +7,6 @@ import ContactPerson from "../../models/ContactPerson";
 import UpgradeListing from "../../models/businessUpgradeModel";
 import Business from "../../models/businessDetailsModel";
 
-
-
 // Controller function to get all business listings with full data
 
 export const getAllBusinessListings = async (req: Request, res: Response) => {

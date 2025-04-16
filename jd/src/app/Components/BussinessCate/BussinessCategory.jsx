@@ -1,132 +1,53 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import "./BussinessCategory.css";
 import Heading from "../Heading/SecHeading";
 import Image from "next/image";
-import HOMEBEAUTY from "../../Images/HOMEBEAUTY.jpg";
-import HOMEBED from "../../Images/HOMEBED.jpg";
-import HOMEBOY from "../../Images/HOMEBOY.png";
-import HOMEBRAIN from "../../Images/HOMEBRAIN.webp";
-import HOMECAR from "../../Images/HOMECAR.png";
-import HOMECELEBRATIONS from "../../Images/HOMECELEBRATIONS.png";
-import HOMEDENTAL from "../../Images/HOMEDENTAL.png";
-import HOMEEDUCATION from "../../Images/HOMEEDUCATION.png";
-import HOMEFURNITURE from "../../Images/HOMEFURNITURE.png";
-import HOMEGYM from "../../Images/HomeGYM.png";
-import HOMEHOSPITAL from "../../Images/HOMEHOSPITAL.png";
-import HOMEKEY from "../../Images/HOMEKEY.webp";
-import HOMEMONEY from "../../Images/HOMEMONEY.png";
-import HOMEPETS from "../../Images/HOMEPETS.png";
-import HOMERESTURANT from "../../Images/HOMERESTURANT.jpg";
-import HOMETRUCK from "../../Images/HOMETRUCK.png";
-import HOMEWORK from "../../Images/HOMEWORK.png";
-
 import Link from "next/link";
-const categories = [
-  {
-    id: 1,
-    title: "Beauty & Spa",
-    icon: HOMEBEAUTY,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 2,
-    title: "PG/Hotels",
-    icon: HOMEBED,
-    link: "/Graphic design",
-  },
-  {
-    id: 3,
-    title: "Courier Services",
-    icon: HOMEBOY,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 4,
-    title: "Content Writing",
-    icon: HOMEBRAIN,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 5,
-    title: "Driving Services",
-    icon: HOMECAR,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 6,
-    title: "Event Organizers",
-    icon: HOMECELEBRATIONS,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 7,
-    title: "Dentists",
-    icon: HOMEDENTAL,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 8,
-    title: "Education",
-    icon: HOMEEDUCATION,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 9,
-    title: "Furniture",
-    icon: HOMEFURNITURE,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 10,
-    title: "Hospital",
-    icon: HOMEHOSPITAL,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 11,
-    title: "Gym",
-    icon: HOMEGYM,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 12,
-    title: "Rent & Hire",
-    icon: HOMEKEY,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 13,
-    title: "Loans",
-    icon: HOMEMONEY,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 14,
-    title: "Pet Shops",
-    icon: HOMEPETS,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 15,
-    title: "Resturants",
-    icon: HOMERESTURANT,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 16,
-    title: "Delivery Services",
-    icon: HOMETRUCK,
-    link: "/WebDevelopment",
-  },
-  {
-    id: 17,
-    title: "Contractors",
-    icon: HOMEWORK,
-    link: "/WebDevelopment",
-  },
-];
+import axios from "axios";  
+
+/**
+ * @typedef {Object} Category
+ * @property {string} _id - The unique identifier for the category.
+ * @property {string} name - The name of the category.
+ * @property {string} [icon] - The optional icon URL for the category.
+ * @property {string} [slug] - The optional slug for the category.
+ * 
+ */
 
 const BussinessCategory = () => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        console.log("Fetching categories...");
+        const res = await axios.get("http://localhost:5000/api/categories");
+        console.log("data",res.data);
+        
+        setCategories(res.data); // Assuming res.data is the array of categories
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setError("Failed to fetch categories");
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (loading) {
+    console.log("Loading state:", loading);
+    return <div>Loading business categories...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <>
       <Heading
@@ -137,20 +58,32 @@ const BussinessCategory = () => {
       <div className="container">
         <div className="row">
           {categories.map((category) => (
-            <div key={category.id} className="col-lg-2 col-md-3 col-sm-4 col-4">
+            
+            <div key={category._id} className="col-lg-2 col-md-3 col-sm-4 col-4">
               <Link
-                href={"/Pages/bussiness-listing"}
-                alt={category.title}
+                href={`/Pages/bussiness-listing?category=${category?.name}`} // Use category.slug if available
+                alt={category?.name}
                 className="text-decoration-none"
               >
                 <div className="bussiness-category-card text-center p-3">
-                  <Image
-                    src={category.icon}
-                    alt={category.title}
-                    width={50}
-                    height={50}
-                  />
-                  <h6 className="mt-2">{category.title}</h6>
+                  {category.icon && (
+                    <Image
+                      src={`http://localhost:5000/uploads/${category.icon}` || " "} // Use category.icon if available, otherwise use category.icon}
+                      alt={category.name}
+                      width={50}
+                      height={50}
+                      onError={(e) => {
+                        e.currentTarget.src = "/path/to/default-category-image.png";
+                      }}
+                    />
+                    
+                  )}
+                  {!category.icon && (
+                    <div style={{ width: '50px', height: '50px', backgroundColor: '#eee', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      {category.name?.charAt(0)?.toUpperCase()}
+                    </div>
+                  )}
+                  <h6 className="mt-2">{category.name}</h6>
                 </div>
               </Link>
             </div>

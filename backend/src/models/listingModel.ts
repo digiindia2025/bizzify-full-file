@@ -8,7 +8,7 @@ const listingSchema = new mongoose.Schema({
   publishedDate: { type: Date, default: null }, // Add a default value if not provided
   status: { 
     type: String, 
-    enum: ["Pending", "Approved", "Rejected"], 
+    enum: ['Draft', 'Pending', 'Approved', 'Rejected', 'Published'], // 'Published' added
     default: "Pending" 
   },
   businessStatus: String,

@@ -22,10 +22,13 @@ export const getAllListingsController = async (req: Request, res: Response) => {
 // ✅ PATCH: Update a specific listing (status, publishedDate, etc.)  
 export const updateListingController = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;  // Get the ID from the request params
-    const updates = req.body;   // Get the update data from the request body
+    const { id } = req.params;
+    const updates = req.body;
 
-    const listing = await Listing.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
+    const listing = await Listing.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!listing) {
       return res.status(404).json({ message: "Listing not found" });

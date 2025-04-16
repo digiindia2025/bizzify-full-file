@@ -153,8 +153,8 @@ export const AllListings = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const normalized = status.toLowerCase();
-    switch (normalized) {
+    const normalized = status?.toLowerCase() === "unpublish" ? "pending" : status?.toLowerCase();    const displayStatus = normalized === "unpublish" ? "pending" : normalized;
+    switch (displayStatus) {
       case "approved":
         return <span className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded-full">Approved</span>;
       case "pending":
@@ -316,8 +316,8 @@ export const AllListings = () => {
               </TableHead>
               <TableHead>ID</TableHead>
               <TableHead>Title</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>User Name</TableHead>
+              <TableHead></TableHead> {/*categories*/}
+              <TableHead></TableHead> {/*User Name*/}
               <TableHead>Created Date</TableHead>
               <TableHead>Published Date</TableHead>
               <TableHead>Status</TableHead>
@@ -344,8 +344,7 @@ export const AllListings = () => {
                   {editingPublishStatusId === listing.businessId ? (
                     <select
                       className="px-2 py-1 border rounded-md"
-                      value={listing.businessDetails?.publishedDate}
-                      onChange={(e) => handleUpdatePublishStatus(listing.businessId, e.target.value)}
+                      value={listing.businessDetails?.publishedDate || "Pending"}                      onChange={(e) => handleUpdatePublishStatus(listing.businessId, e.target.value)}
                       onBlur={() => setEditingPublishStatusId(null)}
                       autoFocus
                     >
@@ -355,8 +354,7 @@ export const AllListings = () => {
                     </select>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <span>{listing.businessDetails?.publishedDate}</span>
-                      <button
+                    {getStatusBadge(listing.businessDetails?.status || "Pending")}                      <button
                         onClick={() => setEditingPublishStatusId(listing.businessId)}
                         className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
                       >
