@@ -1,0 +1,42 @@
+.subcategory-filter-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 10px;
+    width: 200px;
+    height: 200px;
+    padding: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .subcategory-filter-img:hover {
+    transform: scale(1.05);
+  }
+  
+  .subcategory-filter-img img {
+    border-radius: 15px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .subcategory-filter-title {
+    font-size: 1.2rem;
+    text-align: center;
+    font-weight: 600;
+    color: #333;
+    margin-top: 8px;
+  }
+  
+  @media screen and (max-width: 500px) {
+    .subcategory-filter-img {
+      width: 150px;
+    height: 150px;
+    }
+  
+    .subcategory-filter-title {
+      font-size: 1rem;
+     
+    }
+  }
+  

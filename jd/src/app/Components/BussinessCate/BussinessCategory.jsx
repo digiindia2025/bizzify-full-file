@@ -61,7 +61,7 @@ const BussinessCategory = () => {
             
             <div key={category._id} className="col-lg-2 col-md-3 col-sm-4 col-4">
               <Link
-                href={`/Pages/bussiness-listing?category=${category?.name}`} // Use category.slug if available
+                href={`/Pages/subCategoryFilter?category=${category?.name}`} // Use category.slug if available
                 alt={category?.name}
                 className="text-decoration-none"
               >
@@ -88,11 +88,11 @@ const BussinessCategory = () => {
               </Link>
             </div>
           ))}
-          <div className="d-flex justify-content-center mt-3">
+          {/* <div className="d-flex justify-content-center mt-3">
             <Link className="login-btn" href="../../Pages/all-categories">
               View All <i className="bi bi-eye"></i>
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
