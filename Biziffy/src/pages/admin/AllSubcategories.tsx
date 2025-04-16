@@ -84,18 +84,42 @@ const AllSubcategories = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Subcategory Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Subcategory Name</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Subcategory Image</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Subcategory Banner</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Main Category</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {subcategories.length > 0 ? (
                 subcategories.map((subcategory) => (
                   <tr key={subcategory._id}>
-                    <td className="px-6 py-4 text-sm text-gray-900">{subcategory.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{subcategory.status}</td>
-                    <td className="px-6 py-4 text-sm font-medium space-x-2">
+                    <td className="px-4 py-3 text-sm text-gray-900">{subcategory._id}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{subcategory.name}</td>
+                    <td className="px-4 py-3">
+                      <img
+                        src={subcategory.image || "/images/default-image.jpg"}
+                        alt="Subcategory Image"
+                        width={100}
+                        height={60}
+                        className="rounded object-cover"
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <img
+                        src={subcategory.category.banner || "/images/default-banner.jpg"}
+                        alt="Subcategory Banner"
+                        width={100}
+                        height={60}
+                        className="rounded object-cover"
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{subcategory.category.name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{subcategory.status}</td>
+                    <td className="px-4 py-3 space-x-2">
                       <Button variant="link" size="sm">
                         <Link to={`/admin/subcategories/edit/${subcategory._id}`}>Edit</Link>
                       </Button>
@@ -111,7 +135,7 @@ const AllSubcategories = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
+                  <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
                     No subcategories available.
                   </td>
                 </tr>

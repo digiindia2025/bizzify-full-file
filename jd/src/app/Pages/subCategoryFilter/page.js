@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import "./subCategoryFilter.css";
 import "../citytourismGuide/citytourismGuide.css";
-import breadbg from "../../Images/ResturantBanner.jpg";
+// import breadbg from "../../Images/ResturantBanner.jpg";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
@@ -33,13 +33,23 @@ const Page = () => {
       </Head>
 
       <section>
-        <div className="all-breadcrumb">
-          <Image
-            src={breadbg}
-            alt="Breadcrumb Background"
-            layout="fill"
-            objectFit="cover"
-          />
+      <div className="all-breadcrumb">
+          {/* Use dynamic category banner if available */}
+          {categories.length > 0 && categories[0].bannerUrl ? (
+            <Image
+              src={categories[0].bannerUrl} // Use the banner URL from the category data
+              alt="Breadcrumb Background"
+              layout="fill"
+              objectFit="cover"
+            />
+          ) : (
+            <Image
+              src="/images/default-banner.jpg" // Default fallback if no banner is provided
+              alt="Breadcrumb Background"
+              layout="fill"
+              objectFit="cover"
+            />
+          )}
           <div className="city-bread-overlay"></div>
           <div className="container">
             <div className="bread-content">
