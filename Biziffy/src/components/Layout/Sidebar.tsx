@@ -16,7 +16,9 @@ import {
   LogOut,
   Menu,
   X,
-  Settings
+  // Settings
+  Building2,
+  MapPin
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +34,7 @@ export const Sidebar = () => {
   const [openAdvertisementsManage, setOpenAdvertisementsManage] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [openCitiesManage, setOpenCitiesManage] = useState(false);
   
 
   const isActive = (path: string) => location.pathname === path;
@@ -465,7 +468,74 @@ export const Sidebar = () => {
               User membership
             </Link>
           </li>
-          
+          <li>
+            <button 
+              onClick={() => setOpenCitiesManage(!openCitiesManage)}
+              className={cn(
+                "w-full flex items-center justify-between px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                openCitiesManage && "bg-blue-50 text-blue-600"
+              )}
+            >
+              <div className="flex items-center">
+                <Building2 className="h-5 w-5 mr-3" />
+                <span>Cities Manage</span>
+              </div>
+              {openCitiesManage ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            </button>
+            {openCitiesManage && (
+              <ul className="ml-6 mt-1 space-y-1">
+                <li>
+                  <Link 
+                    to="/admin/cities" 
+                    className={cn(
+                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                      isActive("/admin/cities") && location.pathname !== '/admin/cities/create' && "bg-blue-50 text-blue-600"
+                    )}
+                  >
+                    <Building2 className="h-4 w-4 mr-2" />
+                    All Cities
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/admin/cities/create" 
+                    className={cn(
+                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                      isActive("/admin/cities/create") && "bg-blue-50 text-blue-600"
+                    )}
+                  >
+                    <Building2 className="h-4 w-4 mr-2" />
+                    Create City
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/admin/subcities" 
+                    className={cn(
+                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                      isActive("/admin/subcities") && location.pathname !== '/admin/subcities/create' && "bg-blue-50 text-blue-600"
+                    )}
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    All Sub Cities
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/admin/subcities/create" 
+                    className={cn(
+                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                      isActive("/admin/subcities/create") && "bg-blue-50 text-blue-600"
+                    )}
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Create Sub City
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
           <li>
             <Link 
               to="/logout" 

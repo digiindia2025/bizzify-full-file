@@ -32,6 +32,12 @@
   import AllSubcategories from "./pages/admin/AllSubcategories";
   import AddNewSubcategory from "./pages/admin/AddNewSubcategory";
   import UserDetails from "./pages/admin/UserDetails";
+  import AllCities from "./pages/admin/AllCities";
+  import CreateCity from "./pages/admin/CreateCity";
+  import AllSubCities from "./pages/admin/AllSubCities";
+  import CreateSubCity from "./pages/admin/CreateSubCity";
+  import EditCity from "./pages/admin/EditCity";
+  import EditSubCity from "./pages/admin/EditSubCity";
     import NotFound from "./pages/NotFound";
 
 
@@ -74,6 +80,13 @@
               <Route path="/admin/subcategories/add" element={<ProtectedRoute><AddNewSubcategory /></ProtectedRoute>} />
               <Route path="/admin/users/:id" element={<ProtectedRoute><UserDetails /></ProtectedRoute>} />              {/* Other Routes */}
               {/* Add other routes here as needed */}
+              {/* City Management Routes */}
+            <Route path="/admin/cities" element={<ProtectedRoute><AllCities /></ProtectedRoute>} />
+            <Route path="/admin/cities/create" element={<ProtectedRoute><CreateCity /></ProtectedRoute>} />
+            <Route path="/admin/subcities" element={<ProtectedRoute><AllSubCities /></ProtectedRoute>} />
+            <Route path="/admin/subcities/create" element={<ProtectedRoute><CreateSubCity /></ProtectedRoute>} />
+            <Route path="/admin/cities/edit/:id" element={<ProtectedRoute><EditCity /></ProtectedRoute>} />
+            <Route path="/admin/subcities/edit/:id" element={<ProtectedRoute><EditSubCity /></ProtectedRoute>} />
               
               {/* Dashboard Route */}
 
