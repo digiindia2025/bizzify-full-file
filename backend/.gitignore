@@ -1,8 +1,6 @@
 # Node modules
 node_modules/
 
-# Build output
-dist/
 build/
 
 # Environment variables
@@ -23,9 +21,6 @@ Thumbs.db
 
 # VSCode
 .vscode/
-
-# Uploads
-uploads/
 
 # TypeScript cache
 *.tsbuildinfo

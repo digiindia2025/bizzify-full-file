@@ -41,12 +41,8 @@ ehthumbs.db
 Icon?
 Desktop.ini
 
-# Binaries
 *.exe
 *.out
 *.app
 *.dll
 
-# Optional
-# public/static/uploads
-# /uploads
