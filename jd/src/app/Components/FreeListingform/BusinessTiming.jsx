@@ -37,7 +37,6 @@ const BusinessTiming = ({ setKey }) => {
     { day: "Thursday", openTime: "", openPeriod: "AM", closeTime: "", closePeriod: "PM", isOpen: false },
     { day: "Friday", openTime: "", openPeriod: "AM", closeTime: "", closePeriod: "PM", isOpen: false },
     { day: "Saturday", openTime: "", openPeriod: "AM", closeTime: "", closePeriod: "PM", isOpen: false },
-    // { day: "Sunday", openTime: "", openPeriod: "AM", closeTime: "", closePeriod: "PM", isOpen: false },
   ]);
 
   const [allDaysTime, setAllDaysTime] = useState({
@@ -87,6 +86,16 @@ const BusinessTiming = ({ setKey }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate if all required fields are filled
+    const invalidTimings = timing.some(
+      (item) => item.isOpen && (!item.openTime || !item.closeTime)
+    );
+
+    if (invalidTimings) {
+      console.error("Please fill in all timings for selected days.");
+      return;
+    }
+
     const timingsData = timing.map(item => ({
       day: item.day,
       openTime: item.openTime,
@@ -97,7 +106,8 @@ const BusinessTiming = ({ setKey }) => {
     }));
 
     try {
-      const response = await fetch("http://localhost:5000/api/business/timings", {
+      const response = await fetch("http://localhost:5000/api/admin/createBusinessTiming", {
+        
         method: "POST",
         headers: {
           "Content-Type": "application/json",

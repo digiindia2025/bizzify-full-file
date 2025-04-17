@@ -10,6 +10,14 @@ const BusinessCategory = ({ setKey }) => {
   const [keywords, setKeywords] = useState([]);
   const [input, setInput] = useState("");
   const [areas, setAreas] = useState([]);
+  const [serviceArea, setServiceArea] = useState([]);
+  const [serviceAreainput, setServiceAreaInput] = useState("");
+  
+  const categories = [
+    "Construction", "Real Estate", "Education", "Retail",
+    "Healthcare", "Technology", "Finance", "Hospitality", 
+    "Automotive", "Manufacturing"
+  ];
 
   useEffect(() => {
     const fetchAreas = async () => {
@@ -47,19 +55,45 @@ const BusinessCategory = ({ setKey }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setKey("timing");
+    
+    // Prepare the form data to send to the backend
+    const formData = {
+      category,
+      businessImages,
+      about,
+      keywords,
+      serviceArea,
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/api/admin/createBusinessCategory", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Success:", result);
+        // Move to next step after successful submission
+        setKey("timing");
+      } else {
+        const error = await response.json();
+        console.log("Error:", error.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   const removeItem = (list, setList, item) =>
     setList(list.filter((el) => el !== item));
   const removeByIndex = (list, setList, index) =>
     setList(list.filter((_, i) => i !== index));
-
-  // ======= Service Area search =========
-  const [serviceArea, setServiceArea] = useState([]);
-  const [serviceAreainput, setServiceAreaInput] = useState("");
 
   const handleSelect = (area) => {
     if (!serviceArea.includes(area)) {
@@ -77,46 +111,6 @@ const BusinessCategory = ({ setKey }) => {
       area.toLowerCase().includes(serviceAreainput.toLowerCase()) &&
       !serviceArea.includes(area)
   );
-
-  const categories = [
-    "Construction",
-    "Real Estate",
-    "Education",
-    "Retail",
-    "Healthcare",
-    "Technology",
-    "Finance",
-    "Hospitality",
-    "Automotive",
-    "Manufacturing",
-  ];
-
-
-
-
-  const handleBusinessCategorySubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:5000/api/business/category", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-  
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Success:", result);
-      } else {
-        const error = await response.json();
-        console.log("Error:", error.message);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-  
 
   return (
     <form onSubmit={handleSubmit}>
