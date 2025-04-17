@@ -174,8 +174,8 @@ const ProfilePage = () => {
                 </div>
               </div>
             </div>
-            <div className="col-md-9 pt-3">
-              {activeTab === "overview" && (
+            <div className="col-md-9 py-3 fix-scroll-height">
+            {activeTab === "overview" && (
                 <div className="profile-overview card border-0 rounded-4">
                   <div className="d-flex align-items-center">
                     <div className="profile-overview-main avatar bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-3">

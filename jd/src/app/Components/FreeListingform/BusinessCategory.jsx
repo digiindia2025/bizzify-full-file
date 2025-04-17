@@ -1,123 +1,122 @@
-// Frontend (Next.js or React - assuming this is a client component)
 "use client";
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../../Pages/freelistingform/freelistingform.css";
 
 const BusinessCategory = ({ setKey }) => {
-  const [category, setCategory] = useState([]); // Subcategory IDs
-  const [services, setServices] = useState(""); // Static category value
+  const [category, setCategory] = useState([]);
+  const [businessImages, setBusinessImages] = useState([]);
   const [about, setAbout] = useState("");
-  const [businessImages, setBusinessImages] = useState([]); // Images selected by user
-  const [subcategories, setSubcategories] = useState([]);
-  const [fetchSubcategoriesError, setFetchSubcategoriesError] = useState(null);
-  const [submitError, setSubmitError] = useState(null);
+  const [keywords, setKeywords] = useState([]);
+  const [input, setInput] = useState("");
+  const [areas, setAreas] = useState([]);
 
-  // Fetch subcategories
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/subcategories")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => setSubcategories(data))
-      .catch((err) => {
-        console.error("Error fetching subcategories:", err);
-        setFetchSubcategoriesError("Failed to load subcategories.");
-      });
+    const fetchAreas = async () => {
+      try {
+        const res = await axios.get(
+          "https://6800d7ffb72e9cfaf728eac6.mockapi.io/areapincode"
+        );
+        const areaList = res.data.map((user) => `${user.area} ${user.pincode}`);
+        setAreas(areaList);
+      } catch (error) {
+        console.error("Error fetching areas:", error);
+      }
+    };
+    fetchAreas();
   }, []);
 
-  // Handle category selection change
   const handleSelectChange = (e) => {
-    const selectedValues = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setCategory((prev) => [...new Set([...prev, ...selectedValues])]);
+    const values = Array.from(e.target.selectedOptions, (o) => o.value);
+    setCategory((prev) => [...new Set([...prev, ...values])]);
   };
 
-  // Remove selected category
-  const removeCategory = (idToRemove) => {
-    setCategory(category.filter((id) => id !== idToRemove));
-  };
-
-  // Handle image change (upload)
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const imageUrls = files.map((file) => URL.createObjectURL(file));
-    setBusinessImages((prevImages) => [...prevImages, ...imageUrls]);
+    const imageUrls = Array.from(e.target.files).map((file) =>
+      URL.createObjectURL(file)
+    );
+    setBusinessImages((prev) => [...prev, ...imageUrls]);
   };
 
-  // Remove image preview
-  const removeImage = (index) => {
-    setBusinessImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && input.trim()) {
+      e.preventDefault();
+      if (!keywords.includes(input.trim()))
+        setKeywords([...keywords, input.trim()]);
+      setInput("");
+    }
   };
 
-  // Get subcategory name by ID
-  const getSubcategoryName = (id) => {
-    const match = subcategories.find((sub) => sub._id === id);
-    return match ? match.name : id;
-  };
-
-  // Submit the form
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setSubmitError(null);
+    setKey("timing");
+  };
 
-    // Ensure all required fields are provided
-    if (!services || category.length === 0 || !about) {
-      alert("Please select a category, at least one subcategory, and provide a description.");
-      return;
+  const removeItem = (list, setList, item) =>
+    setList(list.filter((el) => el !== item));
+  const removeByIndex = (list, setList, index) =>
+    setList(list.filter((_, i) => i !== index));
+
+  // ======= Service Area search =========
+  const [serviceArea, setServiceArea] = useState([]);
+  const [serviceAreainput, setServiceAreaInput] = useState("");
+
+  const handleSelect = (area) => {
+    if (!serviceArea.includes(area)) {
+      setServiceArea([...serviceArea, area]);
     }
+    setServiceAreaInput("");
+  };
 
-    const formData = new FormData();
-    formData.append("category", services);
-    formData.append("about", about);
+  const removeServiceAreaItem = (itemToRemove) => {
+    setServiceArea(serviceArea.filter((item) => item !== itemToRemove));
+  };
 
-    // Append selected subcategories to form data
-    category.forEach((subCatId) => formData.append("subcategories[]", subCatId));
+  const filteredAreas = areas.filter(
+    (area) =>
+      area.toLowerCase().includes(serviceAreainput.toLowerCase()) &&
+      !serviceArea.includes(area)
+  );
 
-    // Append selected images to form data
-    const fileInputs = document.querySelector('input[type="file"]');
-    const files = fileInputs?.files;
-    if (files && files.length > 0) {
-      Array.from(files).forEach((file) => {
-        formData.append("images", file);
-      });
-    }
+  const categories = [
+    "Construction",
+    "Real Estate",
+    "Education",
+    "Retail",
+    "Healthcare",
+    "Technology",
+    "Finance",
+    "Hospitality",
+    "Automotive",
+    "Manufacturing",
+  ];
 
+
+
+
+  const handleBusinessCategorySubmit = async (e) => {
+    e.preventDefault();
     try {
-      // Send POST request to create a business listing
-      const response = await fetch("http://localhost:5000/api/admin/business-listing", {
+      const response = await fetch("http://localhost:5000/api/business/category", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
-
-      const result = await response.json();
-
-      // Check if the response is successful
+  
       if (response.ok) {
-        console.log("Listing created:", result);
-        setKey("timing"); // Move to next step
+        const result = await response.json();
+        console.log("Success:", result);
       } else {
-        // Ensure result is not undefined and contains an error message
-        const errorMessage = result?.error || "Error submitting form";
-        console.error("Failed to create listing. Response:", result);
-        setSubmitError(errorMessage);
-        alert(errorMessage);
+        const error = await response.json();
+        console.log("Error:", error.message);
       }
     } catch (error) {
-      // Catch unexpected errors and log them
       console.error("Error:", error);
-      setSubmitError("Something went wrong! Please try again.");
-      alert("Something went wrong! Please try again.");
     }
   };
-
-  if (fetchSubcategoriesError) {
-    return <div>Error: {fetchSubcategoriesError}</div>;
-  }
+  
 
   return (
     <form onSubmit={handleSubmit}>
@@ -125,58 +124,120 @@ const BusinessCategory = ({ setKey }) => {
         Select Business Category<sup>*</sup>
       </h5>
 
+      {/* Category Selection */}
       <div className="mb-3">
         <label className="form-label">
           Select Business Category <sup>*</sup>
         </label>
-        <select
-          className="form-control"
-          value={services}
-          onChange={(e) => setServices(e.target.value)}
-          required
-        >
+        <select className="form-control" required>
           <option value="">Select Your Category</option>
-          <option value="health">Health & Wellness</option>
-          <option value="education">Education</option>
-          <option value="food">Food & Beverages</option>
-          <option value="automobile">Automobile</option>
-          <option value="fashion">Fashion & Lifestyle</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
         </select>
       </div>
 
+      {/* Subcategory Selection */}
       <div className="mb-3">
         <label className="form-label">
           Select Business SubCategory <sup>*</sup>
         </label>
-        <select
-          className="form-control"
-          required
-          onChange={handleSelectChange}
-          multiple
-        >
-          <option value="" disabled>Select Your SubCategory</option>
-          {subcategories.map((sub) => (
-            <option key={sub._id} value={sub._id}>
-              {sub.name}
+        <select className="form-control" required onChange={handleSelectChange}>
+          <option value="">Select Your SubCategory</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
             </option>
           ))}
         </select>
-
         <div className="mt-2">
-          {category.map((catId) => (
-            <span key={catId} className="badge bg-primary m-1 p-2">
-              {getSubcategoryName(catId)}
+          {category.map((cat) => (
+            <span key={cat} className="badge bg-primary m-1 p-2">
+              {cat}
               <button
                 type="button"
                 className="btn-close ms-2 bg-danger"
-                onClick={() => removeCategory(catId)}
+                onClick={() => removeItem(category, setCategory, cat)}
                 aria-label="Remove"
-              ></button>
+              />
             </span>
           ))}
         </div>
       </div>
 
+      {/* Services Input */}
+      <div className="mb-3">
+        <label className="form-label">
+          Business Services<sup>*</sup>
+        </label>
+        <input
+          type="text"
+          value={input}
+          className="form-control"
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Business Services"
+        />
+        <div className="mt-2">
+          {keywords.map((keyword, index) => (
+            <span key={index} className="badge bg-primary m-1 p-2">
+              {keyword}
+              <button
+                type="button"
+                className="btn-close ms-2 bg-danger"
+                onClick={() => removeByIndex(keywords, setKeywords, index)}
+                aria-label="Remove"
+              />
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Area Selection */}
+      <div className="mb-3 position-relative">
+        <label className="form-label">
+          Services Area/Pincode<sup>*</sup>
+        </label>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Services Area/Pincode"
+          value={serviceAreainput}
+          onChange={(e) => setServiceAreaInput(e.target.value)}
+        />
+        {serviceAreainput && filteredAreas.length > 0 && (
+          <ul className="list-group position-absolute z-3 w-100">
+            {filteredAreas.map((area) => (
+              <li
+                key={area}
+                className="list-group-item list-group-item-action"
+                onClick={() => handleSelect(area)}
+                style={{ cursor: "pointer" }}
+              >
+                {area}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <div className="mt-2">
+          {serviceArea.map((serarea) => (
+            <span key={serarea} className="badge bg-primary m-1 p-2">
+              {serarea}
+              <button
+                type="button"
+                className="btn-close ms-2 bg-danger"
+                onClick={() => removeServiceAreaItem(serarea)}
+                aria-label="Remove"
+              />
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* About Section */}
       <div className="mb-3">
         <label className="form-label">
           About Your Business <sup>*</sup>
@@ -191,9 +252,10 @@ const BusinessCategory = ({ setKey }) => {
         />
       </div>
 
+      {/* Image Upload */}
       <div className="mb-3">
         <label className="form-label">
-          Upload Business Photos <span style={{ color: "red" }}>(Optional)</span>
+          Upload Business Photos <span className="text-danger">(Optional)</span>
         </label>
         <input
           type="file"
@@ -216,15 +278,15 @@ const BusinessCategory = ({ setKey }) => {
               <button
                 type="button"
                 className="btn-close position-absolute top-0 start-100 translate-middle bg-danger"
-                onClick={() => removeImage(index)}
+                onClick={() =>
+                  removeByIndex(businessImages, setBusinessImages, index)
+                }
                 aria-label="Remove"
-              ></button>
+              />
             </div>
           ))}
         </div>
       </div>
-
-      {submitError && <div className="alert alert-danger">{submitError}</div>}
 
       <button type="submit" className="btn btn-primary w-100 py-3">
         Next
@@ -233,4 +295,4 @@ const BusinessCategory = ({ setKey }) => {
   );
 };
 
-export default BusinessCategory;  
+export default BusinessCategory;

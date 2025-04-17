@@ -92,11 +92,11 @@ const dashboardCardTemplates: DashboardCardTemplate[] = [
     order: 5
   },
   {
-    key: "childCategories",
-    title: "Child Categories",
+    key: "Cities Manage",
+    title: "Cities Manage",
     icon: FolderPlus,
-    description: "Manage child categories",
-    linkTo: "/admin/child-categories",
+    description: "Cities Manage",
+    linkTo: "/admin/cities",
     visible: true,
     colorClass: "bg-gradient-to-r from-yellow-500 to-yellow-700",
     size: "medium",

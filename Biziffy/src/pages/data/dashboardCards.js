@@ -29,41 +29,12 @@ const dashboardCardTemplates = [
       description: "Manage product subcategories.",
       linkTo: "/admin/subcategories",
     },
-    {
-      key: "childCategories",
-      title: "Child categ Manage",
-      description: "Manage product child categories.",
-      linkTo: "/admin/child-categories",
-    },
+    
     {
       key: "contacts",
       title: "All Contact Manage",
       description: "View and manage all contact inquiries.",
       linkTo: "/admin/contact-us",
-    },
-    {
-      key: "supports",
-      title: "Support",
-      description: "Manage and respond to user support requests.",
-      linkTo: "/admin/support/department",
-    },
-    {
-      key: "enquiries",
-      title: "Enquiries",
-      description: "View and manage general enquiries.",
-      linkTo: "/admin/enquiries",
-    },
-    {
-      key: "links",
-      title: "Links",
-      description: "Manage important links.",
-      linkTo: "/admin/links",
-    },
-    {
-      key: "reviews",
-      title: "Reviews",
-      description: "Manage product and service reviews.",
-      linkTo: "/admin/reviews",
     },
     {
       key: "memberships",
@@ -72,11 +43,50 @@ const dashboardCardTemplates = [
       linkTo: "/admin/membership",
     },
     {
-        key: "links",
-        title: "Links",
-        description: "Manage important links.",
-        linkTo: "/admin/links",
-      },
+      key: "cities-manage",
+      title: " City Manage",
+      description: " Manage cities and locations.",
+      linkTo: " /admin/cities",
+    },
+    {
+      key: "Popular Cities",
+      title: " Popular Cities",
+      description: " Manage cities and locations.",
+      linkTo: " /admin/cities",
+    },
+    
+    {
+      key: "Collectiion",
+      title: " Collection Manage",
+      description: " Manage cities and locations.",
+      linkTo: " /admin/cities",
+    },
+    {
+      key: "Deals",
+      title: " Deals Manage",
+      description: "View and manage general enquiries.",
+      linkTo: "/admin/enquiries",
+    },
+    {
+      key: "Support",
+      title: " Support",
+      description: " Manage cities and locations.",
+      linkTo: " /admin/support",
+    },
+    {
+      key: "Enquiries",
+      title: "Enquiries",
+      description: "Manage product and service reviews.",
+      linkTo: "/admin/reviews",
+    },
+    {
+      key: "links",
+      title: "Links",
+      description: "Manage important links.",
+      linkTo: "/admin/links",
+    },
+    
+  
       {
         key: "reviews",
         title: "Reviews",
@@ -101,48 +111,7 @@ const dashboardCardTemplates = [
         description: "Manage product and service reviews.",
         linkTo: "/admin/reviews",
       },
-      {
-        key: "memberships",
-        title: "User Membership",
-        description: "Manage user memberships.",
-        linkTo: "/admin/membership",
-      },
-      {
-        key: "links",
-        title: "Links",
-        description: "Manage important links.",
-        linkTo: "/admin/links",
-      },
-      {
-        key: "reviews",
-        title: "Reviews",
-        description: "Manage product and service reviews.",
-        linkTo: "/admin/reviews",
-      },
-      {
-        key: "reviews",
-        title: "Reviews",
-        description: "Manage product and service reviews.",
-        linkTo: "/admin/reviews",
-      },
-      {
-        key: "memberships",
-        title: "User Membership",
-        description: "Manage user memberships.",
-        linkTo: "/admin/membership",
-      },
-      {
-        key: "links",
-        title: "Links",
-        description: "Manage important links.",
-        linkTo: "/admin/links",
-      },
-      {
-        key: "reviews",
-        title: "Reviews",
-        description: "Manage product and service reviews.",
-        linkTo: "/admin/reviews",
-      },
+     
   ];
   
   export default dashboardCardTemplates;

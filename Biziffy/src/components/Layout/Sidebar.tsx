@@ -18,7 +18,9 @@ import {
   X,
   // Settings
   Building2,
-  MapPin
+  MapPin,
+  Book,
+  Gift
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +37,9 @@ export const Sidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [openCitiesManage, setOpenCitiesManage] = useState(false);
+  const [openPopularCities, setOpenPopularCities] = useState(false);
+  const [openCollections, setOpenCollections] = useState(false);
+  const [openDeals, setOpenDeals] = useState(false);
   
 
   const isActive = (path: string) => location.pathname === path;
@@ -374,7 +379,229 @@ export const Sidebar = () => {
               All Contact us
             </Link>
           </li>
-          
+
+
+
+
+          <li>
+            <Link 
+              to="/admin/membership" 
+              className={cn(
+                "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                isActive("/admin/membership") && "bg-blue-50 text-blue-600"
+              )}
+            >
+              <Users className="h-5 w-5 mr-3" />
+              User membership
+            </Link>
+          </li>
+
+          <li>
+            <button 
+              onClick={() => setOpenCitiesManage(!openCitiesManage)}
+              className={cn(
+                "w-full flex items-center justify-between px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                openCitiesManage && "bg-blue-50 text-blue-600"
+              )}
+            >
+              <div className="flex items-center">
+                <Building2 className="h-5 w-5 mr-3" />
+                <span>Cities Manage</span>
+              </div>
+              {openCitiesManage ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            </button>
+            {openCitiesManage && (
+              <ul className="ml-6 mt-1 space-y-1">
+                <li>
+                  <Link 
+                    to="/admin/cities" 
+                    className={cn(
+                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                      isActive("/admin/cities") && location.pathname !== '/admin/cities/create' && "bg-blue-50 text-blue-600"
+                    )}
+                  >
+                    <Building2 className="h-4 w-4 mr-2" />
+                    All Cities
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/admin/cities/create" 
+                    className={cn(
+                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                      isActive("/admin/cities/create") && "bg-blue-50 text-blue-600"
+                    )}
+                  >
+                    <Building2 className="h-4 w-4 mr-2" />
+                    Create City
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/admin/subcities" 
+                    className={cn(
+                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                      isActive("/admin/subcities") && location.pathname !== '/admin/subcities/create' && "bg-blue-50 text-blue-600"
+                    )}
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    All Sub Cities
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/admin/subcities/create" 
+                    className={cn(
+                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+                      isActive("/admin/subcities/create") && "bg-blue-50 text-blue-600"
+                    )}
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Create Sub City
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+          {/* add some more items */}
+          <li>
+  {/* Popular Cities Manage */}
+  <button 
+    onClick={() => setOpenPopularCities(!openPopularCities)}
+    className={cn(
+      "w-full flex items-center justify-between px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+      openPopularCities && "bg-blue-50 text-blue-600"
+    )}
+  >
+    <div className="flex items-center">
+      <Building2 className="h-5 w-5 mr-3" />
+      <span>Popular Cities</span>
+    </div>
+    {openPopularCities ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+  </button>
+  {openPopularCities && (
+    <ul className="ml-6 mt-1 space-y-1">
+      <li>
+        <Link 
+          to="/admin/popular-cities" 
+          className={cn(
+            "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+            isActive("/admin/popular-cities") && location.pathname !== '/admin/popular-cities/add' && "bg-blue-50 text-blue-600"
+          )}
+        >
+          <Building2 className="h-4 w-4 mr-2" />
+          All Popular Cities
+        </Link>
+      </li>
+      <li>
+        <Link 
+          to="/admin/popular-cities/add" 
+          className={cn(
+            "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+            isActive("/admin/popular-cities/add") && "bg-blue-50 text-blue-600"
+          )}
+        >
+          <Building2 className="h-4 w-4 mr-2" />
+          Add Popular City
+        </Link>
+      </li>
+    </ul>
+  )}
+</li>
+
+<li>
+  {/* Collections Manage */}
+  <button 
+    onClick={() => setOpenCollections(!openCollections)}
+    className={cn(
+      "w-full flex items-center justify-between px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+      openCollections && "bg-blue-50 text-blue-600"
+    )}
+  >
+    <div className="flex items-center">
+      <Book className="h-5 w-5 mr-3" />
+      <span>Collections</span>
+    </div>
+    {openCollections ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+  </button>
+  {openCollections && (
+    <ul className="ml-6 mt-1 space-y-1">
+      <li>
+        <Link 
+          to="/admin/collections" 
+          className={cn(
+            "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+            isActive("/admin/collections") && location.pathname !== '/admin/collections/add' && "bg-blue-50 text-blue-600"
+          )}
+        >
+          <Book className="h-4 w-4 mr-2" />
+          All Collections
+        </Link>
+      </li>
+      <li>
+        <Link 
+          to="/admin/collections/add" 
+          className={cn(
+            "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+            isActive("/admin/collections/add") && "bg-blue-50 text-blue-600"
+          )}
+        >
+          <Book className="h-4 w-4 mr-2" />
+          Add Collection
+        </Link>
+      </li>
+    </ul>
+  )}
+</li>
+
+<li>
+  {/* Deals Manage */}
+  <button 
+    onClick={() => setOpenDeals(!openDeals)}
+    className={cn(
+      "w-full flex items-center justify-between px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+      openDeals && "bg-blue-50 text-blue-600"
+    )}
+  >
+    <div className="flex items-center">
+      <Gift className="h-5 w-5 mr-3" />
+      <span>Deals</span>
+    </div>
+    {openDeals ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+  </button>
+  {openDeals && (
+    <ul className="ml-6 mt-1 space-y-1">
+      <li>
+        <Link 
+          to="/admin/deals" 
+          className={cn(
+            "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+            isActive("/admin/deals") && location.pathname !== '/admin/deals/add' && "bg-blue-50 text-blue-600"
+          )}
+        >
+          <Gift className="h-4 w-4 mr-2" />
+          All Deals
+        </Link>
+      </li>
+      <li>
+        <Link 
+          to="/admin/deals/add" 
+          className={cn(
+            "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
+            isActive("/admin/deals/add") && "bg-blue-50 text-blue-600"
+          )}
+        >
+          <Gift className="h-4 w-4 mr-2" />
+          Add Deal
+        </Link>
+      </li>
+    </ul>
+  )}
+</li>
+
+
+
           <li>
             <button 
               onClick={() => setOpenSupport(!openSupport)}
@@ -456,86 +683,7 @@ export const Sidebar = () => {
             </Link>
           </li>
           
-          <li>
-            <Link 
-              to="/admin/membership" 
-              className={cn(
-                "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
-                isActive("/admin/membership") && "bg-blue-50 text-blue-600"
-              )}
-            >
-              <Users className="h-5 w-5 mr-3" />
-              User membership
-            </Link>
-          </li>
-          <li>
-            <button 
-              onClick={() => setOpenCitiesManage(!openCitiesManage)}
-              className={cn(
-                "w-full flex items-center justify-between px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
-                openCitiesManage && "bg-blue-50 text-blue-600"
-              )}
-            >
-              <div className="flex items-center">
-                <Building2 className="h-5 w-5 mr-3" />
-                <span>Cities Manage</span>
-              </div>
-              {openCitiesManage ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-            </button>
-            {openCitiesManage && (
-              <ul className="ml-6 mt-1 space-y-1">
-                <li>
-                  <Link 
-                    to="/admin/cities" 
-                    className={cn(
-                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
-                      isActive("/admin/cities") && location.pathname !== '/admin/cities/create' && "bg-blue-50 text-blue-600"
-                    )}
-                  >
-                    <Building2 className="h-4 w-4 mr-2" />
-                    All Cities
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/admin/cities/create" 
-                    className={cn(
-                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
-                      isActive("/admin/cities/create") && "bg-blue-50 text-blue-600"
-                    )}
-                  >
-                    <Building2 className="h-4 w-4 mr-2" />
-                    Create City
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/admin/subcities" 
-                    className={cn(
-                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
-                      isActive("/admin/subcities") && location.pathname !== '/admin/subcities/create' && "bg-blue-50 text-blue-600"
-                    )}
-                  >
-                    <MapPin className="h-4 w-4 mr-2" />
-                    All Sub Cities
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/admin/subcities/create" 
-                    className={cn(
-                      "flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600",
-                      isActive("/admin/subcities/create") && "bg-blue-50 text-blue-600"
-                    )}
-                  >
-                    <MapPin className="h-4 w-4 mr-2" />
-                    Create Sub City
-                  </Link>
-                </li>
-              </ul>
-            )}
-          </li>
-
+        
           <li>
             <Link 
               to="/logout" 

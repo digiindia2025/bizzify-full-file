@@ -34,6 +34,9 @@ import businessTimingRoutes from "./routes/admin/businessTimingRoutes";
 import businessUpgradeRoutes from './routes/admin/businessUpgradeRoutes';
 import businessListingAdminRoute from "./routes/admin/businessListingAdminRoute";
 import cityRoutes from "./routes/admin/cityRoutes";
+import dealRoutes from "./routes/admin/dealRoutes";
+import collectionRoutes from "./routes/admin/collectionRoutes";
+import cityRoutes1 from "./routes/admin/cityRoutes1"; // <-- Rename this
 // import businessListingCategoriesRoutes from './routes/admin/businessListingCategoriesRoutes';
 
 
@@ -97,6 +100,9 @@ app.use("/api/business", businessTimingRoutes);
 app.use(businessUpgradeRoutes);
 app.use("/api/admin/business", businessListingAdminRoute);
 app.use("/api/admin", cityRoutes); 
+app.use("/api/admin", dealRoutes);
+app.use("/api/admin", collectionRoutes);
+app.use("/api/admin/cityRoutes1", cityRoutes1); // <-- Match this
 // app.use('/api/admin', businessListingCategoriesRoutes);
 
 // app.use("/api/admin", resetRoutes);

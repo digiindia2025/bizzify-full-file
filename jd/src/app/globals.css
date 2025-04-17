@@ -175,19 +175,18 @@ body {
   cursor: pointer;
   color: #000;
   font-size: 16px;
-
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30%;
+  width: 40%;
   gap: 5px;
 }
 
-.hero-location-picker i {
+/* .hero-location-picker i {
   font-size: 16px;
   color: #000;
-}
+} */
 
 .hero-dropdown-menu {
   position: absolute;
@@ -269,7 +268,7 @@ body {
   }
   .bread-content {
     max-width: 100%;
-    top: 30px;
+    top: 50px;
   }
   .bread-overlay {
     height: 220px;
@@ -287,6 +286,16 @@ body {
     padding: 0px 0px 0px 10px;
     width: 100%;
     gap: 10px;
+  }
+
+  .hero-location-picker {
+    width: 60%;
+    text-align: center;
+  }
+
+  .location-detact {
+    font-size: 11px;
+    
   }
 
   .black-btn {

@@ -38,6 +38,18 @@
   import CreateSubCity from "./pages/admin/CreateSubCity";
   import EditCity from "./pages/admin/EditCity";
   import EditSubCity from "./pages/admin/EditSubCity";
+
+  // Pages - Collections
+  import PopularCities from "./pages/admin/PopularCities";
+  import AddPopularCity from "./pages/admin/AddPopularCity";
+// import AddPopularCity from "./pages/admin/PopularCities";
+import EditPopularCity from "./pages/admin/EditPopularCity";
+import Collections from "./pages/admin/Collections";
+import AddCollection from "./pages/admin/AddCollection";
+import EditCollection from "./pages/admin/EditCollection";
+import Deals from "./pages/admin/Deals";
+import AddDeal from "./pages/admin/AddDeal";
+import EditDeal from "./pages/admin/EditDeal";
     import NotFound from "./pages/NotFound";
 
 
@@ -89,7 +101,16 @@
             <Route path="/admin/subcities/edit/:id" element={<ProtectedRoute><EditSubCity /></ProtectedRoute>} />
               
               {/* Dashboard Route */}
-
+            {/* Content Management Routes */}
+            <Route path="/admin/popular-cities" element={<ProtectedRoute><PopularCities /></ProtectedRoute>} />
+            <Route path="/admin/popular-cities/add" element={<ProtectedRoute><AddPopularCity /></ProtectedRoute>} />  
+            <Route path="/admin/popular-cities/edit/:id" element={<ProtectedRoute><EditPopularCity /></ProtectedRoute>} />
+            <Route path="/admin/collections" element={<ProtectedRoute><Collections /></ProtectedRoute>} />
+            <Route path="/admin/collections/add" element={<ProtectedRoute><AddCollection /></ProtectedRoute>} />
+            <Route path="/admin/collections/edit/:id" element={<ProtectedRoute><EditCollection /></ProtectedRoute>} />
+            <Route path="/admin/deals" element={<ProtectedRoute><Deals /></ProtectedRoute>} />
+            <Route path="/admin/deals/add" element={<ProtectedRoute><AddDeal /></ProtectedRoute>} />
+            <Route path="/admin/deals/edit/:id" element={<ProtectedRoute><EditDeal /></ProtectedRoute>} />
               {/* Membership Route */}
               
               {/* Logout Route */}
