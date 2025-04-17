@@ -83,7 +83,7 @@ export const AllListings = () => {
     setError(null);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/admin/business/all-listings?page=${currentPage}&limit=${listingsPerPage}`, 
+        `http://localhost:5000/api/admin/getAllFullListings`, 
       );
       setFullListings(res.data || []);
       setTotalPages(Math.ceil((res.data?.length || 0) / listingsPerPage) || 1);
@@ -190,7 +190,7 @@ export const AllListings = () => {
 
   const handleUpdatePublishStatus = async (id: string, newStatus: string) => {
     try {
-      await axios.patch(`http://localhost:5000/api/admin/listings/${id}`, { status: newStatus });
+      await axios.patch(`http://localhost:5000/api/admin/getAllFullListings`, { status: newStatus });
       setFullListings(fullListings.map((listing) =>
         listing.businessId === id && listing.businessDetails
           ? { ...listing, businessDetails: { ...listing.businessDetails, publishedDate: newStatus } }
@@ -204,7 +204,7 @@ export const AllListings = () => {
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
-      await axios.patch(`http://localhost:5000/api/admin/listings/${id}`, { status: newStatus });
+      await axios.patch(`http://localhost:5000/api/admin/update-business-listing/:id`, { status: newStatus });
       setFullListings(fullListings.map((listing) => {
         if (listing.businessId === id && listing.businessDetails) {
           return {
@@ -226,27 +226,22 @@ export const AllListings = () => {
   };
 
   const handleDeleteListing = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this listing?")) {
-      try {
-        const response = await axios.delete(`http://localhost:5000/api/admin/listings/${id}`);
-
-        fetchFullListings(); // refetch updated listings
+    if (!id) {
+      console.error("No ID provided for deletion");
+      return;
+    }
   
-        toast({
-          title: "Deleted",
-          description: "Listing deleted successfully.",
-        });
-      } catch (error) {
-        console.error("Failed to delete listing", error);
+    console.log("Deleting listing with ID:", id); // Check the ID
   
-        toast({
-          title: "Error",
-          description: "Failed to delete listing.",
-          variant: "destructive",
-        });
-      }
+    try {
+      const response = await axios.delete(`http://localhost:5000/api/listing/${Id}`);
+      console.log("Delete Response: ", response.data);
+      fetchFullListings(); // Refresh the listings after deletion
+    } catch (error) {
+      console.error("Delete failed: ", error.response ? error.response.data : error.message);
     }
   };
+  
   
   
   const csvData = filteredListings.map(listing => ({

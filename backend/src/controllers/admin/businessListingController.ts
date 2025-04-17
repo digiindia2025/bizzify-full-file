@@ -103,6 +103,26 @@ export const createUpgradeListing = async (req: Request, res: Response) => {
   }
 };
 
+// import { Request, Response } from "express";
+
+// export const upgradeListing = async (req: Request, res: Response) => {
+//     const { listingId, upgradeType, duration } = req.body;
+  
+//     if (!listingId || !upgradeType || !duration) {
+//       return res.status(400).json({ error: "All fields are required" });
+//     }
+  
+    // try {
+      // Your logic to update listing's upgrade info in DB
+      // Example: await ListingModel.findByIdAndUpdate(...)
+  
+//       return res.status(200).json({ message: "Listing upgraded successfully" });
+//     } catch (error) {
+//       console.error("Error upgrading listing:", error);
+//       return res.status(500).json({ error: "Server error" });
+//     }
+//   };
+
 // Step 6: Create Full Business Listing (Optional Combined Entry)
 export const createBusinessListing = async (req: Request, res: Response) => {
   try {
@@ -114,3 +134,107 @@ export const createBusinessListing = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to save full business listing", error: err });
   }
 };
+
+// ✅ Step 7: Get All Full Business Listings (merged from 5 forms)
+export const getAllFullListings = async (req: Request, res: Response) => {
+    try {
+      const businessDetails = await BusinessDetails.find();
+      const contacts = await Contact.find();
+      const categories = await BusinessCategory.find();
+      const timings = await BusinessTiming.find();
+      const upgrades = await UpgradeListing.find();
+  
+      const listings = businessDetails.map((detail, index) => ({
+        businessDetails: detail,
+        contactPerson: contacts[index],
+        categories: categories[index],
+        timings: timings[index],
+        upgrade: upgrades[index]
+      }));
+  
+      res.status(200).json(listings);
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
+
+  // Step 8: Delete Business Listing by ID
+  export const deleteBusinessListing = async (req: Request, res: Response) => {
+    const { id } = req.params; // Get the ID from URL parameters
+    console.log(`Deleting business listing with ID: ${id}`); // Log the ID being received
+  
+    try {
+      // Find the listing by ID and delete it
+      const deletedListing = await BusinessListing.findByIdAndDelete(id);
+  
+      if (!deletedListing) {
+        return res.status(404).json({ message: "Business listing not found" });
+      }
+  
+      res.status(200).json({ message: "Business listing deleted successfully", data: deletedListing });
+    } catch (err) {
+      console.error("Error deleting business listing:", err);
+      res.status(500).json({ message: "Failed to delete business listing", error: err });
+    }
+  };
+  
+  // Step 9: Update Business Listing by ID
+export const updateBusinessListing = async (req: Request, res: Response) => {
+    const { id } = req.params; // Get the ID from URL parameters
+    const updateData = req.body; // Get the data to update from the request body
+  
+    try {
+      // Find the listing by ID and update it
+      const updatedListing = await BusinessListing.findByIdAndUpdate(id, updateData, {
+        new: true, // Return the updated document
+        runValidators: true, // Ensure validation is run on the update
+      });
+  
+      if (!updatedListing) {
+        return res.status(404).json({ message: "Business listing not found" });
+      }
+  
+      res.status(200).json({ message: "Business listing updated successfully", data: updatedListing });
+    } catch (err) {
+      console.error("Error updating business listing:", err);
+      res.status(500).json({ message: "Failed to update business listing", error: err });
+    }
+  };
+  
+//   10 view details by id 
+
+export const getBusinessListingDetails = async (req: Request, res: Response) => {
+    const { id } = req.params;
+  
+    try {
+      // Find the main listing by ID
+      const listing = await BusinessListing.findById(id);
+      if (!listing) {
+        return res.status(404).json({ message: "Business listing not found" });
+      }
+  
+      // Find related records (assuming they are stored separately)
+      const businessDetails = await BusinessDetails.findOne({ listingId: id });
+      const contact = await Contact.findOne({ listingId: id });
+      const category = await BusinessCategory.findOne({ listingId: id });
+      const timing = await BusinessTiming.findOne({ listingId: id });
+      const upgrade = await UpgradeListing.findOne({ listingId: id });
+  
+      return res.status(200).json({
+        message: "Business listing details fetched successfully",
+        data: {
+          listing,
+          businessDetails,
+          contact,
+          category,
+          timing,
+          upgrade,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching business listing details:", error);
+      res.status(500).json({ message: "Server error", error });
+    }
+  };
+  
