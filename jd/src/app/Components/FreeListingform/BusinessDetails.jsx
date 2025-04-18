@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import "../../Pages/freelistingform/freelistingform.css";
+
 const BusinessDetails = ({ setKey }) => {
   const [formData, setFormData] = useState({
     businessName: "",
@@ -15,40 +16,60 @@ const BusinessDetails = ({ setKey }) => {
     website: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Handle input changes for all fields
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setKey("category");
+  // Form validation check
+  const validateForm = () => {
+    const requiredFields = [
+      "businessName", "building", "street", "area", "landmark", "city", "state", "pinCode"
+    ];
+    for (let field of requiredFields) {
+      if (!formData[field]) {
+        setError(`Please fill out the ${field}.`);
+        return false;
+      }
+    }
+    return true;
   };
 
-
-
-  const handleBusinessDetailsSubmit = async (e) => {
+  // Form submission handler
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate the form data
+    if (!validateForm()) return;
+
+    setLoading(true);
+    setError(""); // Reset error on form submission
+
     try {
-      const response = await fetch("http://localhost:5000/api/business/details", {
+      const response = await fetch("http://localhost:5000/api/admin/createBusinessDetails", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-  
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Success:", result);
-      } else {
-        const error = await response.json();
-        console.log("Error:", error.message);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Something went wrong!");
       }
-    } catch (error) {
-      console.error("Error:", error);
+
+      // If success, go to the next step
+      setKey("category");
+    } catch (err) {
+      setError(err.message); // Display error if any occurs
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
-  
 
   return (
     <form onSubmit={handleSubmit}>
@@ -56,6 +77,10 @@ const BusinessDetails = ({ setKey }) => {
         Fill Business Details<sup>*</sup>
       </h5>
 
+      {/* Display error message if any */}
+      {error && <div className="alert alert-danger">{error}</div>}
+
+      {/* Business Name */}
       <div className="mb-3">
         <label className="form-label">
           Business Name<sup>*</sup>
@@ -64,11 +89,12 @@ const BusinessDetails = ({ setKey }) => {
           type="text"
           className="form-control"
           name="businessName"
+          value={formData.businessName}
           onChange={handleChange}
-          // required
         />
       </div>
-     
+
+      {/* Building/Block No */}
       <div className="mb-3">
         <label className="form-label">
           Building/Block No<sup>*</sup>
@@ -77,10 +103,12 @@ const BusinessDetails = ({ setKey }) => {
           type="text"
           className="form-control"
           name="building"
+          value={formData.building}
           onChange={handleChange}
-          // required
         />
       </div>
+
+      {/* Street */}
       <div className="mb-3">
         <label className="form-label">
           Street/Colony Name<sup>*</sup>
@@ -89,10 +117,12 @@ const BusinessDetails = ({ setKey }) => {
           type="text"
           className="form-control"
           name="street"
+          value={formData.street}
           onChange={handleChange}
-          // required
         />
       </div>
+
+      {/* Area */}
       <div className="mb-3">
         <label className="form-label">
           Area<sup>*</sup>
@@ -101,11 +131,12 @@ const BusinessDetails = ({ setKey }) => {
           type="text"
           className="form-control"
           name="area"
+          value={formData.area}
           onChange={handleChange}
-          // required
         />
       </div>
 
+      {/* Landmark */}
       <div className="mb-3">
         <label className="form-label">
           Landmark<sup>*</sup>
@@ -114,9 +145,12 @@ const BusinessDetails = ({ setKey }) => {
           type="text"
           className="form-control"
           name="landmark"
+          value={formData.landmark}
           onChange={handleChange}
         />
       </div>
+
+      {/* City */}
       <div className="mb-3">
         <label className="form-label">
           City<sup>*</sup>
@@ -125,10 +159,12 @@ const BusinessDetails = ({ setKey }) => {
           type="text"
           className="form-control"
           name="city"
+          value={formData.city}
           onChange={handleChange}
-          // required
         />
       </div>
+
+      {/* State */}
       <div className="mb-3">
         <label className="form-label">
           State<sup>*</sup>
@@ -137,10 +173,12 @@ const BusinessDetails = ({ setKey }) => {
           type="text"
           className="form-control"
           name="state"
+          value={formData.state}
           onChange={handleChange}
-          // required
         />
       </div>
+
+      {/* Pin Code */}
       <div className="mb-3">
         <label className="form-label">
           Pin Code<sup>*</sup>
@@ -149,13 +187,14 @@ const BusinessDetails = ({ setKey }) => {
           type="text"
           className="form-control"
           name="pinCode"
+          value={formData.pinCode}
           onChange={handleChange}
-          // required
         />
       </div>
 
-      <button type="submit" className="btn btn-primary w-100 py-3">
-        Next
+      {/* Submit Button */}
+      <button type="submit" className="btn btn-primary w-100 py-3" disabled={loading}>
+        {loading ? "Submitting..." : "Next"}
       </button>
     </form>
   );

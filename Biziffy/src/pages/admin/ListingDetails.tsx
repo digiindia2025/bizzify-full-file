@@ -1,4 +1,3 @@
-// frontend/src/components/Admin/ListingDetails.tsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { AdminLayout } from "@/components/Layout/AdminLayout";
@@ -37,11 +36,10 @@ interface FullListingDetails {
     gstNo?: string;
     cin?: string;
     entity?: string;
-    
   };
-  timings: Record<string, string | number | boolean>; // Replace with the actual structure if known
-  contact: Record<string, string | number | boolean>; // Replace with the actual structure if known
-  upgrade: Record<string, string | number | boolean>; // Replace with the actual structure if known
+  timings: Record<string, string | number | boolean>;
+  contact: Record<string, string | number | boolean>;
+  upgrade: Record<string, string | number | boolean>;
   user?: {
     name?: string;
     email?: string;
@@ -60,29 +58,27 @@ const ListingDetails = () => {
     const fetchListingDetails = async () => {
       setLoading(true);
       setError(null);
-      if (id) {
-        try {
-          const res = await axios.get(`http://localhost:5000/api/admin/business/listings/${id}`);
-          console.log("Fetched Listing Details:", res.data);
-          setListing(res.data);
-        } catch (err: unknown) {
-          console.error(`Failed to fetch listing details for ID: ${id}`, err);
-          if (axios.isAxiosError(err)) {
-            setError(err.response?.data?.message || err.message || "Failed to fetch listing details");
-          } else {
-            setError("An unexpected error occurred");
-          }
-          setListing(null);
-        } finally {
-          setLoading(false);
+      try {
+        const res = await axios.get(`http://localhost:5000/api/admin/getAllFullListings/${id}`);
+        setListing(res.data);
+      } catch (err: unknown) {
+        console.error("Error fetching listing:", err);
+        if (axios.isAxiosError(err)) {
+          setError(err.response?.data?.message || err.message);
+        } else {
+          setError("An unexpected error occurred.");
         }
-      } else {
-        setError("Listing ID not provided in the URL.");
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchListingDetails();
+    if (id) {
+      fetchListingDetails();
+    } else {
+      setError("Listing ID not found.");
+      setLoading(false);
+    }
   }, [id]);
 
   if (loading) {
@@ -90,75 +86,76 @@ const ListingDetails = () => {
   }
 
   if (error) {
-    return <AdminLayout title="Listing Details"><div className="text-red-500">Error loading listing details: {error}</div></AdminLayout>;
+    return <AdminLayout title="Listing Details"><div className="text-red-500">Error: {error}</div></AdminLayout>;
   }
 
-  if (!listing) {
+  if (!listing || !listing.businessDetails) {
     return <AdminLayout title="Listing Details"><div>Listing not found.</div></AdminLayout>;
   }
-console.log("listing value",listing);
+
+  const { businessDetails } = listing;
 
   return (
     <AdminLayout title="Listing Details">
       <div className="flex justify-between mb-4">
-        <h2 className="text-2xl font-semibold">All Bssiness Details</h2>
+        <h2 className="text-2xl font-semibold">Business Details</h2>
         <Link to="/admin/listings">
-          <Button className="bg-blue-500 hover:bg-blue-600">
-            All Listings
-          </Button>
+          <Button className="bg-blue-500 hover:bg-blue-600">All Listings</Button>
         </Link>
       </div>
 
       <Card className="mb-6">
         <CardContent className="p-6">
-          {/* Basic Information */}
+          {/* Basic Info */}
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><p className="font-medium">Business Name:</p><p>{listing?.businessName || "N/A"}</p></div>
-              <div><p className="font-medium">Category:</p><p>{listing?.category || "N/A"}</p></div>
-              <div><p className="font-medium">Phone:</p><p>{listing?.phone || "N/A"}</p></div>
+              <div><p className="font-medium">Business Name:</p><p>{businessDetails.businessName || "N/A"}</p></div>
+              <div><p className="font-medium">Category:</p><p>{businessDetails.category || "N/A"}</p></div>
+              <div><p className="font-medium">Phone:</p><p>{businessDetails.phone || "N/A"}</p></div>
               <div>
                 <p className="font-medium">Hide Phone Number:</p>
-                <input
-                  type="checkbox"
-                  checked={listing?.hidePhoneNumber || false}
-                  readOnly
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
+                <input type="checkbox" checked={businessDetails.hidePhoneNumber || false} readOnly className="h-4 w-4" />
               </div>
-              <div><p className="font-medium">Status:</p><p>{listing?.status || "N/A"}</p></div>
-              <div><p className="font-medium">Business Status:</p><p>{listing?.businessStatus || "N/A"}</p></div>
-              <div><p className="font-medium">Trust Status:</p><p>{listing?.trustStatus || "N/A"}</p></div>
-              <div><p className="font-medium">View Count:</p><p>{listing?.viewCount || 0}</p></div>
-              <div><p className="font-medium">Created At:</p><p>{listing?.createdAt ? new Date(listing?.createdAt).toLocaleDateString() : "N/A"}</p></div>
-              <div><p className="font-medium">Updated At:</p><p>{listing?.updatedAt ? new Date(listing?.updatedAt).toLocaleDateString() : "N/A"}</p></div>
-              {listing?.publishedDate && <div><p className="font-medium">Published Date:</p><p>{new Date(listing?.publishedDate).toLocaleDateString()}</p></div>}
+              <div><p className="font-medium">Status:</p><p>{businessDetails.status || "N/A"}</p></div>
+              <div><p className="font-medium">Business Status:</p><p>{businessDetails.businessStatus || "N/A"}</p></div>
+              <div><p className="font-medium">Trust Status:</p><p>{businessDetails.trustStatus || "N/A"}</p></div>
+              <div><p className="font-medium">View Count:</p><p>{businessDetails.viewCount || 0}</p></div>
+              <div><p className="font-medium">Created At:</p><p>{businessDetails.createdAt ? new Date(businessDetails.createdAt).toLocaleDateString() : "N/A"}</p></div>
+              <div><p className="font-medium">Updated At:</p><p>{businessDetails.updatedAt ? new Date(businessDetails.updatedAt).toLocaleDateString() : "N/A"}</p></div>
+              {businessDetails.publishedDate && <div><p className="font-medium">Published Date:</p><p>{new Date(businessDetails.publishedDate).toLocaleDateString()}</p></div>}
             </div>
           </div>
 
-          {/* Address Information */}
+          {/* Address Info */}
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Address Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><p className="font-medium">Pin Code:</p><p>{listing?.pinCode || "N/A"}</p></div>
-              <div><p className="font-medium">Building:</p><p>{listing?.building || "N/A"}</p></div>
-              <div><p className="font-medium">Street:</p><p>{listing?.street || "N/A"}</p></div>
-              <div><p className="font-medium">Area:</p><p>{listing?.area || "N/A"}</p></div>
-              <div><p className="font-medium">Landmark:</p><p>{listing?.landmark || "N/A"}</p></div>
-              <div><p className="font-medium">City:</p><p>{listing?.city || "N/A"}</p></div>
-              <div><p className="font-medium">State:</p><p>{listing?.state || "N/A"}</p></div>
-              <div><p className="font-medium">Country:</p><p>India</p></div> {/* Assuming country is always India */}
-              {listing?.direction && <div><p className="font-medium">Direction:</p><p>{listing?.direction}</p></div>}
-              {listing?.website && <div><p className="font-medium">Website:</p><Link to={listing?.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{listing?.website}</Link></div>}
+              <div><p className="font-medium">Pin Code:</p><p>{businessDetails.pinCode || "N/A"}</p></div>
+              <div><p className="font-medium">Building:</p><p>{businessDetails.building || "N/A"}</p></div>
+              <div><p className="font-medium">Street:</p><p>{businessDetails.street || "N/A"}</p></div>
+              <div><p className="font-medium">Area:</p><p>{businessDetails.area || "N/A"}</p></div>
+              <div><p className="font-medium">Landmark:</p><p>{businessDetails.landmark || "N/A"}</p></div>
+              <div><p className="font-medium">City:</p><p>{businessDetails.city || "N/A"}</p></div>
+              <div><p className="font-medium">State:</p><p>{businessDetails.state || "N/A"}</p></div>
+              <div><p className="font-medium">Country:</p><p>India</p></div>
+              {businessDetails.direction && <div><p className="font-medium">Direction:</p><p>{businessDetails.direction}</p></div>}
+              {businessDetails.website && (
+                <div>
+                  <p className="font-medium">Website:</p>
+                  <Link to={businessDetails.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                    {businessDetails.website}
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Description */}
-          {listing.businessDetails?.description && (
+          {businessDetails.description && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Description</h3>
-              <p className="text-gray-700">{listing?.description}</p>
+              <p className="text-gray-700">{businessDetails.description}</p>
             </div>
           )}
 
@@ -166,13 +163,13 @@ console.log("listing value",listing);
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Additional Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div><p className="font-medium">GST No:</p><p>{listing?.gstNo || "N/A"}</p></div>
-              <div><p className="font-medium">CIN:</p><p>{listing?.cin || "N/A"}</p></div>
-              <div><p className="font-medium">Entity:</p><p>{listing?.entity || "N/A"}</p></div>
+              <div><p className="font-medium">GST No:</p><p>{businessDetails.gstNo || "N/A"}</p></div>
+              <div><p className="font-medium">CIN:</p><p>{businessDetails.cin || "N/A"}</p></div>
+              <div><p className="font-medium">Entity:</p><p>{businessDetails.entity || "N/A"}</p></div>
             </div>
           </div>
 
-          {/* User Information */}
+          {/* User */}
           {listing.user && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">User Information</h3>
@@ -191,14 +188,14 @@ console.log("listing value",listing);
           )}
 
           {/* Services */}
-          {listing?.services && (
+          {businessDetails.services && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Services</h3>
-              <p className="text-gray-700">{listing?.services}</p>
+              <p className="text-gray-700">{businessDetails.services}</p>
             </div>
           )}
 
-          {/* Timings, Contact, Upgrade */}
+          {/* Timings */}
           {listing.timings && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Timings</h3>
@@ -206,6 +203,7 @@ console.log("listing value",listing);
             </div>
           )}
 
+          {/* Contact */}
           {listing.contact && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Contact Information</h3>
@@ -213,6 +211,7 @@ console.log("listing value",listing);
             </div>
           )}
 
+          {/* Upgrade */}
           {listing.upgrade && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Upgrade Information</h3>

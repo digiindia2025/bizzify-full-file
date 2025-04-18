@@ -8,7 +8,7 @@ const ContactPerson = ({ setKey }) => {
     firstName: "",
     lastName: "",
     contactNumber: "",
-    alternateNumbers: [],
+    alternateNumbers: [],  // If you want to handle this as an array, make sure it's captured properly in the form.
     whatsappNumber: "",
     email: "",
   });
@@ -16,17 +16,19 @@ const ContactPerson = ({ setKey }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Handle input changes for all fields
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError(""); // Reset error on form submission
 
     try {
-      const response = await fetch("http://localhost:5000/api/admin/contact", {
+      const response = await fetch("http://localhost:5000/api/admin/createContact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,17 +36,18 @@ const ContactPerson = ({ setKey }) => {
         body: JSON.stringify(formData),
       });
 
+      // Check for a successful response
       if (!response.ok) {
         const err = await response.json();
         throw new Error(err.message || "Something went wrong!");
       }
 
-      // If success, go to the next step
-      setKey("business");
+      // On successful submission, navigate to the next form
+      setKey("business");  // Replace "business" with the key of the next step
     } catch (err) {
-      setError(err.message);
+      setError(err.message); // Display error if any occurs
     } finally {
-      setLoading(false);
+      setLoading(false);  // Reset loading state
     }
   };
 
@@ -54,6 +57,7 @@ const ContactPerson = ({ setKey }) => {
         Fill Your Contact Details<sup>*</sup>
       </h5>
 
+      {/* Display error message if any */}
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="mb-3">
@@ -66,8 +70,8 @@ const ContactPerson = ({ setKey }) => {
           value={formData.title}
           onChange={handleChange}
         >
-          <option>Mr</option>
-          <option>Ms</option>
+          <option value="Mr">Mr</option>
+          <option value="Ms">Ms</option>
         </select>
       </div>
 
@@ -141,6 +145,7 @@ const ContactPerson = ({ setKey }) => {
         />
       </div>
 
+      {/* Submit button */}
       <button
         type="submit"
         className="btn btn-primary w-100 py-3"

@@ -18,11 +18,10 @@ const UpgradeListing = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Submitted:", formData);
-  
+
     try {
       const response = await fetch("http://localhost:5000/api/business/upgrade", {
         method: "POST",
@@ -31,22 +30,21 @@ const UpgradeListing = () => {
         },
         body: JSON.stringify(formData), // Send the form data as JSON
       });
-  
+
       if (response.ok) {
         const result = await response.json();
         console.log("Success:", result);
-        // You can handle success here (e.g., show a success message or redirect)
+        // Handle success (e.g., show success message or redirect)
       } else {
         const error = await response.json();
         console.log("Error:", error.message);
-        // Handle error here
+        // Handle error
       }
     } catch (error) {
       console.error("Error:", error);
-      // Handle network error or any other issue
+      // Handle network error or other issues
     }
   };
-  
 
   return (
     <form onSubmit={handleSubmit} className="business-timing-container">
