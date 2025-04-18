@@ -8,7 +8,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { CSVLink } from "react-csv";
 import { toast } from "@/components/ui/use-toast";
 
-
 import {
   Table,
   TableBody,
@@ -51,6 +50,8 @@ interface FullListing {
   contact: {
     phone: string;
     email: string;
+    firstName?: string; // Add firstName
+    lastName?: string;  // Add lastName
   };
   upgrade: {
     plan: string;
@@ -66,16 +67,17 @@ export const AllListings = () => {
   const [selectedAction, setSelectedAction] = useState("Bulk Action");
   const [selectedListingIds, setSelectedListingIds] = useState<string[]>([]);
 
-// this for pagination
-
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const listingsPerPage = 10;
+  const [totalPages, setTotalPages] = useState(1);
 
+  // Editing status state
   const [editingPublishStatusId, setEditingPublishStatusId] = useState<string | null>(null);
   const [editingStatusId, setEditingStatusId] = useState<string | null>(null);
   const [publishStatusOptions] = useState(["Pending", "Published", "Unpublished"]);
   const [statusOptions] = useState(["Pending", "Approved", "Rejected"]);
-  const [totalPages, setTotalPages] = useState(1);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -87,7 +89,7 @@ export const AllListings = () => {
     setError(null);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/admin/getAllFullListings`, 
+        `http://localhost:5000/api/admin/getAllFullListings`
       );
       setFullListings(res.data || []);
       setTotalPages(Math.ceil((res.data?.length || 0) / listingsPerPage) || 1);
@@ -120,7 +122,10 @@ export const AllListings = () => {
     );
   });
 
-  const currentListings = filteredListings;
+  const currentListings = filteredListings.slice(
+    (currentPage - 1) * listingsPerPage,
+    currentPage * listingsPerPage
+  );
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
@@ -134,11 +139,20 @@ export const AllListings = () => {
         ids: selectedListingIds,
         action: selectedAction,
       });
+      toast({
+        title: "Bulk Action Successful",
+        description: `Successfully performed '${selectedAction}' on ${selectedListingIds.length} listings.`,
+      });
       fetchFullListings();
       setSelectedListingIds([]);
       setSelectedAction("Bulk Action");
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to ${selectedAction} listings`, error);
+      toast({
+        variant: "destructive",
+        title: "Bulk Action Failed",
+        description: error.response?.data?.message || `Failed to perform '${selectedAction}' on selected listings.`,
+      });
     }
   };
 
@@ -159,7 +173,8 @@ export const AllListings = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const normalized = status?.toLowerCase() === "unpublish" ? "pending" : status?.toLowerCase();    const displayStatus = normalized === "unpublish" ? "pending" : normalized;
+    const normalized = status?.toLowerCase() === "unpublish" ? "pending" : status?.toLowerCase();
+    const displayStatus = normalized === "unpublish" ? "pending" : normalized;
     switch (displayStatus) {
       case "approved":
         return <span className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded-full">Approved</span>;
@@ -195,18 +210,25 @@ export const AllListings = () => {
   const handleUpdatePublishStatus = async (id: string, newStatus: string) => {
     try {
       await axios.patch(`http://localhost:5000/api/admin/listings/publish-status/${id}`, { status: newStatus });
-  
       setFullListings(fullListings.map((listing) =>
         listing.businessId === id && listing.businessDetails
           ? { ...listing, businessDetails: { ...listing.businessDetails, publishedDate: newStatus } }
           : listing
       ));
       setEditingPublishStatusId(null);
-    } catch (error) {
+      toast({
+        title: "Publish Status Updated",
+        description: `Listing ${id} publish status updated to ${newStatus}.`,
+      });
+    } catch (error: any) {
       console.error("Failed to update publish status", error);
+      toast({
+        variant: "destructive",
+        title: "Error Updating Publish Status",
+        description: error.response?.data?.message || "Failed to update publish status.",
+      });
     }
   };
-  
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
@@ -226,31 +248,60 @@ export const AllListings = () => {
         return listing;
       }));
       setEditingStatusId(null);
-    } catch (error) {
+      toast({
+        title: "Status Updated",
+        description: `Listing ${id} status updated to ${newStatus}.`,
+      });
+    } catch (error: any) {
       console.error("Failed to update status", error);
+      toast({
+        variant: "destructive",
+        title: "Error Updating Status",
+        description: error.response?.data?.message || "Failed to update status.",
+      });
     }
   };
 
-  const handleDeleteListing = async (id: string) => {
+  const handleDeleteClick = async (id: string) => {
     if (!id) {
       console.error("No ID provided for deletion");
+      toast({
+        variant: "destructive",
+        title: "Invalid ID",
+        description: "Listing ID is missing. Please try again.",
+      });
       return;
     }
-  
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete listing with ID: ${id}?`
+    );
+
+    if (!confirmed) return;
+
     try {
       const response = await axios.delete(`http://localhost:5000/api/listing/${id}`);
-      console.log("Delete Response: ", response.data);
-      fetchFullListings(); 
-    } catch (error) {
-      console.error("Delete failed: ", error.response ? error.response.data : error.message);
+      console.log("Delete Response:", response.data);
+
+      toast({
+        title: "Listing Deleted",
+        description: "The listing has been successfully deleted.",
+      });
+
+      fetchFullListings(); // Refresh listing after deletion
+    } catch (error: any) {
+      console.error("Delete failed:", error.response?.data || error.message);
+      toast({
+        variant: "destructive",
+        title: "Error deleting listing",
+        description:
+          error.response?.data?.message || "Something went wrong while deleting.",
+      });
     }
   };
-  
-  
-  
-  
+
   const csvData = filteredListings.map(listing => ({
-    ID: listing.businessId,
+    ID: listing.businessDetails?._id, // Use MongoDB _id for CSV ID
     Title: listing.businessDetails?.businessName,
     Category: listing.businessDetails?.category,
     User: listing.businessDetails?.userId,
@@ -272,6 +323,7 @@ export const AllListings = () => {
     return <AdminLayout title=""><div className="text-red-500">Error loading listings: {error}</div></AdminLayout>;
   }
 
+  
   return (
     <AdminLayout title="">
       <div className="mb-6">
@@ -341,117 +393,130 @@ export const AllListings = () => {
       </TableRow>
     </TableHeader>
     <TableBody>
-      {currentListings.map((listing) => (
-        <TableRow key={listing.businessId}>
-          <TableCell>
-            <input
-              type="checkbox"
-              className="h-4 w-4"
-              checked={selectedListingIds.includes(listing.businessId)}
-              onChange={() => handleCheckboxChange(listing.businessId)}
-            />
-          </TableCell>
-          <TableCell>{listing.businessId}</TableCell>
-          <TableCell>{listing.businessDetails?.businessName}</TableCell>
-          <TableCell>{listing.businessDetails?.category}</TableCell>
-          <TableCell>{listing.businessDetails?.userId}</TableCell>
-          <TableCell>{listing.businessDetails?.createdAt}</TableCell>
-          <TableCell>
-            {editingPublishStatusId === listing.businessId ? (
-              <select
-                className="px-2 py-1 border rounded-md"
-                value={listing.businessDetails?.publishedDate || "Pending"}
-                onChange={(e) =>
-                  handleUpdatePublishStatus(listing.businessId, e.target.value)
-                }
-                onBlur={() => setEditingPublishStatusId(null)}
-                autoFocus
+  {currentListings.map((listing) => (
+    
+    <TableRow key={listing.businessId}> {/* Keep businessId as the key for React */}
+    {/* <TableCell>{listing.businessDetails?._id}</TableCell>
+      <TableCell>{listing.businessDetails?.businessName}</TableCell>
+      <TableCell>{listing.businessDetails?.category}</TableCell> */}
+      <TableCell>
+      {listing.contact?.firstName && listing.contact?.lastName
+          ? `${listing.contact.firstName} ${listing.contact.lastName}`
+          : listing.businessDetails?.userId // Fallback
+        }
+        <input
+          type="checkbox"
+          className="h-4 w-4"
+          checked={selectedListingIds.includes(listing.businessId)}
+          onChange={() => handleCheckboxChange(listing.businessId)}
+        />
+      </TableCell>
+      <TableCell>{listing.businessDetails?._id}</TableCell> {/* Access the MongoDB _id */}
+      <TableCell>{listing.businessDetails?.businessName}</TableCell>
+      <TableCell>{listing.businessDetails?.category}</TableCell>
+      <TableCell>{listing.businessDetails?.userId}</TableCell>
+      <TableCell>{listing.businessDetails?.createdAt}</TableCell>
+      <TableCell>
+        {editingPublishStatusId === listing.businessId ? (
+          <select
+            className="px-2 py-1 border rounded-md"
+            value={listing.businessDetails?.publishedDate || "Pending"}
+            onChange={(e) =>
+              handleUpdatePublishStatus(listing.businessId, e.target.value)
+            }
+            onBlur={() => setEditingPublishStatusId(null)}
+            autoFocus
+          >
+            {publishStatusOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div className="flex items-center gap-2">
+            {listing.businessDetails?.publishedDate || "Pending"}
+            <button
+              onClick={() => setEditingPublishStatusId(listing.businessId)}
+              className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
+            >
+              <Pencil className="w-3 h-3 text-orange-600" />
+            </button>
+          </div>
+        )}
+      </TableCell>
+      <TableCell>
+        {editingStatusId === listing.businessId ? (
+          <select
+            className="px-2 py-1 border rounded-md"
+            value={listing.businessDetails?.status}
+            onChange={(e) =>
+              handleUpdateStatus(listing.businessId, e.target.value)
+            }
+            onBlur={() => setEditingStatusId(null)}
+            autoFocus
+          >
+            {statusOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div className="flex items-center gap-2">
+            {getStatusBadge(listing.businessDetails?.status || "Pending")}
+            <button
+              onClick={() => setEditingStatusId(listing.businessId)}
+              className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
+            >
+              <Pencil className="w-3 h-3 text-orange-600" />
+            </button>
+          </div>
+        )}
+      </TableCell>
+      <TableCell>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Link to={`/admin/listings/details/${listing.businessId}`}>
+              <Button
+                size="sm"
+                variant="default"
+                className="bg-blue-500 hover:bg-blue-600 text-white"
               >
-                {publishStatusOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <div className="flex items-center gap-2">
-                {listing.businessDetails?.publishedDate || "Pending"}
-                <button
-                  onClick={() => setEditingPublishStatusId(listing.businessId)}
-                  className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
-                >
-                  <Pencil className="w-3 h-3 text-orange-600" />
-                </button>
-              </div>
-            )}
-          </TableCell>
-          <TableCell>
-            {editingStatusId === listing.businessId ? (
-              <select
-                className="px-2 py-1 border rounded-md"
-                value={listing.businessDetails?.status}
-                onChange={(e) =>
-                  handleUpdateStatus(listing.businessId, e.target.value)
-                }
-                onBlur={() => setEditingStatusId(null)}
-                autoFocus
-              >
-                {statusOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <div className="flex items-center gap-2">
-                {getStatusBadge(listing.businessDetails?.status || "Pending")}
-                <button
-                  onClick={() => setEditingStatusId(listing.businessId)}
-                  className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
-                >
-                  <Pencil className="w-3 h-3 text-orange-600" />
-                </button>
-              </div>
-            )}
-          </TableCell>
-          <TableCell>
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2">
-                <Link to={`/admin/listings/details/${listing.businessId}`}>
-                  <Button
-                    size="sm"
-                    variant="default"
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    View
-                  </Button>
-                </Link>
-                
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => handleDeleteclick(listing.businessId)}
-                >
-                  <Trash className="h-4 w-4 mr-1" />
-                  Delete
-                </Button>
-              </div>
+                <Eye className="h-4 w-4 mr-1" />
+                View
+              </Button>
+            </Link>
 
-              
-              <div className="flex flex-col gap-1">
-                {getBusinessTrustStatus(
-                  listing.businessDetails?.businessStatus || "Not Approved"
-                )}
-                {getTrustStatus(
-                  listing.businessDetails?.trustStatus || "Not Approved"
-                )}
-              </div>
-            </div>
-          </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
+            <Button
+  size="sm"
+  variant="destructive"
+  onClick={() => handleDeleteClick(listing._id)} 
+  
+>
+  
+  <Trash className="h-4 w-4 mr-1" />
+  Delete
+  
+</Button>
+
+
+          </div>
+
+
+          <div className="flex flex-col gap-1">
+            {getBusinessTrustStatus(
+              listing.businessDetails?.businessStatus || "Not Approved"
+            )}
+            {getTrustStatus(
+              listing.businessDetails?.trustStatus || "Not Approved"
+            )}
+          </div>
+        </div>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
   </Table>
         
         {/* Pagination Controls */}

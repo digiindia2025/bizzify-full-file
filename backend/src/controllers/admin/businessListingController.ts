@@ -63,7 +63,6 @@ export const createBusinessCategory = async (req: Request, res: Response) => {
   };
 
 // Step 4: Create Business Timing
-// Controller: Create Business Timings
 export const createBusinessTiming = async (req, res) => {
   try {
     const { timings } = req.body;
@@ -94,35 +93,40 @@ export const createBusinessTiming = async (req, res) => {
 
 // Step 5: Create Upgrade Listing
 export const createUpgradeListing = async (req: Request, res: Response) => {
+  const { direction, website, facebook, instagram, linkedin, twitter } = req.body;
+
+  // Validate the required fields
+  if (!direction || !website) {
+    return res.status(400).json({ message: "Direction and Website are required" });
+  }
+
   try {
-    const upgrade = new UpgradeListing(req.body);
+    // Create a new UpgradeListing instance
+    const upgrade = new UpgradeListing({
+      direction,
+      website,
+      facebook,
+      instagram,
+      linkedin,
+      twitter,
+    });
+
+    // Save the upgrade listing to the database
     await upgrade.save();
-    res.status(201).json({ message: "Upgrade listing saved", data: upgrade });
+
+    // Send a success response with the saved data
+    res.status(201).json({
+      message: "Upgrade listing saved successfully",
+      data: upgrade,
+    });
   } catch (err) {
-    console.error("UpgradeListing Save Error:", err);
-    res.status(500).json({ message: "Failed to save upgrade listing", error: err });
+    console.error("Error saving upgrade listing:", err);
+    res.status(500).json({
+      message: "Failed to save upgrade listing",
+      error: "Internal Server Error",
+    });
   }
 };
-
-// import { Request, Response } from "express";
-
-// export const upgradeListing = async (req: Request, res: Response) => {
-//     const { listingId, upgradeType, duration } = req.body;
-  
-//     if (!listingId || !upgradeType || !duration) {
-//       return res.status(400).json({ error: "All fields are required" });
-//     }
-  
-    // try {
-      // Your logic to update listing's upgrade info in DB
-      // Example: await ListingModel.findByIdAndUpdate(...)
-  
-//       return res.status(200).json({ message: "Listing upgraded successfully" });
-//     } catch (error) {
-//       console.error("Error upgrading listing:", error);
-//       return res.status(500).json({ error: "Server error" });
-//     }
-//   };
 
 // Step 6: Create Full Business Listing (Optional Combined Entry)
 export const createBusinessListing = async (req: Request, res: Response) => {
@@ -162,23 +166,35 @@ export const getAllFullListings = async (req: Request, res: Response) => {
 
   // Step 8: Delete Business Listing by ID
   export const deleteBusinessListing = async (req: Request, res: Response) => {
-    const { id } = req.params; // Get the ID from URL parameters
-    console.log(`Deleting business listing with ID: ${id}`); // Log the ID being received
-  
-    try {
-      // Find the listing by ID and delete it
-      const deletedListing = await BusinessListing.findByIdAndDelete(id);
-  
-      if (!deletedListing) {
-        return res.status(404).json({ message: "Business listing not found" });
-      }
-  
-      res.status(200).json({ message: "Business listing deleted successfully", data: deletedListing });
-    } catch (err) {
-      console.error("Error deleting business listing:", err);
-      res.status(500).json({ message: "Failed to delete business listing", error: err });
+  const { id } = req.params; // Get the ID from URL parameters
+  console.log(`Attempting to delete business listing with ID: ${id}`); // Log the ID being received
+
+  // Check if ID is provided
+  if (!id) {
+    return res.status(400).json({ message: "Listing ID is required" });
+  }
+
+  try {
+    // Find the listing by ID and delete it
+    const deletedListing = await BusinessListing.findByIdAndDelete(id);
+
+    if (!deletedListing) {
+      return res.status(404).json({ message: "Business listing not found" });
     }
-  };
+
+    // Successfully deleted the listing
+    return res.status(200).json({
+      message: "Business listing deleted successfully",
+      data: deletedListing,
+    });
+  } catch (err) {
+    console.error("Error deleting business listing:", err);
+    return res.status(500).json({
+      message: "Failed to delete business listing",
+      error: err.message || err,
+    });
+  }
+};
   
   // Step 9: Update Business Listing by ID
   export const updateBusinessStatus = async (req: Request, res: Response) => {

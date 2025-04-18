@@ -7,9 +7,10 @@ import {
   createUpgradeListing,
   createBusinessListing, // optional: if you want to save all together
   getAllFullListings,
-  deleteBusinessListing,      // Import Delete method
-  updateBusinessStatus,     // Import Update method
-  updatePublishStatus // ✅ Import the new controller
+  deleteBusinessListing      // Import Delete method
+  // updateBusinessStatus,
+  // updatePublishStatus,
+  // getBusinessListingDetails,
 } from "../../controllers/admin/businessListingController";
 
 const router = express.Router();
@@ -19,22 +20,25 @@ router.post("/createContact", createContact);
 router.post("/createBusinessDetails", createBusinessDetails);
 router.post('/createBusinessCategory', createBusinessCategory);
 router.post("/createBusinessTiming", createBusinessTiming); // Business timing
-router.post("/createUpgradeListing", createUpgradeListing);
+router.post("/business/upgrade", createUpgradeListing);
 // router.post("/upgradeListing", upgradeListing);
 
 // Optional: Full form submission in one go
 router.post("/create", createBusinessListing);
 
-router.get("/getAllFullListings", getAllFullListings); // ✅ New route
+// ✅ Get all listings (merged view)
+router.get("/getAllFullListings", getAllFullListings);
 
-// Add the DELETE route
-router.delete("/delete-business-listing/:id", deleteBusinessListing); // Ensure this matches your frontend request
+// ✅ View individual listing details by ID
+// router.get("/listing/:id", getBusinessListingDetails);
+
+/// ✅ Delete a business listing by ID
+router.delete("/listing/:id", deleteBusinessListing);
+
+// ✅ Update business approval status
+// router.patch("/update-business-status/:id", updateBusinessStatus);
 
 
-// Add the PATCH route
-// routes/admin.js
-router.patch('/update-business-listing/:id', updateBusinessStatus);
-router.patch('/update-publish-status/:id', updatePublishStatus);
 
 
 

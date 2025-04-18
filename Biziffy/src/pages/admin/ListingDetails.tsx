@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useParams, Link } from "react-router-dom";
 
+// Interface for full listing response from backend
 interface FullListingDetails {
   businessId: string;
   businessDetails?: {
@@ -54,13 +55,16 @@ const ListingDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch listing details from backend on mount
   useEffect(() => {
     const fetchListingDetails = async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get(`http://localhost:5000/api/admin/getAllFullListings/${id}`);
-        setListing(res.data);
+        const response = await axios.get(
+          `http://localhost:5000/api/admin/getAllFullListings`
+        );
+        setListing(response.data);
       } catch (err: unknown) {
         console.error("Error fetching listing:", err);
         if (axios.isAxiosError(err)) {
@@ -81,16 +85,31 @@ const ListingDetails = () => {
     }
   }, [id]);
 
+  // Show loading UI
   if (loading) {
-    return <AdminLayout title="Listing Details"><div>Loading listing details...</div></AdminLayout>;
+    return (
+      <AdminLayout title="Listing Details">
+        <div>Loading listing details...</div>
+      </AdminLayout>
+    );
   }
 
+  // Show error if something went wrong
   if (error) {
-    return <AdminLayout title="Listing Details"><div className="text-red-500">Error: {error}</div></AdminLayout>;
+    return (
+      <AdminLayout title="Listing Details">
+        <div className="text-red-500">Error: {error}</div>
+      </AdminLayout>
+    );
   }
 
+  // If no data found
   if (!listing || !listing.businessDetails) {
-    return <AdminLayout title="Listing Details"><div>Listing not found.</div></AdminLayout>;
+    return (
+      <AdminLayout title="Listing Details">
+        <div>Listing not found.</div>
+      </AdminLayout>
+    );
   }
 
   const { businessDetails } = listing;
@@ -106,116 +125,126 @@ const ListingDetails = () => {
 
       <Card className="mb-6">
         <CardContent className="p-6">
-          {/* Basic Info */}
+          {/* === BASIC INFO === */}
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><p className="font-medium">Business Name:</p><p>{businessDetails.businessName || "N/A"}</p></div>
-              <div><p className="font-medium">Category:</p><p>{businessDetails.category || "N/A"}</p></div>
-              <div><p className="font-medium">Phone:</p><p>{businessDetails.phone || "N/A"}</p></div>
+              <div><strong>Business Name:</strong> {businessDetails.businessName || "N/A"}</div>
+              <div><strong>Category:</strong> {businessDetails.category || "N/A"}</div>
+              <div><strong>Phone:</strong> {businessDetails.phone || "N/A"}</div>
               <div>
-                <p className="font-medium">Hide Phone Number:</p>
-                <input type="checkbox" checked={businessDetails.hidePhoneNumber || false} readOnly className="h-4 w-4" />
+                <strong>Hide Phone Number:</strong>
+                <input
+                  type="checkbox"
+                  checked={businessDetails.hidePhoneNumber || false}
+                  readOnly
+                  className="ml-2 h-4 w-4"
+                />
               </div>
-              <div><p className="font-medium">Status:</p><p>{businessDetails.status || "N/A"}</p></div>
-              <div><p className="font-medium">Business Status:</p><p>{businessDetails.businessStatus || "N/A"}</p></div>
-              <div><p className="font-medium">Trust Status:</p><p>{businessDetails.trustStatus || "N/A"}</p></div>
-              <div><p className="font-medium">View Count:</p><p>{businessDetails.viewCount || 0}</p></div>
-              <div><p className="font-medium">Created At:</p><p>{businessDetails.createdAt ? new Date(businessDetails.createdAt).toLocaleDateString() : "N/A"}</p></div>
-              <div><p className="font-medium">Updated At:</p><p>{businessDetails.updatedAt ? new Date(businessDetails.updatedAt).toLocaleDateString() : "N/A"}</p></div>
-              {businessDetails.publishedDate && <div><p className="font-medium">Published Date:</p><p>{new Date(businessDetails.publishedDate).toLocaleDateString()}</p></div>}
+              <div><strong>Status:</strong> {businessDetails.status || "N/A"}</div>
+              <div><strong>Business Status:</strong> {businessDetails.businessStatus || "N/A"}</div>
+              <div><strong>Trust Status:</strong> {businessDetails.trustStatus || "N/A"}</div>
+              <div><strong>View Count:</strong> {businessDetails.viewCount || 0}</div>
+              <div><strong>Created At:</strong> {businessDetails.createdAt ? new Date(businessDetails.createdAt).toLocaleDateString() : "N/A"}</div>
+              <div><strong>Updated At:</strong> {businessDetails.updatedAt ? new Date(businessDetails.updatedAt).toLocaleDateString() : "N/A"}</div>
+              <div><strong>Published Date:</strong> {businessDetails.publishedDate ? new Date(businessDetails.publishedDate).toLocaleDateString() : "N/A"}</div>
             </div>
           </div>
 
-          {/* Address Info */}
+          {/* === ADDRESS INFO === */}
           <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-3">Address Information</h3>
+            <h3 className="text-xl font-semibold mb-3">Address</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><p className="font-medium">Pin Code:</p><p>{businessDetails.pinCode || "N/A"}</p></div>
-              <div><p className="font-medium">Building:</p><p>{businessDetails.building || "N/A"}</p></div>
-              <div><p className="font-medium">Street:</p><p>{businessDetails.street || "N/A"}</p></div>
-              <div><p className="font-medium">Area:</p><p>{businessDetails.area || "N/A"}</p></div>
-              <div><p className="font-medium">Landmark:</p><p>{businessDetails.landmark || "N/A"}</p></div>
-              <div><p className="font-medium">City:</p><p>{businessDetails.city || "N/A"}</p></div>
-              <div><p className="font-medium">State:</p><p>{businessDetails.state || "N/A"}</p></div>
-              <div><p className="font-medium">Country:</p><p>India</p></div>
-              {businessDetails.direction && <div><p className="font-medium">Direction:</p><p>{businessDetails.direction}</p></div>}
+              <div><strong>Pin Code:</strong> {businessDetails.pinCode || "N/A"}</div>
+              <div><strong>Building:</strong> {businessDetails.building || "N/A"}</div>
+              <div><strong>Street:</strong> {businessDetails.street || "N/A"}</div>
+              <div><strong>Area:</strong> {businessDetails.area || "N/A"}</div>
+              <div><strong>Landmark:</strong> {businessDetails.landmark || "N/A"}</div>
+              <div><strong>City:</strong> {businessDetails.city || "N/A"}</div>
+              <div><strong>State:</strong> {businessDetails.state || "N/A"}</div>
+              <div><strong>Country:</strong> India</div>
+              <div><strong>Direction:</strong> {businessDetails.direction || "N/A"}</div>
               {businessDetails.website && (
                 <div>
-                  <p className="font-medium">Website:</p>
-                  <Link to={businessDetails.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                  <strong>Website:</strong>{" "}
+                  <a
+                    href={businessDetails.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
                     {businessDetails.website}
-                  </Link>
+                  </a>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Description */}
+          {/* === DESCRIPTION === */}
           {businessDetails.description && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Description</h3>
-              <p className="text-gray-700">{businessDetails.description}</p>
+              <p>{businessDetails.description}</p>
             </div>
           )}
 
-          {/* Additional Details */}
+          {/* === ADDITIONAL DETAILS === */}
           <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-3">Additional Details</h3>
+            <h3 className="text-xl font-semibold mb-3">Additional</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div><p className="font-medium">GST No:</p><p>{businessDetails.gstNo || "N/A"}</p></div>
-              <div><p className="font-medium">CIN:</p><p>{businessDetails.cin || "N/A"}</p></div>
-              <div><p className="font-medium">Entity:</p><p>{businessDetails.entity || "N/A"}</p></div>
+              <div><strong>GST No:</strong> {businessDetails.gstNo || "N/A"}</div>
+              <div><strong>CIN:</strong> {businessDetails.cin || "N/A"}</div>
+              <div><strong>Entity:</strong> {businessDetails.entity || "N/A"}</div>
             </div>
           </div>
 
-          {/* User */}
+          {/* === USER INFO === */}
           {listing.user && (
             <div className="mb-6">
-              <h3 className="text-xl font-semibold mb-3">User Information</h3>
+              <h3 className="text-xl font-semibold mb-3">User Info</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div><p className="font-medium">Name:</p><p>{listing.user.name || "N/A"}</p></div>
-                <div><p className="font-medium">Email:</p><p>{listing.user.email || "N/A"}</p></div>
-                <div><p className="font-medium">Phone:</p><p>{listing.user.phone || "N/A"}</p></div>
+                <div><strong>Name:</strong> {listing.user.name || "N/A"}</div>
+                <div><strong>Email:</strong> {listing.user.email || "N/A"}</div>
+                <div><strong>Phone:</strong> {listing.user.phone || "N/A"}</div>
                 {listing.user.profileImage && (
                   <div>
-                    <p className="font-medium">Profile Image:</p>
-                    <img src={listing.user.profileImage} alt="User Profile" className="w-24 h-24 rounded-full object-cover" />
+                    <strong>Profile:</strong>
+                    <img
+                      src={listing.user.profileImage}
+                      alt="User Profile"
+                      className="w-24 h-24 mt-2 rounded-full object-cover"
+                    />
                   </div>
                 )}
               </div>
             </div>
           )}
 
-          {/* Services */}
+          {/* === SERVICES === */}
           {businessDetails.services && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Services</h3>
-              <p className="text-gray-700">{businessDetails.services}</p>
+              <p>{businessDetails.services}</p>
             </div>
           )}
 
-          {/* Timings */}
+          {/* === TIMINGS === */}
           {listing.timings && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Timings</h3>
-              <pre className="bg-gray-100 p-4 rounded-md overflow-auto">{JSON.stringify(listing.timings, null, 2)}</pre>
+              <pre className="bg-gray-100 p-4 rounded-md overflow-auto">
+                {JSON.stringify(listing.timings, null, 2)}
+              </pre>
             </div>
           )}
 
-          {/* Contact */}
-          {listing.contact && (
-            <div className="mb-6">
-              <h3 className="text-xl font-semibold mb-3">Contact Information</h3>
-              <pre className="bg-gray-100 p-4 rounded-md overflow-auto">{JSON.stringify(listing.contact, null, 2)}</pre>
-            </div>
-          )}
-
-          {/* Upgrade */}
+          {/* === UPGRADE === */}
           {listing.upgrade && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Upgrade Information</h3>
-              <pre className="bg-gray-100 p-4 rounded-md overflow-auto">{JSON.stringify(listing.upgrade, null, 2)}</pre>
+              <pre className="bg-gray-100 p-4 rounded-md overflow-auto">
+                {JSON.stringify(listing.upgrade, null, 2)}
+              </pre>
             </div>
           )}
         </CardContent>
