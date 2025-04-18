@@ -10,8 +10,8 @@ interface IUpgradeListing extends Document {
 }
 
 const upgradeListingSchema: Schema = new Schema({
-  direction: { type: String },
-  website: { type: String },
+  direction: { type: String, required: true },
+  website: { type: String, required: true, unique: true },
   facebook: { type: String },
   instagram: { type: String },
   linkedin: { type: String },

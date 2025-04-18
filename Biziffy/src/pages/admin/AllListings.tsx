@@ -63,10 +63,14 @@ export const AllListings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  // const [selectedAction, setSelectedAction] = useState("Bulk Action");
+  const [selectedAction, setSelectedAction] = useState("Bulk Action");
   const [selectedListingIds, setSelectedListingIds] = useState<string[]>([]);
+
+// this for pagination
+
   const [currentPage, setCurrentPage] = useState(1);
-  const listingsPerPage = 5;
+  const listingsPerPage = 10;
+
   const [editingPublishStatusId, setEditingPublishStatusId] = useState<string | null>(null);
   const [editingStatusId, setEditingStatusId] = useState<string | null>(null);
   const [publishStatusOptions] = useState(["Pending", "Published", "Unpublished"]);
@@ -122,21 +126,21 @@ export const AllListings = () => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  // const handleBulkAction = async () => {
-  //   if (selectedAction === "Bulk Action" || selectedListingIds.length === 0) return;
+  const handleBulkAction = async () => {
+    if (selectedAction === "Bulk Action" || selectedListingIds.length === 0) return;
 
-  //   try {
-  //     await axios.post(`http://localhost:5000/api/admin/listings/bulk-action`, {
-  //       ids: selectedListingIds,
-  //       action: selectedAction,
-  //     });
-  //     fetchFullListings();
-  //     setSelectedListingIds([]);
-  //     setSelectedAction("Bulk Action");
-  //   } catch (error) {
-  //     console.error(`Failed to ${selectedAction} listings`, error);
-  //   }
-  // };
+    try {
+      await axios.post(`http://localhost:5000/api/admin/listings/bulk-action`, {
+        ids: selectedListingIds,
+        action: selectedAction,
+      });
+      fetchFullListings();
+      setSelectedListingIds([]);
+      setSelectedAction("Bulk Action");
+    } catch (error) {
+      console.error(`Failed to ${selectedAction} listings`, error);
+    }
+  };
 
   const handleCheckboxChange = (id: string) => {
     if (selectedListingIds.includes(id)) {
@@ -190,7 +194,8 @@ export const AllListings = () => {
 
   const handleUpdatePublishStatus = async (id: string, newStatus: string) => {
     try {
-      await axios.patch(`http://localhost:5000/api/admin/getAllFullListings`, { status: newStatus });
+      await axios.patch(`http://localhost:5000/api/admin/listings/publish-status/${id}`, { status: newStatus });
+  
       setFullListings(fullListings.map((listing) =>
         listing.businessId === id && listing.businessDetails
           ? { ...listing, businessDetails: { ...listing.businessDetails, publishedDate: newStatus } }
@@ -201,10 +206,11 @@ export const AllListings = () => {
       console.error("Failed to update publish status", error);
     }
   };
+  
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
-      await axios.patch(`http://localhost:5000/api/admin/update-business-listing/:id`, { status: newStatus });
+      await axios.patch(`http://localhost:5000/api/admin/update-business-listing/${id}`, { status: newStatus });
       setFullListings(fullListings.map((listing) => {
         if (listing.businessId === id && listing.businessDetails) {
           return {
@@ -231,16 +237,15 @@ export const AllListings = () => {
       return;
     }
   
-    console.log("Deleting listing with ID:", id); // Check the ID
-  
     try {
-      const response = await axios.delete(`http://localhost:5000/api/listing/${Id}`);
+      const response = await axios.delete(`http://localhost:5000/api/listing/${id}`);
       console.log("Delete Response: ", response.data);
-      fetchFullListings(); // Refresh the listings after deletion
+      fetchFullListings(); 
     } catch (error) {
       console.error("Delete failed: ", error.response ? error.response.data : error.message);
     }
   };
+  
   
   
   
@@ -276,7 +281,7 @@ export const AllListings = () => {
       {/* Bulk Actions + Search/Export */}
       <div className="flex flex-col md:flex-row md:justify-between mb-4 gap-4">
         <div className="flex items-center gap-2">
-          {/* <select
+           <select
             className="px-4 py-2 border rounded-md"
             value={selectedAction}
             onChange={(e) => setSelectedAction(e.target.value)}
@@ -285,167 +290,197 @@ export const AllListings = () => {
             <option value="Delete">Delete</option>
             <option value="Approve">Approve</option>
             <option value="Reject">Reject</option>
-          </select> */}
-          {/* <Button className="bg-blue-500 hover:bg-blue-600" onClick={handleBulkAction} disabled={selectedListingIds.length === 0}>
+          </select> 
+          <Button className="bg-blue-500 hover:bg-blue-600" onClick={handleBulkAction} disabled={selectedListingIds.length === 0}>
             Apply
-          </Button> */}
+          </Button>
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          <Input
-            type="text"
-            placeholder="Search"
-            className="w-40 md:w-64"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <CSVLink
-            data={csvData}
-            filename="listings.csv"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm text-center w-28 sm:w-auto"
-          >
-            Export to CSV
-          </CSVLink>
-        </div>
+  <Input
+    type="text"
+    placeholder="Search"
+    className="w-40 md:w-64"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+  />
+  <CSVLink
+    data={csvData}
+    filename="listings.csv"
+    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm text-center w-28 sm:w-auto"
+  >
+    Export to CSV
+  </CSVLink>
+
+</div>
       </div>
 
-      <div className="bg-white rounded-md border shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[40px]">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4"
-                  onChange={handleSelectAll}
-                  checked={
-                    currentListings.length > 0 &&
-                    selectedListingIds.length === currentListings.length
-                  }
-                />
-              </TableHead>
-              <TableHead>ID</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead></TableHead> {/*categories*/}
-              <TableHead></TableHead> {/*User Name*/}
-              <TableHead>Created Date</TableHead>
-              <TableHead>Published Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentListings.map((listing) => (
-              <TableRow key={listing.businessId}>
-                <TableCell>
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4"
-                    checked={selectedListingIds.includes(listing.businessId)}
-                    onChange={() => handleCheckboxChange(listing.businessId)}
-                  />
-                </TableCell>
-                <TableCell>{listing.businessId}</TableCell>
-                <TableCell>{listing.businessDetails?.businessName}</TableCell>
-                <TableCell>{listing.businessDetails?.category}</TableCell>
-                <TableCell>{listing.businessDetails?.userId}</TableCell>
-                <TableCell>{listing.businessDetails?.createdAt}</TableCell>
-                <TableCell>
-                  {editingPublishStatusId === listing.businessId ? (
-                    <select
-                      className="px-2 py-1 border rounded-md"
-                      value={listing.businessDetails?.publishedDate || "Pending"}                      onChange={(e) => handleUpdatePublishStatus(listing.businessId, e.target.value)}
-                      onBlur={() => setEditingPublishStatusId(null)}
-                      autoFocus
-                    >
-                      {publishStatusOptions.map((option) => (
-                        <option key={option} value={option}>{option}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                    {getStatusBadge(listing.businessDetails?.status || "Pending")}                      <button
-                        onClick={() => setEditingPublishStatusId(listing.businessId)}
-                        className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
-                      >
-                        <Pencil className="w-3 h-3 text-orange-600" />
-                      </button>
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {editingStatusId === listing.businessId ? (
-                    <select
-                      className="px-2 py-1 border rounded-md"
-                      value={listing.businessDetails?.status}
-                      onChange={(e) => handleUpdateStatus(listing.businessId, e.target.value)}
-                      onBlur={() => setEditingStatusId(null)}
-                      autoFocus
-                    >
-                      {statusOptions.map((option) => (
-                        <option key={option} value={option}>{option}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      {getStatusBadge(listing.businessDetails?.status || "Pending")}
-                      <button
-                        onClick={() => setEditingStatusId(listing.businessId)}
-                        className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
-                      >
-                        <Pencil className="w-3 h-3 text-orange-600" />
-                      </button>
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex gap-2">
-                      <Link to={`/admin/listings/details/${listing.businessId}`}>
-                        <Button size="sm" variant="default" className="bg-blue-500 hover:bg-blue-600 text-white">
-                          <Eye className="h-4 w-4 mr-1" />
-                          View
-                        </Button>
-                      </Link>
+      <div className="bg-white rounded-md border shadow-sm mt-4">
+  <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead className="w-[40px]">
+          <input
+            type="checkbox"
+            className="h-4 w-4"
+            onChange={handleSelectAll}
+            checked={
+              currentListings.length > 0 &&
+              selectedListingIds.length === currentListings.length
+            }
+          />
+        </TableHead>
+        <TableHead>ID</TableHead>
+        <TableHead>Title</TableHead>
+        <TableHead>Category</TableHead>
+        <TableHead>User Name</TableHead>
+        <TableHead>Created Date</TableHead>
+        <TableHead>Published Date</TableHead>
+        <TableHead>Status</TableHead>
+        <TableHead>Action</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {currentListings.map((listing) => (
+        <TableRow key={listing.businessId}>
+          <TableCell>
+            <input
+              type="checkbox"
+              className="h-4 w-4"
+              checked={selectedListingIds.includes(listing.businessId)}
+              onChange={() => handleCheckboxChange(listing.businessId)}
+            />
+          </TableCell>
+          <TableCell>{listing.businessId}</TableCell>
+          <TableCell>{listing.businessDetails?.businessName}</TableCell>
+          <TableCell>{listing.businessDetails?.category}</TableCell>
+          <TableCell>{listing.businessDetails?.userId}</TableCell>
+          <TableCell>{listing.businessDetails?.createdAt}</TableCell>
+          <TableCell>
+            {editingPublishStatusId === listing.businessId ? (
+              <select
+                className="px-2 py-1 border rounded-md"
+                value={listing.businessDetails?.publishedDate || "Pending"}
+                onChange={(e) =>
+                  handleUpdatePublishStatus(listing.businessId, e.target.value)
+                }
+                onBlur={() => setEditingPublishStatusId(null)}
+                autoFocus
+              >
+                {publishStatusOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="flex items-center gap-2">
+                {listing.businessDetails?.publishedDate || "Pending"}
+                <button
+                  onClick={() => setEditingPublishStatusId(listing.businessId)}
+                  className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
+                >
+                  <Pencil className="w-3 h-3 text-orange-600" />
+                </button>
+              </div>
+            )}
+          </TableCell>
+          <TableCell>
+            {editingStatusId === listing.businessId ? (
+              <select
+                className="px-2 py-1 border rounded-md"
+                value={listing.businessDetails?.status}
+                onChange={(e) =>
+                  handleUpdateStatus(listing.businessId, e.target.value)
+                }
+                onBlur={() => setEditingStatusId(null)}
+                autoFocus
+              >
+                {statusOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="flex items-center gap-2">
+                {getStatusBadge(listing.businessDetails?.status || "Pending")}
+                <button
+                  onClick={() => setEditingStatusId(listing.businessId)}
+                  className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
+                >
+                  <Pencil className="w-3 h-3 text-orange-600" />
+                </button>
+              </div>
+            )}
+          </TableCell>
+          <TableCell>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <Link to={`/admin/listings/details/${listing.businessId}`}>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    <Eye className="h-4 w-4 mr-1" />
+                    View
+                  </Button>
+                </Link>
+                
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => handleDeleteclick(listing.businessId)}
+                >
+                  <Trash className="h-4 w-4 mr-1" />
+                  Delete
+                </Button>
+              </div>
 
-
-                      <Button size="sm" variant="destructive" onClick={() => handleDeleteListing(listing.businessId)}>
-                        <Trash className="h-4 w-4 mr-1" />
-                        Delete
-                      </Button>
-                    </div>
-
-
-                    
-                    <div className="flex flex-col gap-1">
-                      {getBusinessTrustStatus(listing.businessDetails?.businessStatus || "Not Approved")}
-                      {getTrustStatus(listing.businessDetails?.trustStatus || "Not Approved")}
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+              
+              <div className="flex flex-col gap-1">
+                {getBusinessTrustStatus(
+                  listing.businessDetails?.businessStatus || "Not Approved"
+                )}
+                {getTrustStatus(
+                  listing.businessDetails?.trustStatus || "Not Approved"
+                )}
+              </div>
+            </div>
+          </TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
         
         {/* Pagination Controls */}
         <div className="flex justify-center mt-6 space-x-2">
-          <Button size="sm" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-            Previous
-          </Button>
-          {[...Array(totalPages)].map((_, i) => (
-            <Button
-              key={i}
-              size="sm"
-              variant={currentPage === i + 1 ? "default" : "outline"}
-              onClick={() => handlePageChange(i + 1)}
-            >
-              {i + 1}
-            </Button>
-          ))}
-          <Button size="sm" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-            Next
-          </Button>
+    {/* <Button
+      size="sm"
+      onClick={() => handlePageChange(currentPage - 1)}
+      disabled={currentPage === 1}
+    >
+      Previous
+    </Button> */}
+
+           {[...Array(totalPages)].map((_, i) => (
+      <Button
+        key={i}
+        size="sm"
+        variant={currentPage === i + 1 ? "default" : "outline"}
+        onClick={() => handlePageChange(i + 1)}
+      >
+        {i + 1}
+      </Button>
+         ))}
+         {/* <Button
+           size="sm"
+           onClick={() => handlePageChange(currentPage + 1)}
+           disabled={currentPage === totalPages}
+         >
+           Next
+         </Button> */}
         </div>
       </div>
     </AdminLayout>

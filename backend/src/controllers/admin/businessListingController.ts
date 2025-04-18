@@ -63,34 +63,35 @@ export const createBusinessCategory = async (req: Request, res: Response) => {
   };
 
 // Step 4: Create Business Timing
-export const createBusinessTiming = async (req: Request, res: Response) => {
-    try {
-      const { timings } = req.body;
-  
-      if (!Array.isArray(timings) || timings.length === 0) {
-        return res
-          .status(400)
-          .json({ error: "Timings data must be a non-empty array" });
-      }
-  
-      for (const timing of timings) {
-        const { day, openTime, closeTime } = timing;
-        if (!day || !openTime || !closeTime) {
-          return res
-            .status(400)
-            .json({ error: `Missing required fields for ${day || "a day"}` });
-        }
-      }
-  
-      // TODO: Save to DB if needed
-  
-      return res.status(200).json({ message: "Timings saved successfully" });
-    } catch (error) {
-      console.error("Error saving timings:", error);
-      return res.status(500).json({ error: "Server error" });
+// Controller: Create Business Timings
+export const createBusinessTiming = async (req, res) => {
+  try {
+    const { timings } = req.body;
+
+    // Validate if timings array is provided and is not empty
+    if (!timings || timings.length === 0) {
+      return res.status(400).json({ message: "Timings data is required." });
     }
-  };
-  
+
+    // Validate that every day has openTime and closeTime if 'isOpen' is true
+    const invalidTimings = timings.some(item => 
+      item.isOpen && (!item.openTime || !item.closeTime)
+    );
+
+    if (invalidTimings) {
+      return res.status(400).json({ message: "Please fill in all timings for selected days." });
+    }
+
+    // Save business timings (pseudo code, adjust according to your database logic)
+    const savedTimings = await BusinessTiming.create(timings);
+
+    res.status(201).json({ message: "Timings saved successfully", data: savedTimings });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 // Step 5: Create Upgrade Listing
 export const createUpgradeListing = async (req: Request, res: Response) => {
   try {
@@ -180,25 +181,49 @@ export const getAllFullListings = async (req: Request, res: Response) => {
   };
   
   // Step 9: Update Business Listing by ID
-export const updateBusinessListing = async (req: Request, res: Response) => {
-    const { id } = req.params; // Get the ID from URL parameters
-    const updateData = req.body; // Get the data to update from the request body
+  export const updateBusinessStatus = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { status } = req.body;
   
     try {
-      // Find the listing by ID and update it
-      const updatedListing = await BusinessListing.findByIdAndUpdate(id, updateData, {
-        new: true, // Return the updated document
-        runValidators: true, // Ensure validation is run on the update
-      });
-  
-      if (!updatedListing) {
-        return res.status(404).json({ message: "Business listing not found" });
+      const listing = await BusinessListing.findById(id);
+      if (!listing) {
+        return res.status(404).json({ message: "Listing not found" });
       }
   
-      res.status(200).json({ message: "Business listing updated successfully", data: updatedListing });
-    } catch (err) {
-      console.error("Error updating business listing:", err);
-      res.status(500).json({ message: "Failed to update business listing", error: err });
+      // Directly update fields in BusinessListing
+      listing.businessStatus = status;
+      listing.trustStatus =
+        status === "Approved" || status === "Pending" ? "Approved" : "Not Approved";
+  
+      await listing.save();
+  
+      res.status(200).json({ message: "Business status updated successfully", listing });
+    } catch (error) {
+      console.error("Error updating business status:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
+  
+  // 11 update public status
+  export const updatePublishStatus = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { status } = req.body;
+  
+    try {
+      const listing = await BusinessListing.findById(id);
+      if (!listing) {
+        return res.status(404).json({ message: "Listing not found" });
+      }
+  
+      listing.publishedDate = status;
+  
+      await listing.save();
+  
+      res.status(200).json({ message: "Publish status updated successfully", listing });
+    } catch (error) {
+      console.error("Error updating publish status:", error);
+      res.status(500).json({ message: "Server error" });
     }
   };
   

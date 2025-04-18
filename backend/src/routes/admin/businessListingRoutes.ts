@@ -8,8 +8,8 @@ import {
   createBusinessListing, // optional: if you want to save all together
   getAllFullListings,
   deleteBusinessListing,      // Import Delete method
-  updateBusinessListing,      // Import Update method
-  getBusinessListingDetails, // ✅ Import the new controller
+  updateBusinessStatus,     // Import Update method
+  updatePublishStatus // ✅ Import the new controller
 } from "../../controllers/admin/businessListingController";
 
 const router = express.Router();
@@ -18,7 +18,7 @@ const router = express.Router();
 router.post("/createContact", createContact);
 router.post("/createBusinessDetails", createBusinessDetails);
 router.post('/createBusinessCategory', createBusinessCategory);
-router.post('/createBusinessTiming', createBusinessTiming);
+router.post("/createBusinessTiming", createBusinessTiming); // Business timing
 router.post("/createUpgradeListing", createUpgradeListing);
 // router.post("/upgradeListing", upgradeListing);
 
@@ -32,9 +32,10 @@ router.delete("/delete-business-listing/:id", deleteBusinessListing); // Ensure 
 
 
 // Add the PATCH route
-router.patch("/update-business-listing/:id", updateBusinessListing); // PATCH by ID
+// routes/admin.js
+router.patch('/update-business-listing/:id', updateBusinessStatus);
+router.patch('/update-publish-status/:id', updatePublishStatus);
 
-// Update a business listing by ID
-router.patch("/update-business-listing/:id", updateBusinessListing);
+
 
 export default router;
