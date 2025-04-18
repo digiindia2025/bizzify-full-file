@@ -5,7 +5,8 @@ import Link from "next/link";
 import logo from "../../Images/logo.jpg";
 import Image from "next/image";
 import "../../Pages/login/page";
-import './businessNavbar.css';
+import "./businessNavbar.css";
+import UserLocation from "../UserLocation/UserLocation";
 
 const BusinessNavbar = () => {
   const navbarCollapseRef = useRef(null);
@@ -69,12 +70,9 @@ const BusinessNavbar = () => {
 
             {/* Desktop search bar */}
             <div className="d-none d-lg-flex business-navbar-search-container">
-              <select className="hero-location-select">
-                <option value="">Select Location</option>
-                <option value="new-york">New York</option>
-                <option value="los-angeles">Los Angeles</option>
-                <option value="chicago">Chicago</option>
-              </select>
+              <div className="hero-location-select">
+                <UserLocation />
+              </div>
               <input
                 type="text"
                 className="hero-search-input"
@@ -86,27 +84,27 @@ const BusinessNavbar = () => {
             </div>
 
             {/* Mobile search icon */}
-            <div className="d-flex gap-3 d-lg-none">  
-            <button
-              className="d-lg-none btn btn-link  p-0 ms-2"
-              onClick={() => setShowMobileSearch(!showMobileSearch)}
-            >
-              <i className="bi bi-search fs-4"></i>
-            </button>
+            <div className="d-flex gap-3 d-lg-none">
+              <button
+                className="d-lg-none btn btn-link  p-0 ms-2"
+                onClick={() => setShowMobileSearch(!showMobileSearch)}
+              >
+                <i className="bi bi-search fs-4"></i>
+              </button>
 
-            <button
-              className="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span>
-                <i className="bi bi-list text-white"></i>
-              </span>
-            </button>
+              <button
+                className="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span>
+                  <i className="bi bi-list text-white"></i>
+                </span>
+              </button>
             </div>
 
             <div
@@ -115,10 +113,16 @@ const BusinessNavbar = () => {
               ref={navbarCollapseRef}
             >
               <div className="d-flex align-items-center ">
-                <Link href="/Pages/login" className="btn btn bg-primary text-white me-2">
+                <Link
+                  href="/Pages/login"
+                  className="btn btn bg-primary text-white me-2"
+                >
                   SignIn
                 </Link>
-                <Link href="/Pages/signup" className="btn btn bg-dark text-white me-2">
+                <Link
+                  href="/Pages/signup"
+                  className="btn btn bg-dark text-white me-2"
+                >
                   Register
                 </Link>
               </div>
@@ -131,12 +135,9 @@ const BusinessNavbar = () => {
       {showMobileSearch && (
         <div className="mobile-search-slide animate__animated animate__slideInDown">
           <div className="container-fluid d-flex flex-column bg-white p-3 shadow">
-            <select className="form-select mb-2">
-              <option value="">Select Location</option>
-              <option value="new-york">New York</option>
-              <option value="los-angeles">Los Angeles</option>
-              <option value="chicago">Chicago</option>
-            </select>
+            <div className="form-select mb-2">
+              <UserLocation />
+            </div>
             <div className="d-flex">
               <input
                 type="text"
