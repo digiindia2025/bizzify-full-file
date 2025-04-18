@@ -15,8 +15,6 @@ const Hero = () => {
   ];
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [animatedText, setAnimatedText] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [location, setLocation] = useState("Locaion");
 
   useEffect(() => {
     let charIndex = 0;

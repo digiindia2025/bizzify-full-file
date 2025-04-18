@@ -70,9 +70,9 @@ const BusinessNavbar = () => {
 
             {/* Desktop search bar */}
             <div className="d-none d-lg-flex business-navbar-search-container">
-              <select className="hero-location-select">
+              <div className="hero-location-select">
                 <UserLocation />
-              </select>
+              </div>
               <input
                 type="text"
                 className="hero-search-input"
@@ -135,12 +135,9 @@ const BusinessNavbar = () => {
       {showMobileSearch && (
         <div className="mobile-search-slide animate__animated animate__slideInDown">
           <div className="container-fluid d-flex flex-column bg-white p-3 shadow">
-            <select className="form-select mb-2">
-              <option value="">Select Location</option>
-              <option value="new-york">New York</option>
-              <option value="los-angeles">Los Angeles</option>
-              <option value="chicago">Chicago</option>
-            </select>
+            <div className="form-select mb-2">
+              <UserLocation />
+            </div>
             <div className="d-flex">
               <input
                 type="text"
