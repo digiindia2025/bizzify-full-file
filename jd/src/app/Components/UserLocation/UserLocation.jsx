@@ -69,12 +69,12 @@ export default function UserLocation() {
       {location ? (
         <>
           <p className="m-0 p-0 location-detact">
-            {location.city}, {location.state}
+            {location.city}{" "} {location.state}
           </p>
         </>
       ) : (
         <>
-          <p className="m-0 p-0 location-detact">Searching...</p>
+          <p className="m-0 p-0 location-detact">Finding...</p>
           {error && <p className="m-0 p-0 location-detact">{error}</p>}
         </>
       )}
