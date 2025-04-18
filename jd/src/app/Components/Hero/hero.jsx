@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
 import "./hero.css";
+import UserLocation from "../UserLocation/UserLocation";
 
 const Hero = () => {
   const placeholderTexts = [
@@ -33,11 +34,6 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, [placeholderIndex]);
 
-  const handleLocationChange = (selectedLocation) => {
-    setLocation(selectedLocation);
-    setShowDropdown(false);
-  };
-
   return (
     <section className="some-page-hero-bg">
       <div className="container">
@@ -50,39 +46,12 @@ const Hero = () => {
                   We Are Connecting! <span>Stay Hold</span> Your
                   Success is Near.
                 </h1>
-                {/* <p className="hero-text">
-                Say goodbye to sleepless nights over counterproductive
-                communications between service providers. No more overbilling
-                nightmares for services you’re not sure you need but have to pay
-                for.
-              </p> */}
+
                 <div className="hero-search-bar">
                   <div className="hero-search-container">
                     {/* Location Picker */}
-                    <div
-                      className="hero-location-picker"
-                      onClick={() => setShowDropdown(!showDropdown)}
-                    >
-                      <span>{location}</span>
-                      <i className="bi bi-chevron-down"></i>
-                      {showDropdown && (
-                        <ul className="hero-dropdown-menu">
-                          {[
-                            "Mumbai",
-                            "Delhi",
-                            "Bangalore",
-                            "Kolkata",
-                            "Chennai",
-                          ].map((city, index) => (
-                            <li
-                              key={index}
-                              onClick={() => handleLocationChange(city)}
-                            >
-                              {city}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                    <div className="hero-location-picker">
+                      <UserLocation />
                     </div>
 
                     {/* Search Input */}
