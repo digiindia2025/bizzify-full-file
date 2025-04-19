@@ -51,6 +51,8 @@ interface FullListing {
   contact: {
     phone: string;
     email: string;
+    firstName?: string; // Add firstName
+    lastName?: string;  // Add lastName
   };
   upgrade: {
     plan: string;
@@ -58,7 +60,7 @@ interface FullListing {
   };
 }
 
-export const AllListings = () => {
+  export const AllListings = () => {
   const [fullListings, setFullListings] = useState<FullListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,16 +68,17 @@ export const AllListings = () => {
   const [selectedAction, setSelectedAction] = useState("Bulk Action");
   const [selectedListingIds, setSelectedListingIds] = useState<string[]>([]);
 
-  // this for pagination
-
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const listingsPerPage = 10;
+  const [totalPages, setTotalPages] = useState(1);
 
+  // Editing status state
   const [editingPublishStatusId, setEditingPublishStatusId] = useState<string | null>(null);
   const [editingStatusId, setEditingStatusId] = useState<string | null>(null);
   const [publishStatusOptions] = useState(["Pending", "Published", "Unpublished"]);
   const [statusOptions] = useState(["Pending", "Approved", "Rejected"]);
-  const [totalPages, setTotalPages] = useState(1);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -103,7 +106,7 @@ export const AllListings = () => {
       setLoading(false);
     }
   };
-
+// console.log("setFullListings",fullListings)
   const filteredListings = fullListings.filter((listing) => {
     const query = searchQuery.toLowerCase();
     const businessDetails: NonNullable<FullListing["businessDetails"]> = listing.businessDetails || { _id: "" };
@@ -123,7 +126,10 @@ export const AllListings = () => {
     );
   });
 
-  const currentListings = filteredListings;
+  const currentListings = filteredListings.slice(
+    (currentPage - 1) * listingsPerPage,
+    currentPage * listingsPerPage
+  );
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
@@ -137,11 +143,20 @@ export const AllListings = () => {
         ids: selectedListingIds,
         action: selectedAction,
       });
+      toast({
+        title: "Bulk Action Successful",
+        description: `Successfully performed '${selectedAction}' on ${selectedListingIds.length} listings.`,
+      });
       fetchFullListings();
       setSelectedListingIds([]);
       setSelectedAction("Bulk Action");
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to ${selectedAction} listings`, error);
+      toast({
+        variant: "destructive",
+        title: "Bulk Action Failed",
+        description: error.response?.data?.message || `Failed to perform '${selectedAction}' on selected listings.`,
+      });
     }
   };
 
@@ -162,7 +177,8 @@ export const AllListings = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const normalized = status?.toLowerCase() === "unpublish" ? "pending" : status?.toLowerCase(); const displayStatus = normalized === "unpublish" ? "pending" : normalized;
+    const normalized = status?.toLowerCase() === "unpublish" ? "pending" : status?.toLowerCase();
+    const displayStatus = normalized === "unpublish" ? "pending" : normalized;
     switch (displayStatus) {
       case "approved":
         return <span className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded-full">Approved</span>;
@@ -198,18 +214,25 @@ export const AllListings = () => {
   const handleUpdatePublishStatus = async (id: string, newStatus: string) => {
     try {
       await axios.patch(`http://localhost:5000/api/admin/listings/publish-status/${id}`, { status: newStatus });
-
       setFullListings(fullListings.map((listing) =>
         listing.businessId === id && listing.businessDetails
           ? { ...listing, businessDetails: { ...listing.businessDetails, publishedDate: newStatus } }
           : listing
       ));
       setEditingPublishStatusId(null);
-    } catch (error) {
+      toast({
+        title: "Publish Status Updated",
+        description: `Listing ${id} publish status updated to ${newStatus}.`,
+      });
+    } catch (error: any) {
       console.error("Failed to update publish status", error);
+      toast({
+        variant: "destructive",
+        title: "Error Updating Publish Status",
+        description: error.response?.data?.message || "Failed to update publish status.",
+      });
     }
   };
-
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
@@ -229,14 +252,28 @@ export const AllListings = () => {
         return listing;
       }));
       setEditingStatusId(null);
-    } catch (error) {
+      toast({
+        title: "Status Updated",
+        description: `Listing ${id} status updated to ${newStatus}.`,
+      });
+    } catch (error: any) {
       console.error("Failed to update status", error);
+      toast({
+        variant: "destructive",
+        title: "Error Updating Status",
+        description: error.response?.data?.message || "Failed to update status.",
+      });
     }
   };
 
-  const handleDeleteListing = async (id: string) => {
+  const handleDeleteClick = async (id: string) => {
     if (!id) {
       console.error("No ID provided for deletion");
+      toast({
+        variant: "destructive",
+        title: "Invalid ID",
+        description: "Listing ID is missing. Please try again.",
+      });
       return;
     }
 
@@ -253,7 +290,7 @@ export const AllListings = () => {
   console.log("XXXXXXXXXXXXXXXXXVXXXXXX", currentListings)
 
   const csvData = filteredListings.map(listing => ({
-    ID: listing.businessId,
+    ID: listing.businessDetails?._id, // Use MongoDB _id for CSV ID
     Title: listing.businessDetails?.businessName,
     Category: listing.businessDetails?.category,
     User: listing.businessDetails?.userId,
@@ -275,6 +312,7 @@ export const AllListings = () => {
     return <AdminLayout title=""><div className="text-red-500">Error loading listings: {error}</div></AdminLayout>;
   }
 
+  
   return (
     <AdminLayout title="">
       <div className="mb-6">
@@ -466,7 +504,7 @@ export const AllListings = () => {
       disabled={currentPage === 1}
     >
       Previous
-    </Button> */}
+    </Button>
 
           {[...Array(totalPages)].map((_, i) => (
             <Button
@@ -484,7 +522,7 @@ export const AllListings = () => {
            disabled={currentPage === totalPages}
          >
            Next
-         </Button> */}
+         </Button>
         </div>
       </div>
     </AdminLayout >

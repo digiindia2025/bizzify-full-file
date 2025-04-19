@@ -4,8 +4,9 @@ import profileImage from "../../Images/gourav.jpg";
 import Image from "next/image";
 import Link from "next/link";
 import "./profile.css";
-import EditProfile from "./edit-profile/page";
-import AllEnquiry from "./all-enquiry/page";
+import EditBusinessProfile from "../../Components/ProfilesComponents/Edit-business-profile/Edit-business-profile";
+import AllEnquiry from "../../Components/ProfilesComponents/all-enquiry/all-enquiry";
+import Support from "../../Components/ProfilesComponents/Support/Support";
 import { toast, ToastContainer } from "react-toastify";
 import Head from "next/head";
 
@@ -13,11 +14,13 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   const userProfile = {
-    name: "Maria Fernanda",
+    firstname: "Maria",
+    lastname: "Fernanda",
     userType: "Premium User",
     plans: "Premium",
     email: "gouravpanchal80107@gmail.com",
     mobile: "9131904943",
+    whtnum: "+91 9131904943",
     address: "Digi India Solution, Rohini Sector 24",
     city: "Rampura",
     state: "Bhagalpura",
@@ -37,40 +40,98 @@ const ProfilePage = () => {
       address: "Bawana Delhi 110039",
       image: profileImage,
     },
+    {
+      id: 2,
+      title: "ModakWala Cafe",
+      address: "Bawana Delhi 110039",
+      image: profileImage,
+    },
+    {
+      id: 3,
+      title: "Hari Sweets",
+      address: "Bawana Delhi 110039",
+      image: profileImage,
+    },
   ]);
+
   const handleDelete = (id) => {
     toast.info(
-      <div>
-        <p>Are you sure you want to delete this listing?</p>
-        <button
-          onClick={() => confirmDelete(id)}
-          className="btn btn-danger me-2"
-        >
-          Yes
-        </button>
-        <button onClick={toast.dismiss} className="btn btn-secondary">
-          No
-        </button>
-      </div>,
+      ({ closeToast }) => (
+        <div>
+          <p>Are you sure you want to delete this listing?</p>
+          <div className="d-flex justify-content-end gap-2">
+            <button
+              onClick={() => {
+                confirmDelete(id);
+                closeToast();
+              }}
+              className="btn btn-sm btn-danger"
+            >
+              Yes
+            </button>
+            <button onClick={closeToast} className="btn btn-sm btn-secondary">
+              No
+            </button>
+          </div>
+        </div>
+      ),
       {
-        width: 300,
         position: "top-center",
-        autoClose: false, // Prevent auto-close
+        autoClose: false,
         closeOnClick: false,
         draggable: false,
+        closeButton: false,
       }
     );
   };
 
   const confirmDelete = (id) => {
-    setListings((prevListings) =>
-      prevListings.filter((listing) => listing.id !== id)
-    );
-    toast.dismiss(); // Close the toast after clicking Yes
+    setListings((prev) => prev.filter((item) => item.id !== id));
     toast.success("Listing deleted successfully!", {
       position: "top-right",
       autoClose: 3000,
     });
+  };
+
+  const handleLogout = () => {
+    toast.info(
+      ({ closeToast }) => (
+        <div className="p-2">
+          <p className="mb-2">Are you sure you want to logout?</p>
+          <div className="d-flex justify-content-end gap-2">
+            <button
+              onClick={() => {
+                confirmlogout();
+                closeToast();
+              }}
+              className="btn btn-sm btn-danger"
+            >
+              Yes
+            </button>
+            <button onClick={closeToast} className="btn btn-sm btn-secondary">
+              No
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        position: "top-center",
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        closeButton: false,
+      }
+    );
+  };
+
+  const confirmlogout = () => {
+    // Implement actual logout logic here
+    console.log("Logging out user...");
+    toast.success("Logout Successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+    });
+    // Optional: redirect or clear session storage
   };
 
   return (
@@ -117,7 +178,7 @@ const ProfilePage = () => {
                     alt="Profile"
                     className="profile-img"
                   />
-                  <h3 className="text-white">{userProfile.name}</h3>
+                  <h3 className="text-white">{userProfile.firstname}</h3>
                   <p className="text-warning m-0">{userProfile.userType}</p>
                 </div>
                 <hr className="text-white" />
@@ -165,25 +226,33 @@ const ProfilePage = () => {
                   </button>
                   <button
                     className={`sidebar-tab ${
-                      activeTab === "plan" ? "active" : ""
+                      activeTab === "support" ? "active" : ""
                     }`}
-                    onClick={() => setActiveTab("plan")}
+                    onClick={() => setActiveTab("support")}
                   >
                     <i className="bi bi-patch-question"></i> Support
                   </button>
+                  <button
+                    className="sidebar-tab"
+                    onClick={() => handleLogout()}
+                  >
+                    <i className="bi bi-box-arrow-left"></i> Logout
+                  </button>
+                  {/* Toast container must be in your component tree */}
+                  <ToastContainer />
                 </div>
               </div>
             </div>
             <div className="col-md-9 py-3 fix-scroll-height">
-            {activeTab === "overview" && (
+              {activeTab === "overview" && (
                 <div className="profile-overview card border-0 rounded-4">
                   <div className="d-flex align-items-center">
                     <div className="profile-overview-main avatar bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-3">
-                      {userProfile.name.charAt(0)}
+                      {userProfile.firstname.charAt(0)}
                     </div>
                     <div>
                       <h5 className="mb-1 text-dark fw-bold">
-                        {userProfile.name}
+                        {userProfile.firstname}
                       </h5>
                       <p className="text-muted m-0">{userProfile.email}</p>
                     </div>
@@ -248,33 +317,133 @@ const ProfilePage = () => {
                   <hr />
 
                   <form>
-                    <div className="mb-3">
-                      <label className="form-label">Name</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        defaultValue={userProfile.name}
-                      />
+                    <div className="row">
+                      <div className="col-md-6">
+                        <div className="mb-3">
+                          <label className="form-label">First Name</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            defaultValue={userProfile.firstname}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div className="mb-3">
+                          <label className="form-label">Last Name</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            defaultValue={userProfile.lastname}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="mb-3">
-                      <label className="form-label">Email</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        defaultValue={userProfile.email}
-                      />
+                    <div className="row">
+                      <div className="col-md-6">
+                        <div className="mb-3">
+                          <label className="form-label">Email</label>
+                          <input
+                            type="email"
+                            className="form-control"
+                            defaultValue={userProfile.email}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div className="mb-3">
+                          <label className="form-label">Mobile</label>
+                          <input
+                            type="tel"
+                            className="form-control"
+                            defaultValue={userProfile.mobile}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="mb-3">
-                      <label className="form-label">Mobile</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        defaultValue={userProfile.mobile}
-                      />
+                    <div className="row">
+                      <div className="col-md-6">
+                      <div className="mb-3">
+                          <label className="form-label">Whatsapp Number</label>
+                          <input
+                            type="tel"
+                            className="form-control"
+                            defaultValue={userProfile.whtnum}
+                          />
+                        </div>
+                      </div>
                     </div>
+
                     <button className="btn btn-primary">Save Changes</button>
                   </form>
                 </div>
+              )}
+
+              {activeTab === "all-enquiry" && (
+                <>
+                  <AllEnquiry />
+                </>
+              )}
+
+              {activeTab === "listing" && (
+                <div className="profile-plan-table">
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h3>My Listing</h3>
+                  </div>
+                  <hr />
+                  <ToastContainer />
+                  {listings.length > 0 ? (
+                    listings.map((listing) => (
+                      <div className="profile-listing mb-3" key={listing.id}>
+                        <div className="row listing-item">
+                          <div className="col-md-3">
+                            <Image
+                              src={listing.image}
+                              alt={listing.title}
+                              className="listing-img"
+                            />
+                          </div>
+                          <div className="col-md-9">
+                            <h4 className="text-primary">{listing.title}</h4>
+                            <p className="text-success">{listing.address}</p>
+                            <Link
+                              href="/Pages/free-listing#paidlisting"
+                              className="login-btn me-2"
+                            >
+                              Advertise Now
+                            </Link>
+                            <button
+                              // href="/Pages/Profile/edit-profile"
+                              className={`black-btn ${
+                                activeTab === "edit-business" ? "active" : ""
+                              }`}
+                              onClick={() => setActiveTab("edit-business")}
+                            >
+                              Edit Business
+                            </button>
+
+                            <button
+                              className="btn btn-danger"
+                              onClick={() => handleDelete(listing.id)}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="no-listing">
+                      You have no listings. Please go to the listing page.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "edit-business" && (
+                <>
+                  <EditBusinessProfile />
+                </>
               )}
 
               {activeTab === "plan" && (
@@ -305,72 +474,9 @@ const ProfilePage = () => {
                   </div>
                 </div>
               )}
-
-              {activeTab === "listing" && (
-                <div className="profile-plan-table">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <h3>My Listing</h3>
-                  </div>
-                  <hr />
-                  <ToastContainer />
-                  {listings.length > 0 ? (
-                    listings.map((listing) => (
-                      <div className="profile-listing" key={listing.id}>
-                        <div className="row listing-item">
-                          <div className="col-md-3">
-                            <Image
-                              src={listing.image}
-                              alt={listing.title}
-                              className="listing-img"
-                              width={150}
-                              height={150}
-                            />
-                          </div>
-                          <div className="col-md-9">
-                            <h4 className="text-primary">{listing.title}</h4>
-                            <p className="text-success">{listing.address}</p>
-                            <Link
-                              href="/Pages/free-listing#paidlisting"
-                              className="login-btn me-2"
-                            >
-                              Advertise Now
-                            </Link>
-                            <button
-                              href="/Pages/Profile/edit-profile"
-                              className={`black-btn ${
-                                activeTab === "edit-business" ? "active" : ""
-                              }`}
-                              onClick={() => setActiveTab("edit-business")}
-                            >
-                              Edit Business
-                            </button>
-
-                            <button
-                              className="btn btn-danger"
-                              onClick={() => handleDelete(listing.id)}
-                            >
-                              <i className="bi bi-trash"></i>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="no-listing">
-                      You have no listings. Please go to the listing page.
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {activeTab === "edit-business" && (
+              {activeTab === "support" && (
                 <>
-                  <EditProfile />
-                </>
-              )}
-              {activeTab === "all-enquiry" && (
-                <>
-                  <AllEnquiry />
+                  <Support />
                 </>
               )}
             </div>
