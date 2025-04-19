@@ -9,6 +9,7 @@ interface IBusinessTiming extends Document {
   isOpen: boolean;
 }
 
+
 const businessTimingSchema = new Schema<IBusinessTiming>({
   day: { type: String, required: true },
   openTime: { type: String, required: true },
