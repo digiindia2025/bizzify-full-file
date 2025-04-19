@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import "../../Pages/freelistingform/freelistingform.css";
 
-const BusinessTiming = ({ setKey }) => {
+const BusinessTiming = ({ setKey, formData, setFormData }) => {
   const availableTimes = [
     "9:00",
     "9:30",
@@ -104,25 +104,25 @@ const BusinessTiming = ({ setKey }) => {
       closePeriod: item.closePeriod,
       isOpen: item.isOpen,
     }));
-
+    setFormData({ ...formData, timings: timingsData });
     try {
-      const response = await fetch("http://localhost:5000/api/admin/createBusinessTiming", {
-        
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ timings: timingsData }),
-      });
+      // const response = await fetch("http://localhost:5000/api/admin/createBusinessTiming", {
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Timings saved successfully", data);
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ timings: timingsData }),
+      // });
+
+      // if (response.ok) {
+      //   const data = await response.json();
+      //   console.log("Timings saved successfully", data);
         setKey("upgrade"); // Proceed to next step
-      } else {
-        const error = await response.json();
-        console.error("Error saving timings", error.message);
-      }
+      // } else {
+      //   const error = await response.json();
+      //   console.error("Error saving timings", error.message);
+      // }
     } catch (error) {
       console.error("Error connecting to server", error);
     }

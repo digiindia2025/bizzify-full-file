@@ -4,6 +4,8 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import bodyParser from "body-parser";
+import morgan from "morgan";
+
 import { connectDB } from "./config/db";
 import advertisementRoutes from "./routes/admin/advertisementRoutes";
 import childCategoryRoutes from "./routes/admin/childCategoryRoutes"
@@ -34,6 +36,9 @@ import businessListingRoutes from "./routes/admin/businessListingRoutes";
 
 
 const app = express();
+
+app.use(morgan("dev"));
+
 const PORT = process.env.PORT || 5000;
 connectDB();
 const allowedOrigins = ["http://localhost:3000", "http://localhost:8080", "http://localhost:5173"];
