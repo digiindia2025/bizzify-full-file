@@ -1,0 +1,24 @@
+.support-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.support-card:hover {
+  background: var(--black);
+  color: #ffffff;
+}
+
+.icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--blue);
+  display: flex;
+  color: #ffffff;
+  align-items: center;
+  justify-content: center;
+}
+

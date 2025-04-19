@@ -1,0 +1,48 @@
+.edit-icon-card {
+  width: 70px;
+  height: 70px;
+  background-color: #f0f0f0;
+
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.edit-icon-card.active {
+  background-color: var(--black);
+  color: white;
+}
+
+
+.edit-profile-field input ,.edit-profile-field textarea {
+  width: 100%;
+  border: 1px solid var(--black);
+  border-radius: 5px;
+  padding: 5px 10px;
+  background: transparent;
+  outline: none;
+  margin-bottom: 20px;
+}
+
+.edit-profile-field label{
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--black);
+  margin-bottom: 0px;
+}
+
+.edit-profile-title{
+  font-size: 26px;
+}
+
+.edit-profile-card .heading h5{
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 10px;
+}
