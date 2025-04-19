@@ -78,7 +78,7 @@ const Login = () => {
 
 
     const data = await response.json();
-    console.log("API Response:", data);
+    console.log("API Responses:", data);
 
     if (response.ok) {
       setSuccessMessage("Login successful! Redirecting...");
