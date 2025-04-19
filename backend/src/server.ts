@@ -5,11 +5,12 @@ import cors from "cors";
 import path from "path";
 import bodyParser from "body-parser";
 import { connectDB } from "./config/db";
+
 import advertisementRoutes from "./routes/admin/advertisementRoutes";
 import childCategoryRoutes from "./routes/admin/childCategoryRoutes"
 import categoryRoutes from "./routes/admin/categoryRoutes";
 import subcategoryRoutes from "./routes/admin/subcategoryRoutes";
-import userRoutes from "./routes/admin/userRoutes";
+import userRoutes from "./routes/admin/authRoutes";
 import deactivateUserRoutes from "./routes/admin/deactivateUserRoute";
 import departmentRoutes from "./routes/admin/departmentRoutes";
 import supportTicketRoutes from "./routes/admin/supportTicketRoutes";
@@ -17,17 +18,16 @@ import enquiryRoutes from "./routes/admin/enquiryRoutes";
 import linkRoutes from "./routes/admin/linkRoutes";
 import reviewRoutes from "./routes/admin/reviewRoutes";
 import membershipRoutes from "./routes/admin/membershipRoutes"; // ✅ important path
-import emailRoutes from './routes/admin/emailRoutes';
-import loginRoutes from './routes/admin/loginRoutes';
-import forgotPasswordRoutes from './routes/admin/forgotPasswordRoutes'
-// import businessListingRoutes from "./routes/admin/businessListingRoutes";
 import cityRoutes from "./routes/admin/cityRoutes";
 import dealRoutes from "./routes/admin/dealRoutes";
 import collectionRoutes from "./routes/admin/collectionRoutes";
 import cityRoutes1 from "./routes/admin/cityRoutes1"; // <-- Rename this
 
-// hm yaha per all listiing ka daat import kr rhe hai
+// hm yaha per all listiing ka data import kr rhe hai
 import businessListingRoutes from "./routes/admin/businessListingRoutes";
+
+// for signup 
+import authRoutes from "./routes/admin/authRoutes";
 
 
 
@@ -68,9 +68,6 @@ app.use("/api/enquiries", enquiryRoutes);
 app.use("/api/links", linkRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", membershipRoutes); 
-app.use('/api/admin/email', emailRoutes);
-app.use("/api/user", loginRoutes);
-app.use('/api/users', forgotPasswordRoutes);
 app.use("/api", businessListingRoutes);
 app.use("/api/admin", cityRoutes); 
 app.use("/api/admin", dealRoutes);
@@ -79,6 +76,14 @@ app.use("/api/admin/cityRoutes1", cityRoutes1);
 
 // 
 app.use("/api/admin", businessListingRoutes); // this makes /api/admin/business and /api/admin/contact work
+
+// signup
+app.use("/api/auth", authRoutes);
+
+app.use("/api", authRoutes); // So /api/verify-otp becomes valid
+
+
+app.use("/api/auth", authRoutes); // ✅ Important line
 
 
 

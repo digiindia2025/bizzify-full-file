@@ -59,7 +59,7 @@ interface FullListing {
   };
 }
 
-export const AllListings = () => {
+  export const AllListings = () => {
   const [fullListings, setFullListings] = useState<FullListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -106,7 +106,7 @@ export const AllListings = () => {
       setLoading(false);
     }
   };
-
+// console.log("setFullListings",fullListings)
   const filteredListings = fullListings.filter((listing) => {
     const query = searchQuery.toLowerCase();
     const details: NonNullable<FullListing["businessDetails"]> = listing.businessDetails || { _id: "" };
@@ -477,8 +477,9 @@ export const AllListings = () => {
       <TableCell>
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
-            <Link to={`/admin/listings/details/${listing.businessId}`}>
+            {/* <Link to={`/admin/listings/details/${listing.businessId}`}> */}
               <Button
+              onClick={()=>navigate(`/admin/listings/details`,{state:{listingId:listing}})}
                 size="sm"
                 variant="default"
                 className="bg-blue-500 hover:bg-blue-600 text-white"
@@ -486,7 +487,7 @@ export const AllListings = () => {
                 <Eye className="h-4 w-4 mr-1" />
                 View
               </Button>
-            </Link>
+            {/* </Link> */}
 
             <Button
   size="sm"
@@ -521,13 +522,13 @@ export const AllListings = () => {
         
         {/* Pagination Controls */}
         <div className="flex justify-center mt-6 space-x-2">
-    {/* <Button
+    <Button
       size="sm"
       onClick={() => handlePageChange(currentPage - 1)}
       disabled={currentPage === 1}
     >
       Previous
-    </Button> */}
+    </Button>
 
            {[...Array(totalPages)].map((_, i) => (
       <Button
@@ -539,13 +540,13 @@ export const AllListings = () => {
         {i + 1}
       </Button>
          ))}
-         {/* <Button
+         <Button
            size="sm"
            onClick={() => handlePageChange(currentPage + 1)}
            disabled={currentPage === totalPages}
          >
            Next
-         </Button> */}
+         </Button>
         </div>
       </div>
     </AdminLayout>

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import User from "../../models/userModel";
+import User from "../../models/authModel";
 
 // GET all users with status "Deactivated"
 export const getDeactivatedUsers = async (req: Request, res: Response) => {

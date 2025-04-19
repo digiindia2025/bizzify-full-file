@@ -4,6 +4,7 @@ import { AdminLayout } from "@/components/Layout/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useParams, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 // Interface for full listing response from backend
 interface FullListingDetails {
@@ -49,20 +50,26 @@ interface FullListingDetails {
   };
 }
 
+
 const ListingDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [listing, setListing] = useState<FullListingDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+console.log("XXXXXXXXXXXXXXXXXXXXXXXXx",id)
 
+const location = useLocation();
+
+  const userData = location.state?.listingId;
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXx",userData)
   // Fetch listing details from backend on mount
   useEffect(() => {
-    const fetchListingDetails = async () => {
+    const fetchListingDetails = async (id) => {
       setLoading(true);
       setError(null);
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/admin/getAllFullListings`
+          `http://localhost:5000/api/admin/getAllFullListings/${id}`
         );
         setListing(response.data);
       } catch (err: unknown) {
@@ -78,7 +85,7 @@ const ListingDetails = () => {
     };
 
     if (id) {
-      fetchListingDetails();
+      fetchListingDetails(id);
     } else {
       setError("Listing ID not found.");
       setLoading(false);

@@ -1,14 +1,14 @@
 "use client";
 import React, { useState } from "react";
 import "./login.css";
-import logo from "../../Images/logo.jpg"; 
+// import logo from "../../Images/logo.jpg"; 
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'; // Import correct components
-
 const Login = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,93 +27,103 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const updatedValue = type === "checkbox" ? checked : value;
+    console.log(`Field Changed: ${name} =>`, updatedValue);
+  
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: updatedValue,
     }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
+  
 
   const validate = () => {
     const newErrors = {};
     const { email, password } = formData;
-
+  
     if (!email) {
       newErrors.email = "Email is required.";
     } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
       newErrors.email = "Invalid email format.";
     }
-
+  
     if (!password) {
       newErrors.password = "Password is required.";
     }
-
+  
+    console.log("Validation Errors:", newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  e.preventDefault();
+  console.log("Form submitted with:", formData);
 
-    try {
-      const response = await fetch("http://localhost:5000/api/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+  if (!validate()) return;
 
-      const data = await response.json();
-      console.log("Login Response:", data);
+  setIsLoading(true);
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: formData.email.trim(),
+        password: formData.password.trim(),
+      }),
+    });
 
-      if (response.ok) {
-        setSuccessMessage("Login successful! Redirecting...");
-        setLoginError("");
 
-        // Save token and user data in localStorage
-        localStorage.setItem("biziffyToken", data.token);
-        localStorage.setItem("biziffyUser", JSON.stringify(data.user));
+    const data = await response.json();
+    console.log("API Response:", data);
 
-        setTimeout(() => {
-          router.push("/Pages/Profile");
-
-        }, 1500);
-      } else {
-        setLoginError(data.message || "Invalid credentials.");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      setLoginError("Something went wrong. Please try again later.");
+    if (response.ok) {
+      setSuccessMessage("Login successful! Redirecting...");
+      setLoginError("");
+      console.log("Redirecting to /dashboard...");
+      setTimeout(() => {
+        window.location.href = "/Pages/Profile";
+      }, 1500);
+    } else {
+      setLoginError(data.message || "Something went wrong.");
+      setSuccessMessage("");
     }
-  };
+  } catch (error) {
+    console.error("Login Error:", error);
+    setLoginError("An error occurred while logging in.");
+    setSuccessMessage("");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   // Google Login Success handler
   const handleGoogleLoginSuccess = async (response) => {
-    console.log("Google login success:", response);
-
+    console.log("Google Login Success:", response);
+  
     try {
       const res = await fetch("http://localhost:5000/api/user/google-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tokenId: response.credential, // Pass the Google token
+          tokenId: response.credential,
         }),
       });
-
+  
       const data = await res.json();
-      console.log("Google login response:", data);
-
+      console.log("Google API Response:", data);
+  
       if (res.ok) {
-        // Save token and user data in localStorage
         localStorage.setItem("biziffyToken", data.token);
         localStorage.setItem("biziffyUser", JSON.stringify(data.user));
-
-        setSuccessMessage("Login successful! Redirecting...");
+        setSuccessMessage("Google login successful!");
         setLoginError("");
-
+  
+        console.log("Redirecting to /profile...");
         setTimeout(() => {
           router.push("/profile");
         }, 1500);
@@ -121,10 +131,11 @@ const Login = () => {
         setLoginError(data.message || "Google login failed.");
       }
     } catch (error) {
-      console.error("Google login error:", error);
-      setLoginError("Something went wrong with Google login. Please try again.");
+      console.error("Google Login Error:", error);
+      setLoginError("Something went wrong with Google login.");
     }
   };
+  
 
   // Google Login Failure handler
   const handleGoogleLoginFailure = (error) => {
