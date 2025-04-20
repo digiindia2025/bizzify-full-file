@@ -4,6 +4,8 @@ import '../../Pages/login/login.css';
 import logo from '../../Images/logo.jpg';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';  // Change this to 'next/navigation'
+
 import axios from 'axios';
 
 const Page = () => {
@@ -18,6 +20,8 @@ const Page = () => {
         confirmPassword: false,
     });
 
+    const router = useRouter();  // This should work if imported correctly from 'next/navigation'
+
     const togglePasswordVisibility = (field) => {
         setShowPassword(prevState => ({
             ...prevState,
@@ -25,63 +29,72 @@ const Page = () => {
         }));
     };
 
+    // ----- 🔹 Send OTP -----
     const handleEmailSubmit = async (e) => {
         e.preventDefault();
-        if (email) {
-            try {
-                // Send email to the backend to generate and send OTP
-                const response = await axios.post('http://localhost:5000/api/users/forgot-password', { email });
-                if (response.data.success) {
-                    setMessage('OTP has been sent to your email.');
-                    setStep(2);
-                } else {
-                    setMessage(response.data.message || 'Error sending OTP. Please try again.');
-                }
-            } catch (error) {
-                setMessage('Error sending OTP. Please try again.');
+        setMessage('');
+        console.log('Submitting email:', email);
+        try {
+            const res = await axios.post('http://localhost:5000/api/auth/send-otp', { email });
+            console.log('Send OTP response:', res.data);
+            if (res.data.success) {
+                setStep(2);
+                // Redirect to the verify OTP page after sending OTP
+                router.push('/verify-otp');
+            } else {
+                setMessage(res.data.message || 'Failed to send OTP');
             }
-        } else {
-            setMessage('Please enter your email.');
+        } catch (err) {
+            console.error('Send OTP error:', err);
+            setMessage(err.response?.data?.message || 'Something went wrong');
         }
     };
 
+    // ----- 🔹 Verify OTP -----
     const handleOtpSubmit = async (e) => {
         e.preventDefault();
-        if (otp) {
-            try {
-                // Verify OTP with backend
-                const response = await axios.post('http://localhost:5000/api/users/verify-otp', { otp });
-                if (response.data.success) {
-                    setMessage('OTP verified. Please reset your password.');
-                    setStep(3);
-                } else {
-                    setMessage('Invalid OTP. Please try again.');
-                }
-            } catch (error) {
-                setMessage('Error verifying OTP. Please try again.');
+        setMessage('');
+        console.log('Verifying OTP:', { email, otp });
+        try {
+            const res = await axios.post('http://localhost:5000/api/auth/verify-otp', { email, otp });
+            console.log('Verify OTP response:', res.data);
+            if (res.data.success) {
+                setStep(3);
+                 // Redirect to the reset password page after verifying OTP
+                 router.push('/reset-password');
+            } else {
+                setMessage(res.data.message || 'Invalid OTP');
             }
-        } else {
-            setMessage('Please enter the OTP.');
+        } catch (err) {
+            console.error('Verify OTP error:', err);
+            setMessage(err.response?.data?.message || 'Something went wrong');
         }
     };
 
+    // ----- 🔹 Reset Password -----
     const handlePasswordReset = async (e) => {
         e.preventDefault();
-        if (newPassword && newPassword === confirmPassword) {
-            try {
-                // Send new password to the backend
-                const response = await axios.post('http://localhost:5000/api/users/reset-password', { newPassword });
-                if (response.data.success) {
-                    setMessage('Password has been successfully reset.');
-                    setStep(4);
-                } else {
-                    setMessage('Error resetting password. Please try again.');
-                }
-            } catch (error) {
-                setMessage('Error resetting password. Please try again.');
+        setMessage('');
+        if (newPassword !== confirmPassword) {
+            return setMessage("Passwords do not match");
+        }
+        console.log('Resetting password for:', email);
+        try {
+            const res = await axios.post('http://localhost:5000/api/auth/reset-password', {
+                email,
+                newPassword
+            });
+            console.log('Reset password response:', res.data);
+            if (res.data.success) {
+                setStep(4);
+                // Optionally redirect to login page after successful reset
+                router.push('/login');
+            } else {
+                setMessage(res.data.message || 'Failed to reset password');
             }
-        } else {
-            setMessage('Passwords do not match. Please try again.');
+        } catch (err) {
+            console.error('Reset password error:', err);
+            setMessage(err.response?.data?.message || 'Something went wrong');
         }
     };
 
