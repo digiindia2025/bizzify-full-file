@@ -90,7 +90,6 @@ export const signupUser = async (req: Request, res: Response) => {
   }
 };
 
-// POST /api/auth/verify-otp
 
 // POST /api/auth/verify-otp
 export const verifyOtpController = async (req: Request, res: Response) => {
@@ -164,15 +163,75 @@ export const loginUser = async (req: Request, res: Response) => {
 };
  
 
-  
-    // If everything's good, return success
-//     res.status(200).json({ message: 'Login successful', user });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
+
 
 // POST /api/auth/forgot-password
+export const sendOtpHandler = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: "Email is required" });
 
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
+    const otp = crypto.randomInt(100000, 999999).toString();
+    user.otp = otp;
+    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // Optional: 10 min expiry
+    await user.save();
+
+    await sendOTP(email, otp);
+    res.status(200).json({ message: "OTP sent to email for password reset" });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// POST /api/auth/verify-reset-otp
+export const verifyOtpHandler = async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user || user.otp !== otp)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    if (user.otpExpiry && user.otpExpiry < new Date())
+      return res.status(400).json({ message: "OTP expired" });
+
+    return res.status(200).json({ message: "OTP verified" });
+  } catch (error) {
+    console.error("Verify reset OTP error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// POST /api/auth/reset-password
+export const resetPasswordHandler = async (req: Request, res: Response) => {
+  const { email, otp, newPassword, confirmPassword } = req.body;
+
+  if (!email || !otp || !newPassword || !confirmPassword)
+    return res.status(400).json({ message: "All fields are required" });
+
+  if (newPassword !== confirmPassword)
+    return res.status(400).json({ message: "Passwords do not match" });
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user || user.otp !== otp)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    if (user.otpExpiry && user.otpExpiry < new Date())
+      return res.status(400).json({ message: "OTP expired" });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

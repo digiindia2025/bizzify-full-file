@@ -1,5 +1,5 @@
 import express from "express";
-import { signupUser, verifyOtpController, loginUser, } from "../../controllers/admin/authController";
+import { signupUser, verifyOtpController, loginUser, sendOtpHandler, verifyOtpHandler, resetPasswordHandler, } from "../../controllers/admin/authController";
 
 const router = express.Router();
 
@@ -8,5 +8,10 @@ router.post("/verify-otp", verifyOtpController);
 
 // Login route
 router.post("/login", loginUser);
+
+router.post('/send-otp', sendOtpHandler);
+router.post('/verify-otp', verifyOtpHandler);
+router.post('/reset-password', resetPasswordHandler);
+
 
 export default router;
