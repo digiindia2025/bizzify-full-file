@@ -1,13 +1,32 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./navbar.css";
 import Link from "next/link";
-import logo from "../../Images/logo.jpg";
+// import logo from "../../Images/logo.jpg";
 import Image from "next/image";
 import "../../Pages/login/page";
+import { useRouter } from "next/navigation";
+
 
 const Header = () => {
   const navbarCollapseRef = useRef(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // ✅ NEW: state for login check
+  const router = useRouter(); // ✅ NEW: used for logout redirection
+
+  useEffect(() => {
+    // ✅ NEW: Check localStorage for token on page load
+    const token = localStorage.getItem("biziffyToken");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  // ✅ NEW: Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("biziffyToken");
+    localStorage.removeItem("biziffyUser");
+    setIsLoggedIn(false);
+    router.push("/Pages/login"); // redirect to login after logout
+  };
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -144,6 +163,9 @@ const Header = () => {
                 </Link>
               </li>
             </ul>
+              {/* ✅ Conditionally render SignIn/Register OR My Profile/Logout */}
+              {!isLoggedIn ? (
+
             <div className="d-flex align-items-center ">
               <Link href="/Pages/login" className="btn btn bg-primary text-white me-2">
                 SignIn
@@ -152,13 +174,23 @@ const Header = () => {
                 Register
               </Link>
             </div>
+             ) : (
 
-            {/* ========== This is Profile code show after login please ========== */}
-            {/* <div className="d-flex align-items-center ">
-              <Link href="/Pages/login" className="login-btn me-2">
-               My Profile
+              <div className="d-flex align-items-center">
+              <Link
+                href="/Pages/profile"
+                className="btn btn bg-success text-white me-2"
+              >
+                Profile
               </Link>
-            </div> */}
+              <button
+                onClick={handleLogout}
+                className="btn btn-danger text-white"
+              >
+                Logout
+              </button>
+            </div>
+          )}
           </div>
         </div>
       </nav>
