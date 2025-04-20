@@ -85,7 +85,11 @@ app.use("/api", authRoutes); // So /api/verify-otp becomes valid
 
 app.use("/api/auth", authRoutes); // ✅ Important line
 
+app.use("/api/admin/auth", authRoutes); // 👈 This is crucial
 
+// google login
+
+app.use("/api/user", userRoutes); // <- this part must match
 
 
 
