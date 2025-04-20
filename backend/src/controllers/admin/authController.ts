@@ -4,6 +4,7 @@ import crypto from "crypto"; // To generate OTP
 import nodemailer from "nodemailer"; // For sending email
 import User from "../../models/authModel";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
 
 // Function to send OTP to the user's email
 const sendOTP = async (email: string, otp: string) => {
@@ -233,5 +234,76 @@ export const resetPasswordHandler = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Reset password error:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+// this this for google login setup
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // Add this to your .env
+
+export const googleLoginController = async (req: Request, res: Response) => {
+  const { tokenId } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: tokenId,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload) {
+      return res.status(400).json({ message: "Invalid Google token." });
+    }
+
+    const { email, name, picture, sub } = payload;
+
+    if (!email) {
+      return res.status(400).json({ message: "Google account missing email." });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if not exists
+      user = new User({
+        fullName: name,
+        email,
+        password: sub, // or generate a random password
+        phone: "", // optional, you can prompt later
+        status: "active",
+        profileImage: picture, // optional field in your model
+        isGoogleAccount: true, // optionally track Google accounts
+      });
+
+      await user.save();
+    }
+
+    // Create token
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET as string,
+      { expiresIn: process.env.JWT_EXPIRES }
+    );
+
+    res.status(200).json({
+      message: "Google login successful",
+      token,
+      user,
+    });
+  } catch (error: any) {
+    console.error("Google login error:", error);
+    res.status(500).json({ message: "Google login failed", error: error.message });
+  }
+};
+
+// this for all users display in admin panel
+
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({ success: true, users });
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch users' });
   }
 };
