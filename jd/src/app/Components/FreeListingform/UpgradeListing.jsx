@@ -3,47 +3,48 @@ import React, { useState } from "react";
 import "../../Pages/freelistingform/freelistingform.css";
 import Link from "next/link";
 
-const UpgradeListing = () => {
-  const [formData, setFormData] = useState({
-    direction: "",
-    website: "",
-    facebook: "",
-    instagram: "",
-    linkedin: "",
-    twitter: "",
-  });
+const UpgradeListing = ({formData, setFormData ,handleListingSubmit}) => {
+  // const [formData, setFormData] = useState({
+  //   direction: "",
+  //   website: "",
+  //   facebook: "",
+  //   instagram: "",
+  //   linkedin: "",
+  //   twitter: "",
+  // });
 
   // Handle input change
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, upgradeListing: { ...formData.upgradeListing, [e.target.name]: e.target.value } });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Submitted:", formData);
+    
+    handleListingSubmit();
+    // try {
+    //   const response = await fetch("http://localhost:5000/api/business/upgrade", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(formData), // Send the form data as JSON
+    //   });
 
-    try {
-      const response = await fetch("http://localhost:5000/api/business/upgrade", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData), // Send the form data as JSON
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Success:", result);
-        // Handle success (e.g., show success message or redirect)
-      } else {
-        const error = await response.json();
-        console.log("Error:", error.message);
-        // Handle error
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle network error or other issues
-    }
+    //   if (response.ok) {
+    //     const result = await response.json();
+    //     console.log("Success:", result);
+    //     // Handle success (e.g., show success message or redirect)
+    //   } else {
+    //     const error = await response.json();
+    //     console.log("Error:", error.message);
+    //     // Handle error
+    //   }
+    // } catch (error) {
+    //   console.error("Error:", error);
+    //   // Handle network error or other issues
+    // }
   };
 
   return (
