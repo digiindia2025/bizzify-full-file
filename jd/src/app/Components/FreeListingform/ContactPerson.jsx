@@ -13,6 +13,7 @@ const ContactPerson = ({ setKey, formData, setFormData }) => {
   //   email: "",
   // });
 
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -28,6 +29,18 @@ const ContactPerson = ({ setKey, formData, setFormData }) => {
     setError(""); // Reset error on form submission
 
     try {
+
+      const response = await fetch(
+        "http://localhost:5000/api/admin/createContact",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
       // const response = await fetch("http://localhost:5000/api/admin/createContact", {
       //   method: "POST",
       //   headers: {
@@ -36,6 +49,7 @@ const ContactPerson = ({ setKey, formData, setFormData }) => {
       //   body: JSON.stringify(formData),
       // });
 
+
       // Check for a successful response
       // if (!response.ok) {
       //   const err = await response.json();
@@ -43,11 +57,11 @@ const ContactPerson = ({ setKey, formData, setFormData }) => {
       // }
 
       // On successful submission, navigate to the next form
-      setKey("business");  // Replace "business" with the key of the next step
+      setKey("business"); // Replace "business" with the key of the next step
     } catch (err) {
       setError(err.message); // Display error if any occurs
     } finally {
-      setLoading(false);  // Reset loading state
+      setLoading(false); // Reset loading state
     }
   };
 

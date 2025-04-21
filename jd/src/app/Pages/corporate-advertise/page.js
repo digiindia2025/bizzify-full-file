@@ -23,8 +23,8 @@ import costeffective from "../../Images/CostEffective.jpg";
 import customize from "../../Images/CustomizePlanes.jpg";
 import target from "../../Images/TargetAduince.jpg";
 import moveintime from "../../Images/MoveInTime.jpg";
-import RoadMap from "@/app/Components/RoadMap/RoadMap";
-import BulkSms from "@/app/Components/BulkBusinessListingBenefits/BusinessListingBenefits";
+import RoadMap from "../../Components/RoadMap/RoadMap";
+import BulkSms from "../../Components/BulkBusinessListingBenefits/BusinessListingBenefits";
 
 function Page() {
   // =========================================
