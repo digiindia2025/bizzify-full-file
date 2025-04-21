@@ -214,7 +214,7 @@ const ProfilePage = () => {
                     }`}
                     onClick={() => setActiveTab("listing")}
                   >
-                    <i className="bi bi-list-task"></i> Listing
+                    <i className="bi bi-list-task"></i> My Business
                   </button>
                   <button
                     className={`sidebar-tab ${

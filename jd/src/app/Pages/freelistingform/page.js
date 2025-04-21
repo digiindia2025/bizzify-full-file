@@ -4,17 +4,18 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Tabs, Tab } from "react-bootstrap";
 import "./freelistingform.css";
 import Image from "next/image";
-import BusinessDetails from "@/app/Components/FreeListingform/BusinessDetails";
-import ContactPerson from "@/app/Components/FreeListingform/ContactPerson";
-import BusinessTiming from "@/app/Components/FreeListingform/BusinessTiming";
-import BusinessCategory from "@/app/Components/FreeListingform/BusinessCategory";
-import UpgradeListing from "@/app/Components/FreeListingform/UpgradeListing";
 import contactImage from "../../Images/Step1.png";
 import businessImage from "../../Images/Step2.png";
 import categoryImage from "../../Images/Step3.png";
 import timingImage from "../../Images/Step3.png";
 import upgradeImage from "../../Images/Step4.png";
 import Head from "next/head";
+import BusinessDetails from "../../Components/FreeListingform/BusinessDetails";
+import ContactPerson from "../../Components/FreeListingform/ContactPerson";
+import BusinessCategory from "../../Components/FreeListingform/BusinessCategory";
+import BusinessTiming from "../../Components/FreeListingform/BusinessTiming";
+import UpgradeListing from "../../Components/FreeListingform/UpgradeListing";
+
 
 const Page = () => {
   const [key, setKey] = useState("contact");

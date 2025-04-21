@@ -8,7 +8,7 @@ const ContactPerson = ({ setKey }) => {
     firstName: "",
     lastName: "",
     contactNumber: "",
-    alternateNumbers: [],  // If you want to handle this as an array, make sure it's captured properly in the form.
+    alternateNumbers: [], // If you want to handle this as an array, make sure it's captured properly in the form.
     whatsappNumber: "",
     email: "",
   });
@@ -28,13 +28,16 @@ const ContactPerson = ({ setKey }) => {
     setError(""); // Reset error on form submission
 
     try {
-      const response = await fetch("http://localhost:5000/api/admin/createContact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/admin/createContact",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       // Check for a successful response
       if (!response.ok) {
@@ -43,11 +46,11 @@ const ContactPerson = ({ setKey }) => {
       }
 
       // On successful submission, navigate to the next form
-      setKey("business");  // Replace "business" with the key of the next step
+      setKey("business"); // Replace "business" with the key of the next step
     } catch (err) {
       setError(err.message); // Display error if any occurs
     } finally {
-      setLoading(false);  // Reset loading state
+      setLoading(false); // Reset loading state
     }
   };
 
