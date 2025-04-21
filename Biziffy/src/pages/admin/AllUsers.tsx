@@ -46,59 +46,63 @@ const AllUsers = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+  console.log("Search Query: ", searchQuery);
+  console.log("Users: ", userList);
 
   const fetchUsers = async () => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/users");
-      console.log("API Response:", response.data);
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = response.data;
-      
-      
-      if (data?.users && Array.isArray(data.users)) {
-        setUserList(data.users.filter((user): user is UserData =>
-          typeof user?._id === 'string' &&
-          typeof user?.name === 'string' &&
-          typeof user?.email === 'string' &&
-          typeof user?.phone === 'string' &&
-          ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
-        ));
-      } else if (Array.isArray(data)) {
-        setUserList(data.filter((user): user is UserData =>
-          typeof user?._id === 'string' &&
-          typeof user?.name === 'string' &&
-          typeof user?.email === 'string' &&
-          typeof user?.phone === 'string' &&
-          ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
-        ));
-      }
-       else {
-        console.error("Unexpected response format:", data);
-        setUserList([]);
-        setError("Failed to load users due to unexpected data format.");
-      }
+        const response = await axios.get("http://localhost:5000/api/admin/auth/all");
+        console.log("API Response:", response.data);
+        if (response.status !== 200) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = response.data;
+
+        if (data?.users && Array.isArray(data.users)) {
+            const filteredData = data.users.filter((user): user is UserData =>
+                typeof user?._id === 'string' &&
+                typeof user?.name === 'string' &&
+                typeof user?.email === 'string' &&
+                typeof user?.phone === 'string' &&
+                ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
+            );
+            setUserList(filteredData);
+            console.log("UserList after setting:", filteredData); // ADD THIS LINE
+        } else if (Array.isArray(data)) {
+            const filteredData = data.filter((user): user is UserData =>
+                typeof user?._id === 'string' &&
+                typeof user?.name === 'string' &&
+                typeof user?.email === 'string' &&
+                typeof user?.phone === 'string' &&
+                ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
+            );
+            setUserList(filteredData);
+            console.log("UserList after setting (array data):", filteredData); // ADD THIS LINE
+        } else {
+            console.error("Unexpected response format:", data);
+            setUserList([]);
+            setError("Failed to load users due to unexpected data format.");
+        }
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError("Failed to load users: " + err.message);
-      } else {
-        setError("Failed to load users: An unknown error occurred.");
-      }
-      setUserList([]);
+        if (err instanceof Error) {
+            setError("Failed to load users: " + err.message);
+        } else {
+            setError("Failed to load users: An unknown error occurred.");
+        }
+        setUserList([]);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   const handleDeleteUser = async (userId: string) => {
     const confirmed = window.confirm("Are you sure you want to delete this user?");
     if (!confirmed) return;
 
     try {
-      const response = await axios.delete(`http://localhost:5000/api/admin/users/${userId}`);
+      const response = await axios.delete(`http://localhost:5000/api/admin/auth/all/${userId}`);
       if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -116,7 +120,7 @@ const AllUsers = () => {
 
   const handleUpdateStatus = async (userId: string, newStatus: UserData["status"]) => {
     try {
-      const response = await axios.patch(`http://localhost:5000/api/admin/users/${userId}/toggle-status`, { status: newStatus }, {
+      const response = await axios.patch(`http://localhost:5000/api/admin/auth/all/${userId}/toggle-status`, { status: newStatus }, {
         headers: {
           "Content-Type": "application/json",
         },

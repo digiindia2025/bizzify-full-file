@@ -3,13 +3,6 @@ import axios from "axios";
 import { AdminLayout } from "@/components/Layout/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-<<<<<<< HEAD
-import { useParams, Link, useLocation } from "react-router-dom";
-=======
-import { useParams, Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
->>>>>>> 18fce7f081eb8090d02f9e9644b59419ff0bf379
-
 // Interface for full listing response from backend
 interface FullListingDetails {
   businessId: string;
@@ -71,33 +64,8 @@ const location = useLocation();
   console.log("XXXXXXXXXXXXXXXXXXXXXXXXx",userData)
   // Fetch listing details from backend on mount
   useEffect(() => {
-<<<<<<< HEAD
-    // const fetchListingDetails = async () => {
-    //   setLoading(true);
-    //   setError(null);
-    //   try {
-    //     const res = await axios.get(`http://localhost:5000/api/admin/getAllFullListings/${id}`);
-    //     setListing(res.data);
-    setListing(data);
-    //   } catch (err: unknown) {
-    //     console.error("Error fetching listing:", err);
-    //     if (axios.isAxiosError(err)) {
-    //       setError(err.response?.data?.message || err.message);
-    //     } else {
-    //       setError("An unexpected error occurred.");
-    //     }
-    //   } finally {
-    setLoading(false);
-    //   }
-    // };
 
-    // if (id) {
-    //   fetchListingDetails();
-    // } else {
-    //   setError("Listing ID not found.");
-    //   setLoading(false);
-    // }
-=======
+
     const fetchListingDetails = async (id) => {
       setLoading(true);
       setError(null);
@@ -124,7 +92,7 @@ const location = useLocation();
       setError("Listing ID not found.");
       setLoading(false);
     }
->>>>>>> 18fce7f081eb8090d02f9e9644b59419ff0bf379
+
   }, [id]);
 
   // Show loading UI
@@ -172,18 +140,25 @@ const location = useLocation();
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-<<<<<<< HEAD
+
+              <div><strong>Business Name:</strong> {businessDetails.businessName || "N/A"}</div>
+              <div><strong>Category:</strong> {businessDetails.category || "N/A"}</div>
+              <div><strong>Phone:</strong> {businessDetails.phone || "N/A"}</div>
+              <div>
+
+
               <div><p className="font-medium">Business Name:</p><p>{businessDetails.businessName || "N/A"}</p></div>
               <div><p className="font-medium">Category:</p><p>{businessCategory.category || "N/A"}</p></div>
               <div><p className="font-medium">Phone:</p><p>{contactPerson.contactNumber || "N/A"}</p></div>
               <div>
                 <p className="font-medium">Hide Phone Number:</p>
                 <input type="checkbox" checked={contactPerson.whatsappNumber || false} readOnly className="h-4 w-4" />
-=======
+
               <div><strong>Business Name:</strong> {businessDetails.businessName || "N/A"}</div>
               <div><strong>Category:</strong> {businessDetails.category || "N/A"}</div>
               <div><strong>Phone:</strong> {businessDetails.phone || "N/A"}</div>
               <div>
+
                 <strong>Hide Phone Number:</strong>
                 <input
                   type="checkbox"
@@ -191,7 +166,9 @@ const location = useLocation();
                   readOnly
                   className="ml-2 h-4 w-4"
                 />
->>>>>>> 18fce7f081eb8090d02f9e9644b59419ff0bf379
+
+
+
               </div>
               <div><strong>Status:</strong> {businessDetails.status || "N/A"}</div>
               <div><strong>Business Status:</strong> {businessDetails.businessStatus || "N/A"}</div>
@@ -280,7 +257,7 @@ const location = useLocation();
             </div>
           )}
 
-<<<<<<< HEAD
+
           {/* Timings */}
           {listing.businessTiming && (
             <div className="mb-6">
@@ -302,7 +279,7 @@ const location = useLocation();
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Upgrade Information</h3>
               <pre className="bg-gray-100 p-4 rounded-md overflow-auto">{JSON.stringify(listing.upgradeListing, null, 2)}</pre>
-=======
+
           {/* === TIMINGS === */}
           {listing.timings && (
             <div className="mb-6">
@@ -313,6 +290,7 @@ const location = useLocation();
             </div>
           )}
 
+
           {/* === UPGRADE === */}
           {listing.upgrade && (
             <div className="mb-6">
@@ -320,7 +298,7 @@ const location = useLocation();
               <pre className="bg-gray-100 p-4 rounded-md overflow-auto">
                 {JSON.stringify(listing.upgrade, null, 2)}
               </pre>
->>>>>>> 18fce7f081eb8090d02f9e9644b59419ff0bf379
+
             </div>
           )}
         </CardContent>

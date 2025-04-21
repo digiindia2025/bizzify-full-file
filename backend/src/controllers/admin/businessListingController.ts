@@ -130,7 +130,9 @@ export const createUpgradeListing = async (req: Request, res: Response) => {
   }
 };
 
-<<<<<<< HEAD
+
+
+
 // import { Request, Response } from "express";
 
 // export const upgradeListing = async (req: Request, res: Response) => {
@@ -151,8 +153,8 @@ export const createUpgradeListing = async (req: Request, res: Response) => {
 //     }
 //   };
 
-=======
->>>>>>> 18fce7f081eb8090d02f9e9644b59419ff0bf379
+
+
 // Step 6: Create Full Business Listing (Optional Combined Entry)
 export const createBusinessListing = async (req: Request, res: Response) => {
   try {
@@ -174,7 +176,7 @@ export const getAllFullListings = async (req: Request, res: Response) => {
     const timings = await BusinessTiming.find();
     const upgrades = await UpgradeListing.find();
 
-<<<<<<< HEAD
+
     const listings = businessDetails.map((detail, index) => ({
       businessDetails: detail,
       contactPerson: contacts[index],
@@ -299,7 +301,7 @@ export const updatePublishStatus = async (req: Request, res: Response) => {
     } catch (error) {
       console.error("Error updating business status:", error);
       res.status(500).json({ message: "Server error" });
->>>>>>> 18fce7f081eb8090d02f9e9644b59419ff0bf379
+
     }
 
     listing.publishedDate = status;

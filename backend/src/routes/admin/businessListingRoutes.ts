@@ -6,7 +6,8 @@ import {
   createUpgradeListing,
   createBusinessListing, // optional: if you want to save all together
   getAllFullListings,
-<<<<<<< HEAD
+
+
   deleteBusinessListing,      // Import Delete method
   updateBusinessStatus,     // Import Update method
   updatePublishStatus, // ✅ Import the new controller
@@ -18,12 +19,12 @@ import {
   updateAllListingsById,
   deleteBusinessListing
 
-=======
   deleteBusinessListing      // Import Delete method
   // updateBusinessStatus,
   // updatePublishStatus,
   // getBusinessListingDetails,
->>>>>>> 18fce7f081eb8090d02f9e9644b59419ff0bf379
+
+
 } from "../../controllers/admin/businessListingController";
 import upload from "../../middleware/multer";
 
@@ -42,11 +43,23 @@ router.post("/create", createBusinessListing);
 // ✅ Get all listings (merged view)
 router.get("/getAllFullListings", getAllFullListings);
 
+
 // ✅ View individual listing details by ID
 // router.get("/listing/:id", getBusinessListingDetails);
 
 /// ✅ Delete a business listing by ID
 router.delete("/listing/:id", deleteBusinessListing);
+
+// ✅ Update business approval status
+// router.patch("/update-business-status/:id", updateBusinessStatus);
+
+
+// ✅ View individual listing details by ID
+// router.get("/listing/:id", getBusinessListingDetails);
+
+/// ✅ Delete a business listing by ID
+router.delete("/listing/:id", deleteBusinessListing);
+
 
 // ✅ Update business approval status
 // router.patch("/update-business-status/:id", updateBusinessStatus);
