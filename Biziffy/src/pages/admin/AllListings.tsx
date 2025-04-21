@@ -52,19 +52,15 @@ interface FullListing {
     phone: string;
     email: string;
     firstName?: string; // Add firstName
-    lastName?: string;  // Add lastName
+    lastName?: string; // Add lastName
   };
   upgrade: {
     plan: string;
     expiryDate: string;
   };
-  businessCategory?: {
-    _id: string;
-    category?: string;
-  };
 }
 
-  export const AllListings = () => {
+export const AllListings = () => {
   const [fullListings, setFullListings] = useState<FullListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,9 +74,15 @@ interface FullListing {
   const [totalPages, setTotalPages] = useState(1);
 
   // Editing status state
-  const [editingPublishStatusId, setEditingPublishStatusId] = useState<string | null>(null);
+  const [editingPublishStatusId, setEditingPublishStatusId] = useState<
+    string | null
+  >(null);
   const [editingStatusId, setEditingStatusId] = useState<string | null>(null);
-  const [publishStatusOptions] = useState(["Pending", "Published", "Unpublished"]);
+  const [publishStatusOptions] = useState([
+    "Pending",
+    "Published",
+    "Unpublished",
+  ]);
   const [statusOptions] = useState(["Pending", "Approved", "Rejected"]);
 
   const navigate = useNavigate();
@@ -93,11 +95,14 @@ interface FullListing {
     setLoading(true);
     setError(null);
     try {
-
-      const res = await axios.get(`http://localhost:5000/api/admin/get-all-listings`,);
-      // console.log("SSSSSSSSSSSS-------", res.data.data)
-      setFullListings(res.data.data || []);
-      setTotalPages(Math.ceil((res.data?.data.length || 0) / listingsPerPage) || 1);
+      const res = await axios.get(
+        `http://localhost:5000/api/admin/get-all-listings`
+      );
+      console.log("SSSSSSSSSSSS-------", res.data)
+      setFullListings(res?.data || []);
+      setTotalPages(
+        Math.ceil((res.data.length || 0) / listingsPerPage) || 1
+      );
     } catch (err: unknown) {
       console.error("Failed to fetch full listings", err);
       if (err instanceof Error) {
@@ -111,20 +116,25 @@ interface FullListing {
       setLoading(false);
     }
   };
-// console.log("setFullListings",fullListings)
+  // console.log("setFullListings",fullListings)
   const filteredListings = fullListings.filter((listing) => {
     const query = searchQuery.toLowerCase();
-    const businessDetails: NonNullable<FullListing["businessDetails"]> = listing.businessDetails || { _id: "" };
-    const businessCategory: NonNullable<FullListing["businessCategory"]> = listing.businessCategory || { _id: "" };
-    const businessTimings: NonNullable<FullListing["timings"]> = listing.timings || { open: "", close: "", days: [] };
-    const contactPerson: NonNullable<FullListing["contact"]> = listing.contact || { phone: "", email: "" };
-    const details: NonNullable<FullListing["businessDetails"]> = listing.businessDetails || { _id: "" };
+    const businessDetails: NonNullable<FullListing["businessDetails"]> =
+      listing.businessDetails || { _id: "" };
+    const businessCategory: NonNullable<FullListing["businessCategory"]> =
+      listing.businessCategory || { _id: "" };
+    const businessTimings: NonNullable<FullListing["businessTiming"]> =
+      listing.businessTiming || { _id: "" };
+    const contactPerson: NonNullable<FullListing["contactPerson"]> =
+      listing.contactPerson || { _id: "" };
+    const details: NonNullable<FullListing["businessDetails"]> =
+      listing.businessDetails || { _id: "" };
     return (
       businessDetails.businessName?.toLowerCase().includes(query) ||
       businessCategory.category?.toLowerCase().includes(query) ||
       contactPerson.firstName?.toLowerCase().includes(query) ||
-      formatDate(listing.businessDetails?.createdAt)?.toLowerCase().includes(query) ||
-      // Removed invalid reference to businessTimings.publishedDate
+      formatDate(listing?.createdAt)?.toLowerCase().includes(query) ||
+      businessTimings.publishedDate?.toLowerCase().includes(query) ||
       details.status?.toLowerCase().includes(query) ||
       details.businessStatus?.toLowerCase().includes(query) ||
       details.trustStatus?.toLowerCase().includes(query)
@@ -141,7 +151,8 @@ interface FullListing {
   };
 
   const handleBulkAction = async () => {
-    if (selectedAction === "Bulk Action" || selectedListingIds.length === 0) return;
+    if (selectedAction === "Bulk Action" || selectedListingIds.length === 0)
+      return;
 
     try {
       await axios.post(`http://localhost:5000/api/admin/listings/bulk-action`, {
@@ -160,18 +171,13 @@ interface FullListing {
       toast({
         variant: "destructive",
         title: "Bulk Action Failed",
-        description: error.response?.data?.message || `Failed to perform '${selectedAction}' on selected listings.`,
+        description:
+          error.response?.data?.message ||
+          `Failed to perform '${selectedAction}' on selected listings.`,
       });
     }
   };
 
-
-  /**
-   * Handles checkbox change by adding/removing the corresponding listing ID from
-   * `selectedListingIds` state.
-   * @param {string} id - The listing ID to add/remove
-   */
-/*******  576a60d4-9393-42bd-be17-761f0c463ba4  *******/
   const handleCheckboxChange = (id: string) => {
     if (selectedListingIds.includes(id)) {
       setSelectedListingIds(selectedListingIds.filter((item) => item !== id));
@@ -182,24 +188,43 @@ interface FullListing {
 
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      setSelectedListingIds(currentListings.map((listing) => listing.businessId));
+      setSelectedListingIds(
+        currentListings.map((listing) => listing.businessId)
+      );
     } else {
       setSelectedListingIds([]);
     }
   };
 
   const getStatusBadge = (status: string) => {
-    const normalized = status?.toLowerCase() === "unpublish" ? "pending" : status?.toLowerCase();
+    const normalized =
+      status?.toLowerCase() === "unpublish" ? "pending" : status?.toLowerCase();
     const displayStatus = normalized === "unpublish" ? "pending" : normalized;
     switch (displayStatus) {
       case "approved":
-        return <span className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded-full">Approved</span>;
+        return (
+          <span className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded-full">
+            Approved
+          </span>
+        );
       case "pending":
-        return <span className="px-3 py-1 text-sm bg-yellow-100 text-yellow-800 rounded-full">Pending</span>;
+        return (
+          <span className="px-3 py-1 text-sm bg-yellow-100 text-yellow-800 rounded-full">
+            Pending
+          </span>
+        );
       case "rejected":
-        return <span className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded-full">Rejected</span>;
+        return (
+          <span className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded-full">
+            Rejected
+          </span>
+        );
       default:
-        return <span className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-full">{status}</span>;
+        return (
+          <span className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-full">
+            {status}
+          </span>
+        );
     }
   };
 
@@ -225,12 +250,23 @@ interface FullListing {
 
   const handleUpdatePublishStatus = async (id: string, newStatus: string) => {
     try {
-      await axios.patch(`http://localhost:5000/api/admin/listings/publish-status/${id}`, { status: newStatus });
-      setFullListings(fullListings.map((listing) =>
-        listing.businessId === id && listing.businessDetails
-          ? { ...listing, businessDetails: { ...listing.businessDetails, publishedDate: newStatus } }
-          : listing
-      ));
+      await axios.patch(
+        `http://localhost:5000/api/admin/listings/publish-status/${id}`,
+        { status: newStatus }
+      );
+      setFullListings(
+        fullListings.map((listing) =>
+          listing.businessId === id && listing.businessDetails
+            ? {
+                ...listing,
+                businessDetails: {
+                  ...listing.businessDetails,
+                  publishedDate: newStatus,
+                },
+              }
+            : listing
+        )
+      );
       setEditingPublishStatusId(null);
       toast({
         title: "Publish Status Updated",
@@ -241,28 +277,38 @@ interface FullListing {
       toast({
         variant: "destructive",
         title: "Error Updating Publish Status",
-        description: error.response?.data?.message || "Failed to update publish status.",
+        description:
+          error.response?.data?.message || "Failed to update publish status.",
       });
     }
   };
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
-      await axios.patch(`http://localhost:5000/api/admin/update-business-listing/${id}`, { status: newStatus });
-      setFullListings(fullListings.map((listing) => {
-        if (listing.businessId === id && listing.businessDetails) {
-          return {
-            ...listing,
-            businessDetails: {
-              ...listing.businessDetails,
-              status: newStatus,
-              businessStatus: newStatus === "Approved" ? "Approved" : "Not Approved",
-              trustStatus: newStatus === "Approved" || newStatus === "Pending" ? "Approved" : "Not Approved",
-            },
-          };
-        }
-        return listing;
-      }));
+      await axios.patch(
+        `http://localhost:5000/api/admin/update-business-listing/${id}`,
+        { status: newStatus }
+      );
+      setFullListings(
+        fullListings.map((listing) => {
+          if (listing.businessId === id && listing.businessDetails) {
+            return {
+              ...listing,
+              businessDetails: {
+                ...listing.businessDetails,
+                status: newStatus,
+                businessStatus:
+                  newStatus === "Approved" ? "Approved" : "Not Approved",
+                trustStatus:
+                  newStatus === "Approved" || newStatus === "Pending"
+                    ? "Approved"
+                    : "Not Approved",
+              },
+            };
+          }
+          return listing;
+        })
+      );
       setEditingStatusId(null);
       toast({
         title: "Status Updated",
@@ -273,7 +319,8 @@ interface FullListing {
       toast({
         variant: "destructive",
         title: "Error Updating Status",
-        description: error.response?.data?.message || "Failed to update status.",
+        description:
+          error.response?.data?.message || "Failed to update status.",
       });
     }
   };
@@ -289,60 +336,23 @@ interface FullListing {
       return;
     }
 
-    const confirmed = window.confirm(
-      `Are you sure you want to delete listing with ID: ${id}?`
-    );
-
-    if (!confirmed) return;
-
     try {
-      const response = await axios.delete(`http://localhost:5000/api/listing/${id}`);
-      console.log("Delete Response:", response.data);
-
-      toast({
-        title: "Listing Deleted",
-        description: "The listing has been successfully deleted.",
-      });
-
-      fetchFullListings(); // Refresh listing after deletion
-    } catch (error: any) {
-      console.error("Delete failed:", error.response?.data || error.message);
-      toast({
-        variant: "destructive",
-        title: "Error deleting listing",
-        description:
-          error.response?.data?.message || "Something went wrong while deleting.",
-      });
-    }
-  };
-
-    try {
-      const response = await axios.get(`http://localhost:5000/api/admin/delete-business-listing/${id}`);
+      const response = await axios.get(
+        `http://localhost:5000/api/admin/delete-business-listing/${id}`
+      );
       console.log("Delete Response: ", response.data);
       fetchFullListings();
     } catch (error) {
-      console.error("Delete failed: ", error.response ? error.response.data : error.message);
+      console.error(
+        "Delete failed: ",
+        error.response ? error.response.data : error.message
+      );
     }
   };
 
+  console.log("XXXXXXXXXXXXXXXXXVXXXXXX", currentListings);
 
-  // console.log("XXXXXXXXXXXXXXXXXVXXXXXX", currentListings)
-
-  const csvData = (fullListings?.filter((listing) => {
-    const query = searchQuery.toLowerCase();
-    const businessDetails: NonNullable<FullListing["businessDetails"]> = listing.businessDetails || { _id: "" };
-    const businessCategory: NonNullable<FullListing["businessCategory"]> = listing.businessCategory || { _id: "" };
-    const contactPerson: NonNullable<FullListing["contact"]> = listing.contact || { phone: "", email: "" };
-    return (
-      businessDetails.businessName?.toLowerCase().includes(query) ||
-      businessCategory.category?.toLowerCase().includes(query) ||
-      contactPerson.firstName?.toLowerCase().includes(query) ||
-      formatDate(listing.businessDetails?.createdAt)?.toLowerCase().includes(query) ||
-      businessDetails.status?.toLowerCase().includes(query) ||
-      businessDetails.businessStatus?.toLowerCase().includes(query) ||
-      businessDetails.trustStatus?.toLowerCase().includes(query)
-    );
-  }) || []).map(listing => ({
+  const csvData = filteredListings.map((listing) => ({
     ID: listing.businessDetails?._id, // Use MongoDB _id for CSV ID
     Title: listing.businessDetails?.businessName,
     Category: listing.businessDetails?.category,
@@ -358,14 +368,21 @@ interface FullListing {
   }));
 
   if (loading) {
-    return <AdminLayout title=""><div>Loading listings...</div></AdminLayout>;
+    return (
+      <AdminLayout title="">
+        <div>Loading listings...</div>
+      </AdminLayout>
+    );
   }
 
   if (error) {
-    return <AdminLayout title=""><div className="text-red-500">Error loading listings: {error}</div></AdminLayout>;
+    return (
+      <AdminLayout title="">
+        <div className="text-red-500">Error loading listings: {error}</div>
+      </AdminLayout>
+    );
   }
 
-  
   return (
     <AdminLayout title="">
       <div className="mb-6">
@@ -385,7 +402,11 @@ interface FullListing {
             <option value="Approve">Approve</option>
             <option value="Reject">Reject</option>
           </select>
-          <Button className="bg-blue-500 hover:bg-blue-600" onClick={handleBulkAction} disabled={selectedListingIds.length === 0}>
+          <Button
+            className="bg-blue-500 hover:bg-blue-600"
+            onClick={handleBulkAction}
+            disabled={selectedListingIds.length === 0}
+          >
             Apply
           </Button>
         </div>
@@ -405,166 +426,10 @@ interface FullListing {
           >
             Export to CSV
           </CSVLink>
-
         </div>
       </div>
 
       <div className="bg-white rounded-md border shadow-sm mt-4">
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead className="w-[40px]">
-          <input
-            type="checkbox"
-            className="h-4 w-4"
-            onChange={handleSelectAll}
-            checked={
-              currentListings.length > 0 &&
-              selectedListingIds.length === currentListings.length
-            }
-          />
-        </TableHead>
-        <TableHead>ID</TableHead>
-        <TableHead>Title</TableHead>
-        <TableHead>Category</TableHead>
-        <TableHead>User Name</TableHead>
-        <TableHead>Created Date</TableHead>
-        <TableHead>Published Date</TableHead>
-        <TableHead>Status</TableHead>
-        <TableHead>Action</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-  {currentListings.map((listing) => (
-    
-    <TableRow key={listing.businessId}> {/* Keep businessId as the key for React */}
-    {/* <TableCell>{listing.businessDetails?._id}</TableCell>
-      <TableCell>{listing.businessDetails?.businessName}</TableCell>
-      <TableCell>{listing.businessDetails?.category}</TableCell> */}
-      <TableCell>
-      {listing.contact?.firstName && listing.contact?.lastName
-          ? `${listing.contact.firstName} ${listing.contact.lastName}`
-          : listing.businessDetails?.userId // Fallback
-        }
-        <input
-          type="checkbox"
-          className="h-4 w-4"
-          checked={selectedListingIds.includes(listing.businessId)}
-          onChange={() => handleCheckboxChange(listing.businessId)}
-        />
-      </TableCell>
-      <TableCell>{listing.businessDetails?._id}</TableCell> {/* Access the MongoDB _id */}
-      <TableCell>{listing.businessDetails?.businessName}</TableCell>
-      <TableCell>{listing.businessDetails?.category}</TableCell>
-      <TableCell>{listing.businessDetails?.userId}</TableCell>
-      <TableCell>{listing.businessDetails?.createdAt}</TableCell>
-      <TableCell>
-        {editingPublishStatusId === listing.businessId ? (
-          <select
-            className="px-2 py-1 border rounded-md"
-            value={listing.businessDetails?.publishedDate || "Pending"}
-            onChange={(e) =>
-              handleUpdatePublishStatus(listing.businessId, e.target.value)
-            }
-            onBlur={() => setEditingPublishStatusId(null)}
-            autoFocus
-          >
-            {publishStatusOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <div className="flex items-center gap-2">
-            {listing.businessDetails?.publishedDate || "Pending"}
-            <button
-              onClick={() => setEditingPublishStatusId(listing.businessId)}
-              className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
-            >
-              <Pencil className="w-3 h-3 text-orange-600" />
-            </button>
-          </div>
-        )}
-      </TableCell>
-      <TableCell>
-        {editingStatusId === listing.businessId ? (
-          <select
-            className="px-2 py-1 border rounded-md"
-            value={listing.businessDetails?.status}
-            onChange={(e) =>
-              handleUpdateStatus(listing.businessId, e.target.value)
-            }
-            onBlur={() => setEditingStatusId(null)}
-            autoFocus
-          >
-            {statusOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <div className="flex items-center gap-2">
-            {getStatusBadge(listing.businessDetails?.status || "Pending")}
-            <button
-              onClick={() => setEditingStatusId(listing.businessId)}
-              className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
-            >
-              <Pencil className="w-3 h-3 text-orange-600" />
-            </button>
-          </div>
-        )}
-      </TableCell>
-      <TableCell>
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
-            {/* <Link to={`/admin/listings/details/${listing.businessId}`}> */}
-              <Button
-              onClick={()=>navigate(`/admin/listings/details`,{state:{listingId:listing}})}
-                size="sm"
-                variant="default"
-                className="bg-blue-500 hover:bg-blue-600 text-white"
-              >
-                <Eye className="h-4 w-4 mr-1" />
-                View
-              </Button>
-            {/* </Link> */}
-
-            <Button
-  size="sm"
-  variant="destructive"
-  onClick={() => handleDeleteClick(listing._id)} 
-  
->
-  
-  <Trash className="h-4 w-4 mr-1" />
-  Delete
-  
-</Button>
-
-
-          </div>
-
-
-          <div className="flex flex-col gap-1">
-            {getBusinessTrustStatus(
-              listing.businessDetails?.businessStatus || "Not Approved"
-            )}
-            {getTrustStatus(
-              listing.businessDetails?.trustStatus || "Not Approved"
-            )}
-          </div>
-        </div>
-      </TableCell>
-    </TableRow>
-  ))}
-</TableBody>
-  </Table>
-        
-        {/* Pagination Controls */}
-        <div className="flex justify-center mt-6 space-x-2">
-    <Button
         <Table>
           <TableHeader>
             <TableRow>
@@ -590,7 +455,7 @@ interface FullListing {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentListings.map((listing) => (
+            {currentListings?.map((listing) => (
               <TableRow key={listing.businessId}>
                 <TableCell>
                   <input
@@ -603,15 +468,24 @@ interface FullListing {
                 <TableCell>{listing._id}</TableCell>
                 <TableCell>{listing?.contactPerson?.title}</TableCell>
                 <TableCell>{listing?.businessCategory?.category}</TableCell>
-                <TableCell>{listing?.contactPerson?.firstName + " " + listing?.contactPerson?.lastName}</TableCell>
+                <TableCell>
+                  {listing?.contactPerson?.firstName +
+                    " " +
+                    listing?.contactPerson?.lastName}
+                </TableCell>
                 <TableCell>{formatDate(listing?.createdAt)}</TableCell>
                 <TableCell>
                   {editingPublishStatusId === listing.businessId ? (
                     <select
                       className="px-2 py-1 border rounded-md"
-                      value={listing.businessDetails?.publishedDate || "Pending"}
+                      value={
+                        listing.businessDetails?.publishedDate || "Pending"
+                      }
                       onChange={(e) =>
-                        handleUpdatePublishStatus(listing.businessId, e.target.value)
+                        handleUpdatePublishStatus(
+                          listing.businessId,
+                          e.target.value
+                        )
                       }
                       onBlur={() => setEditingPublishStatusId(null)}
                       autoFocus
@@ -626,7 +500,9 @@ interface FullListing {
                     <div className="flex items-center gap-2">
                       {listing.businessDetails?.publishedDate || "Pending"}
                       <button
-                        onClick={() => setEditingPublishStatusId(listing.businessId)}
+                        onClick={() =>
+                          setEditingPublishStatusId(listing.businessId)
+                        }
                         className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
                       >
                         <Pencil className="w-3 h-3 text-orange-600" />
@@ -640,12 +516,12 @@ interface FullListing {
                       className="px-2 py-1 border rounded-md"
                       value={listing.businessDetails?.status}
                       onChange={(e) =>
-                        handleUpdateStatus(listing._id, e.target.value)
+                        handleUpdateStatus(listing?._id, e.target.value)
                       }
                       onBlur={() => setEditingStatusId(null)}
                       autoFocus
                     >
-                      {statusOptions.map((option) => (
+                      {statusOptions?.map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
@@ -653,7 +529,9 @@ interface FullListing {
                     </select>
                   ) : (
                     <div className="flex items-center gap-2">
-                      {getStatusBadge(listing.businessDetails?.status || "Pending")}
+                      {getStatusBadge(
+                        listing.businessDetails?.status || "Pending"
+                      )}
                       <button
                         onClick={() => setEditingStatusId(listing.businessId)}
                         className="p-1 bg-orange-200 rounded-md hover:bg-orange-300 transition-colors w-6 h-6 flex items-center justify-center"
@@ -668,7 +546,12 @@ interface FullListing {
                     <div className="flex gap-2">
                       {/* <Link to={`/admin/listings/details/${listing.businessId}`}> */}
                       <Button
-                        onClick={() => navigate(`/admin/listings/details/${listing?.businessDetails?._id}`, { state: { listing: listing } })}
+                        onClick={() =>
+                          navigate(
+                            `/admin/listings/details/${listing?.businessDetails?._id}`,
+                            { state: { listing: listing } }
+                          )
+                        }
                         size="sm"
                         variant="default"
                         className="bg-blue-500 hover:bg-blue-600 text-white"
@@ -688,10 +571,10 @@ interface FullListing {
                       </Button>
                     </div>
 
-
                     <div className="flex flex-col gap-1">
                       {getBusinessTrustStatus(
-                        listing.businessDetails?.businessStatus || "Not Approved"
+                        listing.businessDetails?.businessStatus ||
+                          "Not Approved"
                       )}
                       {getTrustStatus(
                         listing.businessDetails?.trustStatus || "Not Approved"
@@ -706,35 +589,34 @@ interface FullListing {
 
         {/* Pagination Controls */}
         <div className="flex justify-center mt-6 space-x-2">
-          {/* <Button
+          <Button
+            size="sm"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
 
-      size="sm"
-      onClick={() => handlePageChange(currentPage - 1)}
-      disabled={currentPage === 1}
-    >
-      Previous
-    </Button>
-
-           {[...Array(totalPages)].map((_, i) => (
-      <Button
-        key={i}
-        size="sm"
-        variant={currentPage === i + 1 ? "default" : "outline"}
-        onClick={() => handlePageChange(i + 1)}
-      >
-        {i + 1}
-      </Button>
-         ))}
-        
-           size="sm"
-           onClick={() => handlePageChange(currentPage + 1)}
-           disabled={currentPage === totalPages}
-         >
-           Next
-         </Button>
+          {[...Array(totalPages)].map((_, i) => (
+            <Button
+              key={i}
+              size="sm"
+              variant={currentPage === i + 1 ? "default" : "outline"}
+              onClick={() => handlePageChange(i + 1)}
+            >
+              {i + 1}
+            </Button>
+          ))}
+          <Button
+            size="sm"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
         </div>
       </div>
-    </AdminLayout >
+    </AdminLayout>
   );
 };
 

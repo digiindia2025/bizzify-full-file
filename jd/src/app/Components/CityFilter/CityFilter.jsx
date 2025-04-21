@@ -19,7 +19,7 @@ export default function CityCards() {
         console.log("Fetched cities:", data);
 
         // Assuming the response contains a 'cities' array
-        setCityData(data?.cities || []);
+        setCityData(data || []);
       } catch (err) {
         console.error("Error fetching cities:", err);
       }

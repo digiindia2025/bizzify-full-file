@@ -80,7 +80,9 @@ const Header = () => {
         </div> */}
         <div className="container">
           <Link className="navbar-brand" href="/">
-            <p className="logo-text">Bizi<span>ff</span>y </p>
+            <p className="logo-text">
+              Bizi<span>ff</span>y{" "}
+            </p>
             {/* <Image src={logo} alt="logo" /> */}
           </Link>
           <button
@@ -150,7 +152,7 @@ const Header = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link"
-                  href="/Pages/bussiness-listing"
+                  href="/Pages/mybusiness"
                   onClick={() => {
                     if (navbarCollapseRef.current) {
                       new window.bootstrap.Collapse(navbarCollapseRef.current, {
@@ -167,10 +169,16 @@ const Header = () => {
               {!isLoggedIn ? (
 
             <div className="d-flex align-items-center ">
-              <Link href="/Pages/login" className="btn btn bg-primary text-white me-2">
+              <Link
+                href="/Pages/login"
+                className="btn btn bg-primary text-white me-2"
+              >
                 SignIn
               </Link>
-              <Link href="/Pages/signup" className="btn btn bg-dark text-white me-2">
+              <Link
+                href="/Pages/signup"
+                className="btn btn bg-dark text-white me-2"
+              >
                 Register
               </Link>
             </div>

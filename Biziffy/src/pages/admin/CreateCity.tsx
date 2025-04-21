@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // make sure this is imported at the top
+
 
 const CreateCity = () => {
   const [formData, setFormData] = useState({
@@ -32,19 +34,26 @@ const CreateCity = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
-      // Simulate API call - would be replaced with actual API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const res = await axios.post(
+        "http://localhost:5000/api/admin/cityRoutes1/add-multiple", // ✅ DIRECT URL
+        { cities: [formData] } // ✅ wrap in `cities` array if your backend expects multiple
+      );
+  
       toast({
         title: "City Created",
         description: `${formData.name}, ${formData.country} has been successfully created.`,
       });
-      
+  
       navigate("/admin/cities");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating city:", error);
+  
+      if (error.response) {
+        console.error("Response error:", error.response.data);
+      }
+  
       toast({
         variant: "destructive",
         title: "Error",
@@ -54,7 +63,7 @@ const CreateCity = () => {
       setLoading(false);
     }
   };
-
+  
   return (
     <AdminLayout title="Create City">
       <div className="flex flex-col gap-5">

@@ -1,50 +1,64 @@
-"use client";
+"use client"; // Ensure it's client-side rendering
 import React, { useEffect, useState } from "react";
-import "./subCategoryFilter.css";
-import "../citytourismGuide/citytourismGuide.css";
-// import breadbg from "../../Images/ResturantBanner.jpg";
+import { useRouter } from "next/navigation"; // Correct import for app router
 import Image from "next/image";
 import Link from "next/link";
-import Head from "next/head";
 import axios from "axios";
+import "./subCategoryFilter.css";
+import "../citytourismGuide/citytourismGuide.css";
 
 const Page = () => {
-  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState(null);
+  const [subcategories, setSubcategories] = useState([]);
+  const [isClient, setIsClient] = useState(false); // Track if it's client-side
+
+  // Only trigger useRouter after component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const router = isClient ? useRouter() : null; // Ensure router is available on client side
+  const { categoryId } = router?.query || {}; // Safely access categoryId
 
   useEffect(() => {
-    const fetchSubCategories = async () => {
+    if (!categoryId) return; // Prevent fetching if categoryId is not available
+
+    const fetchCategoryDetails = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/admin/subcategories");
-        setCategories(response.data.subcategories); // Assuming this is the response format
+        const response = await axios.get(`http://localhost:5000/api/categories/${categoryId}`);
+        setCategory(response.data);
+        setSubcategories(response.data.subcategories || []);
       } catch (error) {
-        console.error("Error fetching subcategories:", error);
+        console.error("Error fetching category details:", error);
       }
     };
 
-    fetchSubCategories();
-  }, []);
+    fetchCategoryDetails();
+  }, [categoryId]); // Fetch when categoryId changes
+
+  if (!categoryId) {
+    return <div>Loading: categoryId is not available.
+    </div>;
+  }
+
+  if (!category || subcategories.length === 0) {
+    return <div>Loading category details...</div>;
+  }
 
   return (
     <>
-      <Head>
-        <title>Find Top Businesses by Category | Biziffy</title>
-        <meta name="description" content="Explore local businesses by category on Biziffy." />
-        <meta name="keywords" content="business category filter, local services, list by category" />
-      </Head>
-
       <section>
-      <div className="all-breadcrumb">
-          {/* Use dynamic category banner if available */}
-          {categories.length > 0 && categories[0].bannerUrl ? (
+        <div className="all-breadcrumb">
+          {category?.bannerUrl ? (
             <Image
-              src={categories[0].bannerUrl} // Use the banner URL from the category data
+              src={category.bannerUrl}
               alt="Breadcrumb Background"
               layout="fill"
               objectFit="cover"
             />
           ) : (
             <Image
-              src="/images/default-banner.jpg" // Default fallback if no banner is provided
+              src="/images/default-banner.jpg"
               alt="Breadcrumb Background"
               layout="fill"
               objectFit="cover"
@@ -53,63 +67,36 @@ const Page = () => {
           <div className="city-bread-overlay"></div>
           <div className="container">
             <div className="bread-content">
-              <h1>Crazy Delicious Awaits. Are You Ready?</h1>
+              <h1>{category?.name}</h1>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="citys-section">
+      <section className="subcategory-section">
         <div className="container">
           <div className="row justify-content-center">
-            <div className="col-md-12">
-              <div className="citys-section-head">
-                <h1 className="citys-section-heading">
-                  What are you looking for?
-                </h1>
-              </div>
-            </div>
-
-            {categories?.length > 0 ? (
-              categories.map((category) => (
-                <div key={category._id} className="col-md-3 col-sm-4 col-6">
-                  <div className="city-category-select-data">
-                    <Link href={`/subcategory-filter?categoryId=${category._id}`}>
+            {subcategories.length > 0 ? (
+              subcategories.map((sub) => (
+                <div key={sub._id} className="col-md-3 col-sm-4 col-6">
+                  <div className="subcategory-card">
+                    <Link href={`/subcategory/${sub.name.toLowerCase().replace(/\s/g, "-")}`}>
                       <div className="subcategory-filter-img">
                         <Image
-                          src={category.imageUrl || "/images/default.jpg"}
-                          alt={category.name}
+                          src={sub.imageUrl || "/images/default.jpg"}
+                          alt={sub.name}
                           width={300}
                           height={200}
                         />
                       </div>
                     </Link>
-
-                    <h4 className="subcategory-filter-title">{category.name}</h4>
-
-                    {category.mainSubCategories?.length > 0 && (
-                      <div className="subcategory-list mt-2">
-                        {category.mainSubCategories.map((sub, idx) => (
-                          <div key={idx} className="subcategory-item">
-                            <Link href={`/subcategory/${sub.name.toLowerCase().replace(/\s/g, "-")}`}>
-                              {sub.name}
-                            </Link>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <h4>{sub.name}</h4>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-center mt-4">No categories found.</p>
+              <p>No subcategories available.</p>
             )}
-
-            <div className="text-center mt-4">
-              <button className="btn btn-primary" type="button">
-                View All Categories
-              </button>
-            </div>
           </div>
         </div>
       </section>

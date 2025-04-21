@@ -1,4 +1,4 @@
-import Businesslistingdetails from "@/app/Components/Businesslistingdetails/Businesslistingdetails";
+import Businesslistingdetails from "../../../Components/Businesslistingdetails/Businesslistingdetails";
 import React from "react";
 
 const page = () => {

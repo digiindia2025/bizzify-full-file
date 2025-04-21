@@ -33,14 +33,19 @@ const AddPopularCity = () => {
     setFormData(prev => ({ ...prev, [name]: checked }));
   };
 
+  // VITE_API_BASE_URL=http://localhost:5000/api/admin/cityRoutes1/add-multiple
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
+      console.log("Submitting data:", formData);
+
       const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/admin/popular-cities`,
+        "http://localhost:5000/api/admin/cityRoutes1/add-multiple",
         formData
+        
       );
+
       toast({
         title: "Success",
         description: "City added successfully!",
