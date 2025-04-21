@@ -1,6 +1,6 @@
-"use client"; // Ensure it's client-side rendering
+"use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Correct import for app router
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
@@ -10,22 +10,17 @@ import "../citytourismGuide/citytourismGuide.css";
 const Page = () => {
   const [category, setCategory] = useState(null);
   const [subcategories, setSubcategories] = useState([]);
-  const [isClient, setIsClient] = useState(false); // Track if it's client-side
-
-  // Only trigger useRouter after component mounts
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const router = isClient ? useRouter() : null; // Ensure router is available on client side
-  const { categoryId } = router?.query || {}; // Safely access categoryId
+  const searchParams = useSearchParams();
+  const categoryId = searchParams.get("categoryId");
 
   useEffect(() => {
-    if (!categoryId) return; // Prevent fetching if categoryId is not available
+    if (!categoryId) return;
 
     const fetchCategoryDetails = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/categories/${categoryId}`);
+        console.log("API Response:", response.data);
+
         setCategory(response.data);
         setSubcategories(response.data.subcategories || []);
       } catch (error) {
@@ -34,36 +29,21 @@ const Page = () => {
     };
 
     fetchCategoryDetails();
-  }, [categoryId]); // Fetch when categoryId changes
+  }, [categoryId]);
 
-  if (!categoryId) {
-    return <div>Loading: categoryId is not available.
-    </div>;
-  }
-
-  if (!category || subcategories.length === 0) {
-    return <div>Loading category details...</div>;
-  }
+  if (!categoryId) return <div>Loading: categoryId not available...</div>;
+  if (!category) return <div>Loading category...</div>;
 
   return (
     <>
       <section>
-        <div className="all-breadcrumb">
-          {category?.bannerUrl ? (
-            <Image
-              src={category.bannerUrl}
-              alt="Breadcrumb Background"
-              layout="fill"
-              objectFit="cover"
-            />
-          ) : (
-            <Image
-              src="/images/default-banner.jpg"
-              alt="Breadcrumb Background"
-              layout="fill"
-              objectFit="cover"
-            />
-          )}
+        <div className="all-breadcrumb position-relative">
+          <Image
+            src={category?.bannerUrl || "/images/default-banner.jpg"}
+            alt="Breadcrumb"
+            layout="fill"
+            objectFit="cover"
+          />
           <div className="city-bread-overlay"></div>
           <div className="container">
             <div className="bread-content">

@@ -22,7 +22,7 @@ const CategorySchema = new mongoose.Schema({
   },
   subcategories: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'SubCategory',  // Assuming you have a SubCategory model
+    ref: 'Subcategory',  // Assuming you have a SubCategory model
   }]
 });
 
