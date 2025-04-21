@@ -2,23 +2,24 @@
 import React, { useState } from "react";
 import "../../Pages/freelistingform/freelistingform.css";
 
-const ContactPerson = ({ setKey }) => {
-  const [formData, setFormData] = useState({
-    title: "Mr",
-    firstName: "",
-    lastName: "",
-    contactNumber: "",
-    alternateNumbers: [], // If you want to handle this as an array, make sure it's captured properly in the form.
-    whatsappNumber: "",
-    email: "",
-  });
+const ContactPerson = ({ setKey, formData, setFormData }) => {
+  // const [formData, setFormData] = useState({
+  //   title: "Mr",
+  //   firstName: "",
+  //   lastName: "",
+  //   contactNumber: "",
+  //   alternateNumbers: [],  // If you want to handle this as an array, make sure it's captured properly in the form.
+  //   whatsappNumber: "",
+  //   email: "",
+  // });
+
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   // Handle input changes for all fields
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, contactPerson: { ...formData.contactPerson, [e.target.name]: e.target.value } });
   };
 
   // Form submission handler
@@ -28,6 +29,7 @@ const ContactPerson = ({ setKey }) => {
     setError(""); // Reset error on form submission
 
     try {
+
       const response = await fetch(
         "http://localhost:5000/api/admin/createContact",
         {
@@ -39,11 +41,20 @@ const ContactPerson = ({ setKey }) => {
         }
       );
 
+      // const response = await fetch("http://localhost:5000/api/admin/createContact", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(formData),
+      // });
+
+
       // Check for a successful response
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.message || "Something went wrong!");
-      }
+      // if (!response.ok) {
+      //   const err = await response.json();
+      //   throw new Error(err.message || "Something went wrong!");
+      // }
 
       // On successful submission, navigate to the next form
       setKey("business"); // Replace "business" with the key of the next step
@@ -73,6 +84,7 @@ const ContactPerson = ({ setKey }) => {
           value={formData.title}
           onChange={handleChange}
         >
+          <option value="">Select Title</option>
           <option value="Mr">Mr</option>
           <option value="Ms">Ms</option>
         </select>

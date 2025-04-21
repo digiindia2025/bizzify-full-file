@@ -125,7 +125,7 @@ const Login = () => {
   
         console.log("Redirecting to /profile...");
         setTimeout(() => {
-          router.push("/profile");
+          router.push("/Pages/Profile");
         }, 1500);
       } else {
         setLoginError(data.message || "Google login failed.");

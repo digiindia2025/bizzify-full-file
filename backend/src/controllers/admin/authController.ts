@@ -1,9 +1,13 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import crypto from "crypto"; // To generate OTP
+import crypto from "crypto"; // To gfd vfdqvd dovenerate OTP
 import nodemailer from "nodemailer"; // For sending email
 import User from "../../models/authModel";
 import jwt from "jsonwebtoken";
+
+import { OAuth2Client } from "google-auth-library";
+
+
 
 // Function to send OTP to the user's email
 const sendOTP = async (email: string, otp: string) => {
@@ -14,14 +18,36 @@ const sendOTP = async (email: string, otp: string) => {
       pass: "bqbd gioy wnir pqgj", // Replace with your generated App Password
     },
   });
-
   const mailOptions = {
     from: "amankumartiwari5255@gmail.com",
     to: email,
-    subject: "Your OTP for registration",
-    text: `Your OTP for registration is: ${otp}`,
+    subject: "Biziffy - Your One-Time Password (OTP) for Registration",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2 style="color: #007bff;">Welcome to Biziffy!</h2>
+        <p>Hi there,</p>
+        <p>Thank you for choosing <strong>Biziffy</strong>. To complete your registration, please use the OTP below:</p>
+        
+        <h3 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; display: inline-block;">
+          ${otp}
+        </h3>
+        
+        <p>This OTP is valid for only 10 minutes. Please do not share it with anyone.</p>
+        
+        <p>If you did not initiate this request, you can safely ignore this email.</p>
+  
+        <hr />
+  
+        <p>To learn more about our services, visit:</p>
+        <a href="https://biziffy.com" style="color: #007bff;">https://biziffy.com</a>
+  
+        <br/><br/>
+        <p>Best regards,</p>
+        <p><strong>Team Biziffy</strong></p>
+      </div>
+    `,
   };
-
+  
   try {
     await transporter.sendMail(mailOptions);
     console.log("OTP sent to email:", email);
@@ -90,7 +116,9 @@ export const signupUser = async (req: Request, res: Response) => {
   }
 };
 
+=======
 // POST /api/auth/verify-otp
+
 
 // POST /api/auth/verify-otp
 export const verifyOtpController = async (req: Request, res: Response) => {
@@ -164,6 +192,151 @@ export const loginUser = async (req: Request, res: Response) => {
 };
  
 
+
+
+
+// POST /api/auth/forgot-password
+export const sendOtpHandler = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: "Email is required" });
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    user.otp = otp;
+    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // Optional: 10 min expiry
+    await user.save();
+
+    await sendOTP(email, otp);
+    res.status(200).json({ message: "OTP sent to email for password reset" });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// POST /api/auth/verify-reset-otp
+export const verifyOtpHandler = async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user || user.otp !== otp)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    if (user.otpExpiry && user.otpExpiry < new Date())
+      return res.status(400).json({ message: "OTP expired" });
+
+    return res.status(200).json({ message: "OTP verified" });
+  } catch (error) {
+    console.error("Verify reset OTP error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// POST /api/auth/reset-password
+export const resetPasswordHandler = async (req: Request, res: Response) => {
+  const { email, otp, newPassword, confirmPassword } = req.body;
+
+  if (!email || !otp || !newPassword || !confirmPassword)
+    return res.status(400).json({ message: "All fields are required" });
+
+  if (newPassword !== confirmPassword)
+    return res.status(400).json({ message: "Passwords do not match" });
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user || user.otp !== otp)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    if (user.otpExpiry && user.otpExpiry < new Date())
+      return res.status(400).json({ message: "OTP expired" });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+// this this for google login setup
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // Add this to your .env
+
+export const googleLoginController = async (req: Request, res: Response) => {
+  const { tokenId } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: tokenId,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload) {
+      return res.status(400).json({ message: "Invalid Google token." });
+    }
+
+    const { email, name, picture, sub } = payload;
+
+    if (!email) {
+      return res.status(400).json({ message: "Google account missing email." });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if not exists
+      user = new User({
+        fullName: name,
+        email,
+        password: sub, // or generate a random password
+        phone: "", // optional, you can prompt later
+        status: "active",
+        profileImage: picture, // optional field in your model
+        isGoogleAccount: true, // optionally track Google accounts
+      });
+
+      await user.save();
+    }
+
+    // Create token
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET as string,
+      { expiresIn: process.env.JWT_EXPIRES }
+    );
+
+    res.status(200).json({
+      message: "Google login successful",
+      token,
+      user,
+    });
+  } catch (error: any) {
+    console.error("Google login error:", error);
+    res.status(500).json({ message: "Google login failed", error: error.message });
+  }
+};
+
+// this for all users display in admin panel
+
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({ success: true, users });
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch users' });
+  }
+};
+
   
     // If everything's good, return success
 //     res.status(200).json({ message: 'Login successful', user });
@@ -171,4 +344,4 @@ export const loginUser = async (req: Request, res: Response) => {
 //     console.error(err);
 //     res.status(500).json({ message: 'Server error' });
 //   }
-// };
+/

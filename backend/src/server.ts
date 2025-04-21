@@ -4,6 +4,8 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import bodyParser from "body-parser";
+import morgan from "morgan";
+
 import { connectDB } from "./config/db";
 
 import advertisementRoutes from "./routes/admin/advertisementRoutes";
@@ -34,6 +36,9 @@ import authRoutes from "./routes/admin/authRoutes";
 
 
 const app = express();
+
+app.use(morgan("dev"));
+
 const PORT = process.env.PORT || 5000;
 connectDB();
 const allowedOrigins = ["http://localhost:3000", "http://localhost:8080", "http://localhost:5173"];
@@ -86,6 +91,12 @@ app.use("/api", authRoutes); // So /api/verify-otp becomes valid
 app.use("/api/auth", authRoutes); // ✅ Important line
 
 
+app.use("/api/admin/auth", authRoutes); // 👈 This is crucial
+
+// google login
+
+
+app.use("/api/user", userRoutes); // <- this part must match
 
 
 
