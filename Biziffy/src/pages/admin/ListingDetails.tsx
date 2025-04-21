@@ -136,6 +136,7 @@ const location = useLocation();
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
               <div><strong>Business Name:</strong> {businessDetails.businessName || "N/A"}</div>
               <div><strong>Category:</strong> {businessDetails.category || "N/A"}</div>
               <div><strong>Phone:</strong> {businessDetails.phone || "N/A"}</div>
