@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Tabs, Tab } from "react-bootstrap";
+import { Tabs, Tab, Form } from "react-bootstrap";
 import "./freelistingform.css";
 import Image from "next/image";
 import BusinessDetails from "@/app/Components/FreeListingform/BusinessDetails";
@@ -15,17 +15,40 @@ import categoryImage from "../../Images/Step3.png";
 import timingImage from "../../Images/Step3.png";
 import upgradeImage from "../../Images/Step4.png";
 import Head from "next/head";
+import axios from "axios";
 
 const Page = () => {
   const [key, setKey] = useState("contact");
+  const [formData, setFormData] = useState({});
 
-  const tabImages = {
-    contact: contactImage,
-    business: businessImage,
-    category: categoryImage,
-    timing: timingImage,
-    upgrade: upgradeImage,
-  };
+  const tabImages = { contact: contactImage, business: businessImage, category: categoryImage, timing: timingImage, upgrade: upgradeImage, };
+
+  console.log("FORMDATA:-", formData);
+  const handleListingSubmit = async () => {
+    const form = new FormData();
+    form.append("contactPerson", JSON.stringify(formData.contactPerson));
+    form.append("businessDetails", JSON.stringify(formData.businessDetails));
+    form.append("businessTiming", JSON.stringify(formData.timings));
+    form.append("businessCategory", JSON.stringify(formData.businessCategory));
+    form.append("upgradeListing", JSON.stringify(formData.upgradeListing));
+    form.append("businessImages", formData.businessCategory.businessImages);
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/createBusinessListing", form);
+
+      if (response.status) {
+        // const data = await response.json();
+        console.log("Success:", response.data);
+        // Handle success (e.g., show success message or redirect)
+      } else {
+        const error = await response.json();
+        console.log("Error:", error.message);
+        // Handle error
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   return (
     <>
@@ -84,20 +107,20 @@ const Page = () => {
               <div className="free-listing-multitab">
                 <Tabs activeKey={key} className="border-0">
                   <Tab eventKey="contact" className="tab-stlye">
-                    <ContactPerson setKey={setKey} />
+                    <ContactPerson setKey={setKey} formData={formData} setFormData={setFormData} />
                   </Tab>
                   <Tab eventKey="business" className="tab-stlye">
-                    <BusinessDetails setKey={setKey} />
+                    <BusinessDetails setKey={setKey} formData={formData} setFormData={setFormData} />
                   </Tab>
 
                   <Tab eventKey="category" className="tab-stlye">
-                    <BusinessCategory setKey={setKey} />
+                    <BusinessCategory setKey={setKey} formData={formData} setFormData={setFormData} />
                   </Tab>
                   <Tab eventKey="timing" className="tab-stlye">
-                    <BusinessTiming setKey={setKey} />
+                    <BusinessTiming setKey={setKey} formData={formData} setFormData={setFormData} />
                   </Tab>
                   <Tab eventKey="upgrade" className="tab-stlye">
-                    <UpgradeListing setKey={setKey} />
+                    <UpgradeListing setKey={setKey} handleListingSubmit={handleListingSubmit} formData={formData} setFormData={setFormData} />
                   </Tab>
                 </Tabs>
               </div>

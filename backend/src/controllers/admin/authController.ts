@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import crypto from "crypto"; // To gfd vfdqvd dovenerate OTP
+import crypto from "crypto"; // To generate OTP
 import nodemailer from "nodemailer"; // For sending email
 import User from "../../models/authModel";
 import jwt from "jsonwebtoken";
@@ -181,8 +181,8 @@ export const loginUser = async (req: Request, res: Response) => {
 
     res.status(200).json({ status: true, message: "User Logged In Successfully", token, user });
 } catch (error) {
-    return res.status(500).json({ status: false, message: error.message });
-   }
+    return res.status(500).json({ status: false, message: error.message });
+   }
 };
  
 
