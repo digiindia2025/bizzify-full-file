@@ -3,8 +3,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../../Pages/freelistingform/freelistingform.css";
 
-const BusinessCategory = ({ setKey }) => {
-  const [category, setCategory] = useState([]);
+const BusinessCategory = ({ setKey, formData, setFormData }) => {
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState([]);
   const [businessImages, setBusinessImages] = useState([]);
   const [about, setAbout] = useState("");
   const [keywords, setKeywords] = useState([]);
@@ -12,19 +13,17 @@ const BusinessCategory = ({ setKey }) => {
   const [areas, setAreas] = useState([]);
   const [serviceArea, setServiceArea] = useState([]);
   const [serviceAreainput, setServiceAreaInput] = useState("");
-  
+
   const categories = [
     "Construction", "Real Estate", "Education", "Retail",
-    "Healthcare", "Technology", "Finance", "Hospitality", 
+    "Healthcare", "Technology", "Finance", "Hospitality",
     "Automotive", "Manufacturing"
   ];
 
   useEffect(() => {
     const fetchAreas = async () => {
       try {
-        const res = await axios.get(
-          "https://6800d7ffb72e9cfaf728eac6.mockapi.io/areapincode"
-        );
+        const res = await axios.get("https://6800d7ffb72e9cfaf728eac6.mockapi.io/areapincode");
         const areaList = res.data.map((user) => `${user.area} ${user.pincode}`);
         setAreas(areaList);
       } catch (error) {
@@ -34,9 +33,9 @@ const BusinessCategory = ({ setKey }) => {
     fetchAreas();
   }, []);
 
-  const handleSelectChange = (e) => {
+  const handleSubCategoryChange = (e) => {
     const values = Array.from(e.target.selectedOptions, (o) => o.value);
-    setCategory((prev) => [...new Set([...prev, ...values])]);
+    setSubCategory(values);
   };
 
   const handleImageChange = (e) => {
@@ -49,45 +48,32 @@ const BusinessCategory = ({ setKey }) => {
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && input.trim()) {
       e.preventDefault();
-      if (!keywords.includes(input.trim()))
+      if (!keywords.includes(input.trim())) {
         setKeywords([...keywords, input.trim()]);
+      }
       setInput("");
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Prepare the form data to send to the backend
-    const formData = {
+
+    const updatedBusinessCategory = {
       category,
+      subCategory,
       businessImages,
       about,
       keywords,
-      serviceArea,
+      businessService: input,
+      serviceArea:serviceAreainput,
     };
 
-    try {
-      const response = await fetch("http://localhost:5000/api/admin/createBusinessCategory", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    setFormData((prev) => ({
+      ...prev,
+      businessCategory: updatedBusinessCategory,
+    }));
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Success:", result);
-        // Move to next step after successful submission
-        setKey("timing");
-      } else {
-        const error = await response.json();
-        console.log("Error:", error.message);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    setKey("timing");
   };
 
   const removeItem = (list, setList, item) =>
@@ -95,15 +81,11 @@ const BusinessCategory = ({ setKey }) => {
   const removeByIndex = (list, setList, index) =>
     setList(list.filter((_, i) => i !== index));
 
-  const handleSelect = (area) => {
+  const handleSelectArea = (area) => {
     if (!serviceArea.includes(area)) {
       setServiceArea([...serviceArea, area]);
     }
     setServiceAreaInput("");
-  };
-
-  const removeServiceAreaItem = (itemToRemove) => {
-    setServiceArea(serviceArea.filter((item) => item !== itemToRemove));
   };
 
   const filteredAreas = areas.filter(
@@ -114,46 +96,35 @@ const BusinessCategory = ({ setKey }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h5 className="section-title">
-        Select Business Category<sup>*</sup>
-      </h5>
+      <h5 className="section-title">Select Business Category<sup>*</sup></h5>
 
       {/* Category Selection */}
       <div className="mb-3">
-        <label className="form-label">
-          Select Business Category <sup>*</sup>
-        </label>
-        <select className="form-control" required>
+        <label className="form-label">Select Business Category <sup>*</sup></label>
+        <select className="form-control" required value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">Select Your Category</option>
           {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
+            <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
       </div>
 
       {/* Subcategory Selection */}
       <div className="mb-3">
-        <label className="form-label">
-          Select Business SubCategory <sup>*</sup>
-        </label>
-        <select className="form-control" required onChange={handleSelectChange}>
-          <option value="">Select Your SubCategory</option>
+        <label className="form-label">Select Business SubCategory <sup>*</sup></label>
+        <select className="form-control" multiple required onChange={handleSubCategoryChange}>
           {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
+            <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
         <div className="mt-2">
-          {category.map((cat) => (
+          {subCategory.map((cat) => (
             <span key={cat} className="badge bg-primary m-1 p-2">
               {cat}
               <button
                 type="button"
                 className="btn-close ms-2 bg-danger"
-                onClick={() => removeItem(category, setCategory, cat)}
+                onClick={() => removeItem(subCategory, setSubCategory, cat)}
                 aria-label="Remove"
               />
             </span>
@@ -161,11 +132,9 @@ const BusinessCategory = ({ setKey }) => {
         </div>
       </div>
 
-      {/* Services Input */}
+      {/* Business Services Input */}
       <div className="mb-3">
-        <label className="form-label">
-          Business Services<sup>*</sup>
-        </label>
+        <label className="form-label">Business Services<sup>*</sup></label>
         <input
           type="text"
           value={input}
@@ -189,11 +158,9 @@ const BusinessCategory = ({ setKey }) => {
         </div>
       </div>
 
-      {/* Area Selection */}
+      {/* Service Area Input */}
       <div className="mb-3 position-relative">
-        <label className="form-label">
-          Services Area/Pincode<sup>*</sup>
-        </label>
+        <label className="form-label">Services Area/Pincode<sup>*</sup></label>
         <input
           type="text"
           className="form-control"
@@ -207,7 +174,8 @@ const BusinessCategory = ({ setKey }) => {
               <li
                 key={area}
                 className="list-group-item list-group-item-action"
-                onClick={() => handleSelect(area)}
+                onClick={() => handleSelectArea(area)}
+                
                 style={{ cursor: "pointer" }}
               >
                 {area}
@@ -215,7 +183,6 @@ const BusinessCategory = ({ setKey }) => {
             ))}
           </ul>
         )}
-
         <div className="mt-2">
           {serviceArea.map((serarea) => (
             <span key={serarea} className="badge bg-primary m-1 p-2">
@@ -223,7 +190,7 @@ const BusinessCategory = ({ setKey }) => {
               <button
                 type="button"
                 className="btn-close ms-2 bg-danger"
-                onClick={() => removeServiceAreaItem(serarea)}
+                onClick={() => removeItem(serviceArea, setServiceArea, serarea)}
                 aria-label="Remove"
               />
             </span>
@@ -233,9 +200,7 @@ const BusinessCategory = ({ setKey }) => {
 
       {/* About Section */}
       <div className="mb-3">
-        <label className="form-label">
-          About Your Business <sup>*</sup>
-        </label>
+        <label className="form-label">About Your Business <sup>*</sup></label>
         <textarea
           className="form-control"
           rows="3"
@@ -248,9 +213,7 @@ const BusinessCategory = ({ setKey }) => {
 
       {/* Image Upload */}
       <div className="mb-3">
-        <label className="form-label">
-          Upload Business Photos <span className="text-danger">(Optional)</span>
-        </label>
+        <label className="form-label">Upload Business Photos <span className="text-danger">(Optional)</span></label>
         <input
           type="file"
           className="form-control"
@@ -260,21 +223,12 @@ const BusinessCategory = ({ setKey }) => {
         />
         <div className="image-preview-container mt-2">
           {businessImages.map((img, index) => (
-            <div
-              key={index}
-              className="image-preview d-inline-block position-relative me-2"
-            >
-              <img
-                src={img}
-                alt={`Preview ${index}`}
-                className="img-thumbnail"
-              />
+            <div key={index} className="image-preview d-inline-block position-relative me-2">
+              <img src={img} alt={`Preview ${index}`} className="img-thumbnail" />
               <button
                 type="button"
                 className="btn-close position-absolute top-0 start-100 translate-middle bg-danger"
-                onClick={() =>
-                  removeByIndex(businessImages, setBusinessImages, index)
-                }
+                onClick={() => removeByIndex(businessImages, setBusinessImages, index)}
                 aria-label="Remove"
               />
             </div>
@@ -282,9 +236,7 @@ const BusinessCategory = ({ setKey }) => {
         </div>
       </div>
 
-      <button type="submit" className="btn btn-primary w-100 py-3">
-        Next
-      </button>
+      <button type="submit" className="btn btn-primary w-100 py-3">Next</button>
     </form>
   );
 };

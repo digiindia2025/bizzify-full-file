@@ -3,9 +3,6 @@ import axios from "axios";
 import { AdminLayout } from "@/components/Layout/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useParams, Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-
 // Interface for full listing response from backend
 interface FullListingDetails {
   businessId: string;
@@ -52,6 +49,9 @@ interface FullListingDetails {
 
 
 const ListingDetails = () => {
+  const location = useLocation()
+  const data = location.state.listing
+  // console.log("datadatadata", data)
   const { id } = useParams<{ id: string }>();
   const [listing, setListing] = useState<FullListingDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,6 +64,8 @@ const location = useLocation();
   console.log("XXXXXXXXXXXXXXXXXXXXXXXXx",userData)
   // Fetch listing details from backend on mount
   useEffect(() => {
+
+
     const fetchListingDetails = async (id) => {
       setLoading(true);
       setError(null);
@@ -90,6 +92,7 @@ const location = useLocation();
       setError("Listing ID not found.");
       setLoading(false);
     }
+
   }, [id]);
 
   // Show loading UI
@@ -119,8 +122,9 @@ const location = useLocation();
     );
   }
 
-  const { businessDetails } = listing;
+  const { businessDetails, businessTiming, contactPerson, upgradeListing, businessCategory } = listing;
 
+  console.log("businessDetails:-", listing)
   return (
     <AdminLayout title="Listing Details">
       <div className="flex justify-between mb-4">
@@ -136,11 +140,29 @@ const location = useLocation();
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
               
+
+
               <div><strong>Business Name:</strong> {businessDetails.businessName || "N/A"}</div>
               <div><strong>Category:</strong> {businessDetails.category || "N/A"}</div>
               <div><strong>Phone:</strong> {businessDetails.phone || "N/A"}</div>
               <div>
+
+
+              <div><p className="font-medium">Business Name:</p><p>{businessDetails.businessName || "N/A"}</p></div>
+              <div><p className="font-medium">Category:</p><p>{businessCategory.category || "N/A"}</p></div>
+              <div><p className="font-medium">Phone:</p><p>{contactPerson.contactNumber || "N/A"}</p></div>
+              <div>
+                <p className="font-medium">Hide Phone Number:</p>
+                <input type="checkbox" checked={contactPerson.whatsappNumber || false} readOnly className="h-4 w-4" />
+
+
+              <div><strong>Business Name:</strong> {businessDetails.businessName || "N/A"}</div>
+              <div><strong>Category:</strong> {businessDetails.category || "N/A"}</div>
+              <div><strong>Phone:</strong> {businessDetails.phone || "N/A"}</div>
+              <div>
+
                 <strong>Hide Phone Number:</strong>
                 <input
                   type="checkbox"
@@ -148,6 +170,9 @@ const location = useLocation();
                   readOnly
                   className="ml-2 h-4 w-4"
                 />
+
+
+
               </div>
               <div><strong>Status:</strong> {businessDetails.status || "N/A"}</div>
               <div><strong>Business Status:</strong> {businessDetails.businessStatus || "N/A"}</div>
@@ -236,6 +261,29 @@ const location = useLocation();
             </div>
           )}
 
+
+          {/* Timings */}
+          {listing.businessTiming && (
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-3">Timings</h3>
+              <pre className="bg-gray-100 p-4 rounded-md overflow-auto">{JSON.stringify(listing.businessTiming, null, 2)}</pre>
+            </div>
+          )}
+
+          {/* Contact */}
+          {listing.contactPerson && (
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-3">Contact Information</h3>
+              <pre className="bg-gray-100 p-4 rounded-md overflow-auto">{JSON.stringify(listing.contactPerson, null, 2)}</pre>
+            </div>
+          )}
+
+          {/* Upgrade */}
+          {listing.upgradeListing && (
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-3">Upgrade Information</h3>
+              <pre className="bg-gray-100 p-4 rounded-md overflow-auto">{JSON.stringify(listing.upgradeListing, null, 2)}</pre>
+
           {/* === TIMINGS === */}
           {listing.timings && (
             <div className="mb-6">
@@ -246,6 +294,7 @@ const location = useLocation();
             </div>
           )}
 
+
           {/* === UPGRADE === */}
           {listing.upgrade && (
             <div className="mb-6">
@@ -253,6 +302,7 @@ const location = useLocation();
               <pre className="bg-gray-100 p-4 rounded-md overflow-auto">
                 {JSON.stringify(listing.upgrade, null, 2)}
               </pre>
+
             </div>
           )}
         </CardContent>

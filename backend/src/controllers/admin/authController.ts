@@ -4,7 +4,10 @@ import crypto from "crypto"; // To gfd vfdqvd dovenerate OTP
 import nodemailer from "nodemailer"; // For sending email
 import User from "../../models/authModel";
 import jwt from "jsonwebtoken";
+
 import { OAuth2Client } from "google-auth-library";
+
+
 
 // Function to send OTP to the user's email
 const sendOTP = async (email: string, otp: string) => {
@@ -113,6 +116,9 @@ export const signupUser = async (req: Request, res: Response) => {
   }
 };
 
+=======
+// POST /api/auth/verify-otp
+
 
 // POST /api/auth/verify-otp
 export const verifyOtpController = async (req: Request, res: Response) => {
@@ -185,6 +191,7 @@ export const loginUser = async (req: Request, res: Response) => {
    }
 };
  
+
 
 
 
@@ -329,3 +336,12 @@ export const getAllUsers = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: 'Failed to fetch users' });
   }
 };
+
+  
+    // If everything's good, return success
+//     res.status(200).json({ message: 'Login successful', user });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+/
