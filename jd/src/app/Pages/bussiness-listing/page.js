@@ -5,7 +5,6 @@ import gourav from "../../Images/gourav.jpg";
 import gourav2 from "../../Images/gourav2.jpg";
 import gourav3 from "../../Images/gourav3.jpg";
 import Image from "next/image";
-
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";

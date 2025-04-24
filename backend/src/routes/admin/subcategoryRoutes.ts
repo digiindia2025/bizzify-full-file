@@ -1,16 +1,19 @@
-import { Router } from "express";
-import {
-  getSubcategories,
-  createSubcategory,
-  updateSubcategory,
-  deleteSubcategory,
-} from "../../controllers/admin/subcategoryController";
+import express from "express";
+import { createSubcategory, getAllSubcategories } from "../../controllers/admin/subcategoryController";
+import { upload } from "../../middleware/upload";
 
-const router = Router();
+const router = express.Router();
 
-router.get("/subcategories", getSubcategories); // Get all subcategories
-router.post("/subcategories", createSubcategory); // Create new subcategory
-router.put("/subcategories/:id", updateSubcategory); // Update subcategory
-router.delete("/subcategories/:id", deleteSubcategory); // Delete subcategory
+const uploadFields = [
+  { name: "image", maxCount: 1 },
+  { name: "banner", maxCount: 1 },
+];
+
+for (let i = 0; i < 10; i++) {
+  uploadFields.push({ name: `mainSubCategories[${i}][banner]`, maxCount: 1 });
+}
+
+router.post("/subcategories", upload.fields(uploadFields), createSubcategory);
+router.get("/subcategories", getAllSubcategories);
 
 export default router;

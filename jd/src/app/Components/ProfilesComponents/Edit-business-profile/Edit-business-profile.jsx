@@ -2,14 +2,15 @@
 import React, { useState, useEffect } from "react";
 import "./EditBusinessProfile.css";
 import axios from "axios";
+import Image from "next/image";
 
 const categories = [
   { id: "basic", label: "Basic Info", icon: "bi-person" },
   { id: "address", label: "Address", icon: "bi-geo-alt" },
-  { id: "subcategory", label: "Subcategory Services", icon: "bi-grid" },
+  { id: "subcategory", label: "Category", icon: "bi-grid" },
   { id: "services", label: "Services", icon: "bi-briefcase" },
   { id: "servicearea", label: "Service Area", icon: "bi-map" },
-  { id: "url", label: "Basic URL", icon: "bi-link-45deg" },
+  { id: "url", label: "Business URL", icon: "bi-link-45deg" },
   { id: "img", label: "Business Image", icon: "bi-card-image" },
 ];
 
@@ -27,9 +28,13 @@ export default function EditBusinessProfile() {
     businessSubCategory: [],
     services: [],
     businessArea: [],
+    Building: "",
+    Street: "",
+    Area: "",
+    Landmark: "",
     city: "",
     state: "",
-    address: "",
+    pincode: "",
     phone: "",
     about: "",
     image: null,
@@ -37,7 +42,7 @@ export default function EditBusinessProfile() {
     email: "",
     experience: "",
     whatsapp: "",
-    pincode: "",
+
     websiteURL: "",
     googlemap: "",
     facebook: "",
@@ -132,17 +137,7 @@ export default function EditBusinessProfile() {
                   />
                 </div>
               </div>
-              <div className="col-md-4">
-                <div className="edit-profile-field">
-                  <label>Business Category</label>
-                  <input
-                    type="text"
-                    name="businessCategory"
-                    value={formData.businessCategory}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
+
               <div className="col-md-4">
                 <div className="edit-profile-field">
                   <label>Phone Number</label>
@@ -206,15 +201,50 @@ export default function EditBusinessProfile() {
             <div className="row align-items-center">
               <div className="col-md-3">
                 <div className="edit-profile-field">
-                  <label>Address</label>
+                  <label>Building/Block No</label>
                   <input
                     type="text"
-                    name="address"
-                    value={formData.address}
+                    name="Building"
+                    value={formData.Building}
                     onChange={handleChange}
                   />
                 </div>
               </div>
+              <div className="col-md-3">
+                <div className="edit-profile-field">
+                  <label>Street/Colony Name</label>
+                  <input
+                    type="text"
+                    name="Street"
+                    value={formData.Street}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              <div className="col-md-3">
+                <div className="edit-profile-field">
+                  <label>Area</label>
+                  <input
+                    type="text"
+                    name="Area"
+                    value={formData.Area}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              <div className="col-md-3">
+                <div className="edit-profile-field">
+                  <label>Landmark</label>
+                  <input
+                    type="text"
+                    name="Landmark"
+                    value={formData.Landmark}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="row align-items-center">
               <div className="col-md-3">
                 <div className="edit-profile-field">
                   <label>City</label>
@@ -348,6 +378,15 @@ export default function EditBusinessProfile() {
         return (
           <form onSubmit={handleSubmit}>
             <div className="row align-items-center">
+              <div className="edit-profile-field">
+                <label>Business Category</label>
+                <input
+                  type="text"
+                  name="businessCategory"
+                  value={formData.businessCategory}
+                  onChange={handleChange}
+                />
+              </div>
               <div className="edit-profile-field">
                 <label>Add More SubCategory</label>
                 <select
@@ -493,7 +532,7 @@ export default function EditBusinessProfile() {
                       }
                     }
                   }}
-                  placeholder="Type area name and press Enter"
+                  placeholder="Type area name/pin code and press Enter"
                 />
                 <div className="mt-2">
                   {businessArea.map((area, index) => (

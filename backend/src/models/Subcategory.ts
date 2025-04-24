@@ -1,21 +1,20 @@
-  import { Schema, model, Document } from "mongoose";
+import mongoose from "mongoose";
 
-  interface Subcategory extends Document {
-    name: string;
-    category: string;
-    status: "active" | "inactive";
-    createdAt: Date;
-    imageUrl: string;
-  }
+const MainSubCategorySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  banner: { type: String },
+});
 
-  const subcategorySchema = new Schema<Subcategory>({
+const SubcategorySchema = new mongoose.Schema(
+  {
     name: { type: String, required: true },
-    category: { type: String, required: true },
-    status: { type: String, required: true, enum: ["active", "inactive"], default: "inactive" },
-    createdAt: { type: Date, default: Date.now },
-    imageUrl: { type: String, default: "" },
-  });
+    image: { type: String },
+    banner: { type: String },
+    status: { type: String, enum: ["active", "inactive"], default: "active" },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
+    mainSubCategories: [MainSubCategorySchema],
+  },
+  { timestamps: true }
+);
 
-  const SubcategoryModel = model<Subcategory>("Subcategory", subcategorySchema);
-
-  export default SubcategoryModel;
+export default mongoose.model("Subcategory", SubcategorySchema);

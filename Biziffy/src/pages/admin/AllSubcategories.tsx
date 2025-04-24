@@ -14,10 +14,12 @@ const AllSubcategories = () => {
     const fetchSubcategories = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/admin/subcategories");
-        
+
+        console.log("Response Data:", response.data);
+
         // Extract subcategories array from the response
-        if (Array.isArray(response.data.subcategories)) {
-          setSubcategories(response.data.subcategories); // Set subcategories array
+        if (Array.isArray(response.data)) {
+          setSubcategories(response.data);
         } else {
           console.error("Invalid data format:", response.data);
           toast({
@@ -26,6 +28,7 @@ const AllSubcategories = () => {
             variant: "destructive",
           });
         }
+
       } catch (error) {
         console.error("Error fetching subcategories:", error);
         toast({
@@ -43,10 +46,12 @@ const AllSubcategories = () => {
   const handleDelete = async (id: string) => {
     try {
       const response = await axios.delete(`http://localhost:5000/api/admin/subcategories/${id}`);
-      
+
       if (response.status === 200) {
         // Filter the subcategories array to remove the deleted subcategory
-        setSubcategories(prevSubcategories => prevSubcategories.filter(sub => sub._id !== id));
+        setSubcategories(prevSubcategories =>
+          prevSubcategories.filter(sub => sub._id !== id)
+        );
         toast({
           title: "Subcategory Deleted",
           description: "Subcategory deleted successfully.",
@@ -110,14 +115,16 @@ const AllSubcategories = () => {
                     </td>
                     <td className="px-4 py-3">
                       <img
-                        src={subcategory.category.banner || "/images/default-banner.jpg"}
+                        src={subcategory.category?.banner || "/images/default-banner.jpg"}
                         alt="Subcategory Banner"
                         width={100}
                         height={60}
                         className="rounded object-cover"
                       />
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{subcategory.category.name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {subcategory.category?.name || "N/A"}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-900">{subcategory.status}</td>
                     <td className="px-4 py-3 space-x-2">
                       <Button variant="link" size="sm">

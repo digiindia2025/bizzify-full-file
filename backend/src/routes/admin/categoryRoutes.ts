@@ -5,6 +5,7 @@ import {
   getAllCategories,
   updateCategoryById,
   deleteCategoryById,
+  getCategoryById, // ✅ Import it here
 } from "../../controllers/admin/categoryController";
 
 const router = express.Router();
@@ -34,5 +35,7 @@ router.get("/categories", getAllCategories);
 router.put("/categories/:id", upload.single("icon"), updateCategoryById);
 
 router.delete("/categories/:id", deleteCategoryById); // ✅ Delete route
+
+router.get("/categories/:id", getCategoryById); // ✅ Add this
 
 export default router;

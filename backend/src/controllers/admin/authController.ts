@@ -4,10 +4,7 @@ import crypto from "crypto"; // To generate OTP
 import nodemailer from "nodemailer"; // For sending email
 import User from "../../models/authModel";
 import jwt from "jsonwebtoken";
-
 import { OAuth2Client } from "google-auth-library";
-
-
 
 // Function to send OTP to the user's email
 const sendOTP = async (email: string, otp: string) => {
@@ -18,14 +15,36 @@ const sendOTP = async (email: string, otp: string) => {
       pass: "bqbd gioy wnir pqgj", // Replace with your generated App Password
     },
   });
-
   const mailOptions = {
     from: "amankumartiwari5255@gmail.com",
     to: email,
-    subject: "Your OTP for registration",
-    text: `Your OTP for registration is: ${otp}`,
+    subject: "Biziffy - Your One-Time Password (OTP) for Registration",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2 style="color: #007bff;">Welcome to Biziffy!</h2>
+        <p>Hi there,</p>
+        <p>Thank you for choosing <strong>Biziffy</strong>. To complete your registration, please use the OTP below:</p>
+        
+        <h3 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; display: inline-block;">
+          ${otp}
+        </h3>
+        
+        <p>This OTP is valid for only 10 minutes. Please do not share it with anyone.</p>
+        
+        <p>If you did not initiate this request, you can safely ignore this email.</p>
+  
+        <hr />
+  
+        <p>To learn more about our services, visit:</p>
+        <a href="https://biziffy.com" style="color: #007bff;">https://biziffy.com</a>
+  
+        <br/><br/>
+        <p>Best regards,</p>
+        <p><strong>Team Biziffy</strong></p>
+      </div>
+    `,
   };
-
+  
   try {
     await transporter.sendMail(mailOptions);
     console.log("OTP sent to email:", email);
@@ -93,9 +112,6 @@ export const signupUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
-
-=======
-// POST /api/auth/verify-otp
 
 
 // POST /api/auth/verify-otp
@@ -165,11 +181,10 @@ export const loginUser = async (req: Request, res: Response) => {
 
     res.status(200).json({ status: true, message: "User Logged In Successfully", token, user });
 } catch (error) {
-    return res.status(500).json({ status: false, message: error.message });
-   }
+    return res.status(500).json({ status: false, message: error.message });
+   }
 };
  
-
 
 
 
@@ -314,12 +329,3 @@ export const getAllUsers = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: 'Failed to fetch users' });
   }
 };
-
-  
-    // If everything's good, return success
-//     res.status(200).json({ message: 'Login successful', user });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-/

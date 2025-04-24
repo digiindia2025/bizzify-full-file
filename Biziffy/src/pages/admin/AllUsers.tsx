@@ -54,37 +54,38 @@ const AllUsers = () => {
     setError("");
     try {
         const response = await axios.get("http://localhost:5000/api/admin/auth/all");
-        console.log("API Response:", response.data);
+        // console.log("API Response:", response.data);
         if (response.status !== 200) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = response.data;
-
-        if (data?.users && Array.isArray(data.users)) {
-            const filteredData = data.users.filter((user): user is UserData =>
-                typeof user?._id === 'string' &&
-                typeof user?.name === 'string' &&
-                typeof user?.email === 'string' &&
-                typeof user?.phone === 'string' &&
-                ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
-            );
-            setUserList(filteredData);
-            console.log("UserList after setting:", filteredData); // ADD THIS LINE
-        } else if (Array.isArray(data)) {
-            const filteredData = data.filter((user): user is UserData =>
-                typeof user?._id === 'string' &&
-                typeof user?.name === 'string' &&
-                typeof user?.email === 'string' &&
-                typeof user?.phone === 'string' &&
-                ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
-            );
-            setUserList(filteredData);
-            console.log("UserList after setting (array data):", filteredData); // ADD THIS LINE
-        } else {
-            console.error("Unexpected response format:", data);
-            setUserList([]);
-            setError("Failed to load users due to unexpected data format.");
-        }
+        const data = response?.data?.users
+        console.log("Fetched users:", data);
+        setUserList(data);
+        // if (data?.users && Array.isArray(data?.users)) {
+        //     const filteredData = data.users.filter((user): user is UserData =>
+        //         typeof user?._id === 'string' &&
+        //         typeof user?.name === 'string' &&
+        //         typeof user?.email === 'string' &&
+        //         typeof user?.phone === 'string' &&
+        //         ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
+        //     );
+        //     setUserList(filteredData);
+        //     console.log("UserList after setting:", filteredData); // ADD THIS LINE
+        // } else if (Array.isArray(data)) {
+        //     const filteredData = data.filter((user): user is UserData =>
+        //         typeof user?._id === 'string' &&
+        //         typeof user?.name === 'string' &&
+        //         typeof user?.email === 'string' &&
+        //         typeof user?.phone === 'string' &&
+        //         ['Active', 'Inactive', 'Deactivated'].includes(user?.status)
+        //     );
+        //     setUserList(filteredData);
+        //     console.log("UserList after setting (array data):", filteredData); // ADD THIS LINE
+        // } else {
+        //     console.error("Unexpected response format:", data);
+        //     setUserList([]);
+        //     setError("Failed to load users due to unexpected data format.");
+        // }
     } catch (err: unknown) {
         if (err instanceof Error) {
             setError("Failed to load users: " + err.message);
@@ -172,7 +173,7 @@ const AllUsers = () => {
   
   const filteredUsers = searchQuery
     ? userList.filter((user) => {
-        const name = user?.name || "";
+        const name = user?.fullName || "";
         const email = user?.email || "";
         const phone = user?.phone || "";
   
@@ -381,7 +382,7 @@ const renderPageNumbers = () => {
                       />
                     </TableCell>
                     <TableCell>{user._id}</TableCell>
-                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.fullName}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{user.phone}</TableCell>
                     <TableCell>

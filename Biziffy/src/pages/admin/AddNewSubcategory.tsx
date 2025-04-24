@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/Layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,9 @@ const AddNewSubcategory = () => {
     { name: "", banner: null as File | null },
   ]);
 
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   const form = useForm<FormValues>({
     defaultValues: {
       name: "",
@@ -42,6 +45,18 @@ const AddNewSubcategory = () => {
       status: "active",
     },
   });
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/categories");
+        setCategories(res.data);
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -84,13 +99,20 @@ const AddNewSubcategory = () => {
   };
 
   const onSubmit = async (data: FormValues) => {
+    if (!selectedCategory) {
+      toast({ title: "Please select a category." });
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("status", data.status);
+    formData.append("category", selectedCategory);
 
     if (data.image && data.image[0]) {
       formData.append("image", data.image[0]);
     }
+
     if (data.banner && data.banner[0]) {
       formData.append("banner", data.banner[0]);
     }
@@ -103,24 +125,41 @@ const AddNewSubcategory = () => {
     });
 
     try {
-      const response = await axios.post('http://localhost:5000/api/admin/subcategories', {
-        name: data.name,
-        category: "defaultCategory", // Replace with the actual category value
-        status: data.status,
-        imageUrl: data.image ? URL.createObjectURL(data.image[0]) : "", // Ensure this logic matches your requirements
-      });
-      console.log('Subcategory created:', response.data);
+      await axios.post("http://localhost:5000/api/admin/subcategories", formData);
+      toast({ title: "Subcategory created successfully." });
+      navigate("/admin/subcategories");
     } catch (error) {
-      console.error('Error creating subcategory:', error.response ? error.response.data : error.message);
-      
+      console.error("Error creating subcategory:", error.response?.data || error.message);
+      toast({
+        title: "Failed to create subcategory.",
+        variant: "destructive",
+      });
     }
   };
-  
+
   return (
     <AdminLayout title="Add New Subcategory">
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Category Dropdown */}
+            <FormItem>
+              <FormLabel>Select Category</FormLabel>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="border p-2 rounded-md w-full"
+              >
+                <option value="">Select a category</option>
+                {categories.map((cat: any) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <FormDescription>Choose the category for this subcategory.</FormDescription>
+            </FormItem>
+
             {/* Subcategory Name */}
             <FormField
               control={form.control}
@@ -191,10 +230,7 @@ const AddNewSubcategory = () => {
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <FormControl>
-                    <select
-                      {...field}
-                      className="border p-2 rounded-md w-full"
-                    >
+                    <select {...field} className="border p-2 rounded-md w-full">
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </select>
@@ -240,16 +276,12 @@ const AddNewSubcategory = () => {
                   )}
                 </div>
               ))}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={addMainSubCategory}
-              >
+              <Button type="button" variant="outline" onClick={addMainSubCategory}>
                 + Add Main Subcategory
               </Button>
             </div>
 
-            {/* Submit */}
+            {/* Submit Buttons */}
             <div className="flex justify-end space-x-2">
               <Button type="button" variant="outline" asChild>
                 <Link to="/admin/subcategories">Cancel</Link>
